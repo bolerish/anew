@@ -1,19 +1,15 @@
-import type { DragEndEvent } from "@dnd-kit/react";
+import type { ElementEventBasePayload } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
-import type { BookmarkDragData, BookmarkDropData } from "./drag-drop";
+import type { BookmarkDragData, BookmarkDropData, BookmarkDropEdge } from "./drag-drop";
 
 type BookmarkDrop = {
   dragged: BookmarkDragData;
   target: BookmarkDropData;
 };
 
-export function resolveBookmarkDrop(event: DragEndEvent): BookmarkDrop | null {
-  if (event.canceled) {
-    return null;
-  }
-
-  const dragged = resolveBookmarkDragData(event);
-  const target = resolveBookmarkDropData(event);
+export function resolveBookmarkDrop(event: ElementEventBasePayload): BookmarkDrop | null {
+  const dragged = resolveBookmarkDragData(event.source.data);
+  const target = resolveBookmarkDropData(event.location.current.dropTargets[0]?.data);
 
   if (!dragged || !target) {
     return null;
@@ -22,27 +18,11 @@ export function resolveBookmarkDrop(event: DragEndEvent): BookmarkDrop | null {
   return { dragged, target };
 }
 
-function resolveBookmarkDragData(event: DragEndEvent): BookmarkDragData | null {
-  const dragData = event.operation.source?.data;
-
-  if (isBookmarkDragData(dragData)) {
-    return dragData;
-  }
-
-  return null;
+export function resolveBookmarkDragData(value: unknown): BookmarkDragData | null {
+  return isBookmarkDragData(value) ? value : null;
 }
 
-function resolveBookmarkDropData(event: DragEndEvent): BookmarkDropData | null {
-  const dropData = event.operation.target?.data;
-
-  if (isBookmarkDropData(dropData)) {
-    return dropData;
-  }
-
-  return null;
-}
-
-function isBookmarkDragData(value: unknown): value is BookmarkDragData {
+export function isBookmarkDragData(value: unknown): value is BookmarkDragData {
   if (!isRecord(value)) {
     return false;
   }
@@ -58,7 +38,34 @@ function isBookmarkDragData(value: unknown): value is BookmarkDragData {
   return false;
 }
 
-function isBookmarkDropData(value: unknown): value is BookmarkDropData {
+export function isBookmarkItemDragData(value: unknown): value is Extract<BookmarkDragData, { kind: "item" }> {
+  return isBookmarkDragData(value) && value.kind === "item";
+}
+
+export function isBookmarkFolderDragData(value: unknown): value is Extract<BookmarkDragData, { kind: "folder" }> {
+  return isBookmarkDragData(value) && value.kind === "folder";
+}
+
+export function resolveVerticalDropEdge(clientY: number, element: Element): BookmarkDropEdge {
+  const bounds = element.getBoundingClientRect();
+  const midpoint = bounds.top + bounds.height / 2;
+
+  return clientY >= midpoint ? "after" : "before";
+}
+
+export function resolveBookmarkDropEdge(value: unknown): BookmarkDropEdge | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  return value.edge === "after" || value.edge === "before" ? value.edge : null;
+}
+
+function resolveBookmarkDropData(value: unknown): BookmarkDropData | null {
+  return isBookmarkDropData(value) ? value : null;
+}
+
+export function isBookmarkDropData(value: unknown): value is BookmarkDropData {
   if (!isRecord(value)) {
     return false;
   }
@@ -67,9 +74,21 @@ function isBookmarkDropData(value: unknown): value is BookmarkDropData {
     return typeof value.parentId === "string";
   }
 
-  return isBookmarkDragData(value);
+  if (value.kind === "folder") {
+    return isRecord(value.folder) && isOptionalDropEdge(value.edge);
+  }
+
+  if (value.kind === "item") {
+    return isRecord(value.item) && isOptionalDropEdge(value.edge);
+  }
+
+  return false;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object";
+}
+
+function isOptionalDropEdge(value: unknown): boolean {
+  return value === undefined || value === "after" || value === "before";
 }

@@ -22,10 +22,8 @@ export function Folder({ folder }: FolderProps) {
   });
 
   return (
-    <section
-      className={cn("grid", folderSort.isDropTarget && "bg-accent", folderSort.isDragSource && "opacity-60")}
-      ref={folderSort.ref}
-    >
+    <section className={cn("relative grid", folderSort.isDragSource && "opacity-20")} ref={folderSort.ref}>
+      {folderSort.isDropTarget && folderSort.dropEdge ? <DropIndicator edge={folderSort.dropEdge} /> : null}
       <FolderHeader
         folder={folder}
         dnd={{
@@ -37,12 +35,34 @@ export function Folder({ folder }: FolderProps) {
 
       <AddItemForm addItem={addItem} onCancel={addItem.closeForm} />
 
-      <div className={cn("grid", folderDrop.isDropTarget && "bg-accent/60")} ref={folderDrop.ref}>
+      <div className="relative grid" ref={folderDrop.ref}>
+        {folderDrop.isDropTarget ? <FolderDropIndicator /> : null}
         <FolderStartDropZone folderId={folder.id} />
         {folder.items.map((item, itemIndex) => (
           <Item itemEntry={{ item, itemIndex }} key={item.id} />
         ))}
       </div>
     </section>
+  );
+}
+
+function FolderDropIndicator() {
+  return (
+    <div
+      aria-hidden="true"
+      className="ring-primary/70 pointer-events-none absolute inset-x-0 top-0 bottom-0 z-10 rounded-sm ring-1 ring-inset"
+    />
+  );
+}
+
+function DropIndicator({ edge }: { edge: "after" | "before" }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "bg-primary pointer-events-none absolute right-0 left-0 z-20 h-[3px] rounded-full shadow-sm",
+        edge === "before" ? "-top-1" : "-bottom-1",
+      )}
+    />
   );
 }

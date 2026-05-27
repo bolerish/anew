@@ -17,7 +17,7 @@ type ItemProps = {
 };
 
 export function Item({ itemEntry }: ItemProps) {
-  const { item, itemIndex } = itemEntry;
+  const { item } = itemEntry;
   const { activeBookmark, bookmarkIconMode } = useBookmarkContext();
   const itemView = deriveBookmarkItemView(item, bookmarkIconMode);
   const isActive = activeBookmark?.kind === "item" && activeBookmark.id === item.id;
@@ -31,11 +31,10 @@ export function Item({ itemEntry }: ItemProps) {
     revealBookmarkActions,
     suppressBookmarkActions,
   } = useItemInlineEdit(item);
-  const { handleRef, isDragSource, isDropTarget, setItemElement } = useItemDnd({
+  const { dropEdge, handleRef, isDropTarget, isDragSource, setItemElement } = useItemDnd({
     isActive,
     isEditing,
     item,
-    itemIndex,
   });
 
   const deleteItem = useCallback(() => {
@@ -44,11 +43,12 @@ export function Item({ itemEntry }: ItemProps) {
 
   return (
     <div
-      className={cn("group/bookmark-item", isDropTarget && "bg-accent", isDragSource && "opacity-60")}
+      className={cn("group/bookmark-item relative", isDragSource && "opacity-20")}
       data-suppress-bookmark-actions={suppressBookmarkActions ? "" : undefined}
       ref={setItemElement}
       onMouseMove={suppressBookmarkActions ? revealBookmarkActions : undefined}
     >
+      {isDropTarget && dropEdge ? <DropIndicator edge={dropEdge} /> : null}
       <div className="group/bookmark-row relative min-h-8">
         <DragHandle isDragging={isDragSource} label={UI_LANGUAGE.bookmarks.action.move} ref={handleRef} />
 
@@ -82,5 +82,17 @@ export function Item({ itemEntry }: ItemProps) {
         </Collapsible>
       </div>
     </div>
+  );
+}
+
+function DropIndicator({ edge }: { edge: "after" | "before" }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        "bg-primary pointer-events-none absolute right-0 left-0 z-20 h-[3px] rounded-full shadow-sm",
+        edge === "before" ? "top-0" : "bottom-0",
+      )}
+    />
   );
 }

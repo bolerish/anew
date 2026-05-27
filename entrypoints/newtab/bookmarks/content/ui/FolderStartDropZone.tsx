@@ -1,25 +1,41 @@
-import { useDroppable } from "@dnd-kit/react";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useEffect, useState } from "react";
 import { cn } from "~newtab/shared/lib/utils";
 
-import type { BookmarkDropData } from "../../movement/lib/drag-drop";
+import { isBookmarkItemDragData } from "../../movement/lib/dnd-protocol";
 
 type FolderStartDropZoneProps = {
   folderId: string;
 };
 
 export function FolderStartDropZone({ folderId }: FolderStartDropZoneProps) {
-  const drop = useDroppable<BookmarkDropData>({
-    accept: ["item"],
-    data: { kind: "item-start", parentId: folderId },
-    id: `item-start:${folderId}`,
-    type: "item-start",
-  });
+  const [element, setElement] = useState<HTMLDivElement | null>(null);
+  const [isDropTarget, setIsDropTarget] = useState(false);
+
+  useEffect(() => {
+    if (!element) {
+      return;
+    }
+
+    return dropTargetForElements({
+      element,
+      canDrop: ({ source }) => isBookmarkItemDragData(source.data),
+      getData: () => ({ kind: "item-start", parentId: folderId }),
+      onDragEnter: () => setIsDropTarget(true),
+      onDragLeave: () => setIsDropTarget(false),
+      onDrop: () => setIsDropTarget(false),
+    });
+  }, [element, folderId]);
 
   return (
     <div
       aria-hidden="true"
-      className={cn("-mb-3 h-3 opacity-0", drop.isDropTarget && "bg-accent opacity-100")}
-      ref={drop.ref}
-    />
+      className={cn("relative -mb-3 h-3 opacity-0", isDropTarget && "opacity-100")}
+      ref={setElement}
+    >
+      {isDropTarget ? (
+        <div className="bg-primary pointer-events-none absolute top-1/2 right-0 left-0 h-[3px] -translate-y-1/2 rounded-full shadow-sm" />
+      ) : null}
+    </div>
   );
 }

@@ -1,6 +1,4 @@
-import type { DragEndEvent } from "@dnd-kit/react";
-import { isSortableOperation } from "@dnd-kit/react/sortable";
-import { useReducer } from "react";
+import type { ElementEventBasePayload } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { browser } from "wxt/browser";
 
 import type { BookmarkFolder, BookmarkItem } from "../../lib/model";
@@ -8,7 +6,6 @@ import { resolveBookmarkDrop } from "../lib/dnd-protocol";
 import { type BookmarkDropData, computeBookmarkInsertIndex, computeFolderInsertIndex } from "../lib/drag-drop";
 import {
   updateBookmarkFolderBeforeTarget,
-  updateBookmarkFolderParentIndex,
   updateBookmarkItemBeforeTarget,
   updateBookmarkItemParentIndex,
   updateBookmarkItemFolder,
@@ -20,11 +17,6 @@ type UseMovementInput = {
   searchIsActive: boolean;
 };
 
-type SortableBookmarkMove = {
-  group: string;
-  renderedIndex: number;
-};
-
 type BookmarkMoveExpectation = {
   id: string;
   insertIndex?: number;
@@ -33,20 +25,16 @@ type BookmarkMoveExpectation = {
 };
 
 export function useBookmarkMovement({ folders, onBookmarksChange, searchIsActive }: UseMovementInput) {
-  const [forceReconcileKey, forceReconcile] = useReducer((version: number) => version + 1, 0);
-
-  async function handleDragEnd(event: DragEndEvent) {
+  async function handleDrop(event: ElementEventBasePayload) {
     if (searchIsActive) {
-      syncSkippedMove(event, "bookmark move skipped while search is active", {
-        sortableMove: resolveSortableMove(event),
-      });
+      logMovement("bookmark move skipped while search is active", null);
       return;
     }
 
     const drop = resolveBookmarkDrop(event);
 
     if (!drop) {
-      logMovement("drop skipped", { canceled: event.canceled });
+      logMovement("drop skipped", null);
       return;
     }
 
@@ -54,47 +42,38 @@ export function useBookmarkMovement({ folders, onBookmarksChange, searchIsActive
       logMovement("drop received", {
         ...drop,
         folders: deriveFolderSnapshots(folders),
-        sortableMove: resolveSortableMove(event),
       });
 
       if (drop.dragged.kind === "folder") {
-        await handleFolderDrop(drop.dragged.folder, drop.target, event);
+        await handleFolderDrop(drop.dragged.folder, drop.target);
         return;
       }
 
-      await handleItemDrop(drop.dragged.item, drop.target, event);
+      await handleItemDrop(drop.dragged.item, drop.target);
     } catch (error) {
       console.error("[newtab:movement] failed to persist bookmark move", {
         error,
         folders: deriveFolderSnapshots(folders),
-        sortableMove: resolveSortableMove(event),
       });
     }
   }
 
-  async function handleFolderDrop(folder: BookmarkFolder, target: BookmarkDropData, event: DragEndEvent) {
-    const sortableMove = resolveSortableMove(event);
-
+  async function handleFolderDrop(folder: BookmarkFolder, target: BookmarkDropData) {
     switch (target.kind) {
       case "folder": {
         if (folder.id === target.folder.id) {
-          if (sortableMove && !isSameRenderedFolderPosition(folder, sortableMove.group, sortableMove.renderedIndex)) {
-            await updateFolderFromRenderedIndex(folder, sortableMove, event);
-            return;
-          }
-
-          syncSkippedMove(event, "folder move skipped because target is source", {
+          logMovement("folder move skipped because target is source", {
             folderId: folder.id,
-            sortableMove,
             targetId: target.folder.id,
           });
           return;
         }
 
-        const insertIndex = computeFolderInsertIndex(target.folder);
+        const insertIndex = computeFolderInsertIndex(target.folder, target.edge);
 
         logMovement("move folder before target", {
           folderId: folder.id,
+          edge: target.edge,
           insertIndex,
           parentId: target.folder.parentId,
           targetId: target.folder.id,
@@ -109,20 +88,15 @@ export function useBookmarkMovement({ folders, onBookmarksChange, searchIsActive
         return;
       }
       case "item":
-      case "item-start": {
-        if (sortableMove) {
-          await updateFolderFromRenderedIndex(folder, sortableMove, event);
-        }
-      }
+      case "item-start":
+        return;
     }
   }
 
-  async function handleItemDrop(item: BookmarkItem, target: BookmarkDropData, event: DragEndEvent) {
-    const sortableMove = resolveSortableMove(event);
-
+  async function handleItemDrop(item: BookmarkItem, target: BookmarkDropData) {
     switch (target.kind) {
       case "item-start":
-        await updateItemToStart(item, target.parentId, event);
+        await updateItemToStart(item, target.parentId);
         return;
       case "folder":
         logMovement("move item to folder", {
@@ -139,22 +113,17 @@ export function useBookmarkMovement({ folders, onBookmarksChange, searchIsActive
         return;
       case "item": {
         if (item.id === target.item.id) {
-          if (sortableMove && !isSameRenderedItemPosition(item, sortableMove.group, sortableMove.renderedIndex)) {
-            await updateItemFromRenderedIndex(item, sortableMove, event);
-            return;
-          }
-
-          syncSkippedMove(event, "item move skipped because target is source", {
+          logMovement("item move skipped because target is source", {
             itemId: item.id,
-            sortableMove,
             targetId: target.item.id,
           });
           return;
         }
 
-        const insertIndex = computeBookmarkInsertIndex(folders, target.item);
+        const insertIndex = computeBookmarkInsertIndex(folders, target.item, target.edge);
 
         logMovement("move item before target", {
+          edge: target.edge,
           insertIndex,
           itemId: item.id,
           items: deriveFolderItemSnapshots(target.item.parentId, folders),
@@ -172,169 +141,9 @@ export function useBookmarkMovement({ folders, onBookmarksChange, searchIsActive
     }
   }
 
-  async function updateFolderFromRenderedIndex(
-    folder: BookmarkFolder,
-    sortableMove: SortableBookmarkMove,
-    event: DragEndEvent,
-  ) {
-    const insertIndex = computeFolderInsertIndexFromRenderedIndex(
-      folder,
-      sortableMove.group,
-      sortableMove.renderedIndex,
-    );
-
-    if (insertIndex === null) {
-      reportBookmarkMoveMismatch("folder move skipped because rendered target is missing", {
-        folderId: folder.id,
-        folders: deriveFolderSnapshots(folders),
-        sortableMove,
-      });
-      return;
-    }
-
-    if (isSameRenderedFolderPosition(folder, sortableMove.group, sortableMove.renderedIndex)) {
-      syncSkippedMove(event, "folder move skipped because position is unchanged", {
-        folderId: folder.id,
-        sortableMove,
-      });
-      return;
-    }
-
-    logMovement("move folder from rendered index", {
-      folderId: folder.id,
-      folders: deriveFolderSnapshots(folders),
-      insertIndex,
-      parentId: sortableMove.group,
-      sortableMove,
-    });
-
-    await syncBookmarkMove(
-      () =>
-        updateBookmarkFolderParentIndex(folder, {
-          insertIndex,
-          parentId: sortableMove.group,
-        }),
-      {
-        id: folder.id,
-        insertIndex,
-        kind: "folder",
-        parentId: sortableMove.group,
-      },
-    );
-  }
-
-  async function updateItemFromRenderedIndex(
-    item: BookmarkItem,
-    sortableMove: SortableBookmarkMove,
-    event: DragEndEvent,
-  ) {
-    const insertIndex = computeItemInsertIndexFromRenderedIndex(item, sortableMove.group, sortableMove.renderedIndex);
-
-    if (insertIndex === null) {
-      reportBookmarkMoveMismatch("item move skipped because rendered target is missing", {
-        itemId: item.id,
-        items: deriveFolderItemSnapshots(sortableMove.group, folders),
-        sortableMove,
-      });
-      return;
-    }
-
-    if (isSameRenderedItemPosition(item, sortableMove.group, sortableMove.renderedIndex)) {
-      syncSkippedMove(event, "item move skipped because position is unchanged", {
-        itemId: item.id,
-        sortableMove,
-      });
-      return;
-    }
-
-    logMovement("move item from rendered index", {
-      insertIndex,
-      itemId: item.id,
-      items: deriveFolderItemSnapshots(sortableMove.group, folders),
-      parentId: sortableMove.group,
-      sortableMove,
-    });
-
-    await syncBookmarkMove(
-      () =>
-        updateBookmarkItemParentIndex(item, {
-          insertIndex,
-          parentId: sortableMove.group,
-        }),
-      {
-        id: item.id,
-        insertIndex,
-        kind: "item",
-        parentId: sortableMove.group,
-      },
-    );
-  }
-
-  function computeItemInsertIndexFromRenderedIndex(
-    item: BookmarkItem,
-    parentId: string,
-    renderedIndex: number,
-  ): number | null {
-    const folder = folders.find((candidate) => candidate.id === parentId);
-
-    if (!folder) {
-      return null;
-    }
-
-    const remainingItems = folder.items.filter((candidate) => candidate.id !== item.id);
-    const itemAfterMove = remainingItems[renderedIndex];
-
-    if (itemAfterMove) {
-      return computeBookmarkInsertIndex(folders, itemAfterMove);
-    }
-
-    const lastItem = remainingItems.at(-1);
-
-    return lastItem?.bookmarkIndex !== undefined ? lastItem.bookmarkIndex + 1 : 0;
-  }
-
-  function computeFolderInsertIndexFromRenderedIndex(
-    folder: BookmarkFolder,
-    parentId: string,
-    renderedIndex: number,
-  ): number | null {
-    const siblingFolders = folders.filter((candidate) => candidate.parentId === parentId);
-    const remainingFolders = siblingFolders.filter((candidate) => candidate.id !== folder.id);
-    const folderAfterMove = remainingFolders[renderedIndex];
-
-    if (folderAfterMove) {
-      return computeFolderInsertIndex(folderAfterMove);
-    }
-
-    const lastFolder = remainingFolders.at(-1);
-
-    return lastFolder?.bookmarkIndex !== undefined ? lastFolder.bookmarkIndex + 1 : 0;
-  }
-
-  function isSameRenderedItemPosition(item: BookmarkItem, parentId: string, renderedIndex: number): boolean {
-    const folder = folders.find((candidate) => candidate.id === item.parentId);
-
-    if (!folder) {
-      return false;
-    }
-
-    return (
-      item.parentId === parentId && folder.items.findIndex((candidate) => candidate.id === item.id) === renderedIndex
-    );
-  }
-
-  function isSameRenderedFolderPosition(folder: BookmarkFolder, parentId: string, renderedIndex: number): boolean {
-    const siblingFolders = folders.filter((candidate) => candidate.parentId === folder.parentId);
-
-    return (
-      folder.parentId === parentId &&
-      siblingFolders.findIndex((candidate) => candidate.id === folder.id) === renderedIndex
-    );
-  }
-
-  async function updateItemToStart(item: BookmarkItem, parentId: string, event: DragEndEvent) {
+  async function updateItemToStart(item: BookmarkItem, parentId: string) {
     if (item.parentId === parentId && resolveRenderedItemIndex(item) === 0) {
-      syncSkippedMove(event, "item move skipped because it is already first", {
+      logMovement("item move skipped because it is already first", {
         itemId: item.id,
         parentId,
       });
@@ -403,20 +212,7 @@ export function useBookmarkMovement({ folders, onBookmarksChange, searchIsActive
     await onBookmarksChange();
   }
 
-  function syncSkippedMove(event: DragEndEvent, message: string, debugData: unknown) {
-    forceReconcile();
-    // dnd-kit may keep its internal sortable projection after a skipped drop.
-    // The runtime event can expose preventDefault even though DragEndEvent does not type it.
-    const preventDefault = (event as DragEndEvent & { preventDefault?: () => void }).preventDefault;
-
-    if (preventDefault) {
-      preventDefault();
-    }
-
-    logMovement(message, debugData);
-  }
-
-  return { forceReconcileKey, handleDragEnd };
+  return { handleDrop };
 }
 
 function computeExpectedFinalIndex(
@@ -436,24 +232,6 @@ function computeExpectedFinalIndex(
   }
 
   return expectedMove.insertIndex;
-}
-
-function resolveSortableMove(event: DragEndEvent): SortableBookmarkMove | null {
-  if (!isSortableOperation(event.operation)) {
-    return null;
-  }
-
-  const sortable = event.operation.source?.sortable;
-
-  if (!sortable || typeof sortable.group !== "string") {
-    return null;
-  }
-
-  if (!Number.isInteger(sortable.index) || sortable.index < 0) {
-    return null;
-  }
-
-  return { group: sortable.group, renderedIndex: sortable.index };
 }
 
 async function fetchBookmarkChildrenSnapshot(parentId: string): Promise<BookmarkChildSnapshot[]> {

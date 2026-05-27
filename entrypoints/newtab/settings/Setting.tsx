@@ -10,11 +10,13 @@ import { Time } from "./time/ui/Time";
 export function Setting() {
   return (
     <Popover>
-      <PopoverTrigger>
-        <Button aria-label="Open settings" size="icon" variant="outline">
-          <GearSixIcon className="size-4" />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger
+        render={
+          <Button aria-label="Open settings" size="icon" variant="outline">
+            <GearSixIcon className="size-4" />
+          </Button>
+        }
+      />
       <PopoverContent
         align="end"
         className="bg-popover/78 text-popover-foreground max-h-available-height w-mds-settings-panel rounded-mds gap-3 overflow-y-auto py-3.5 shadow-md ring-1 backdrop-blur-2xl backdrop-saturate-150"
