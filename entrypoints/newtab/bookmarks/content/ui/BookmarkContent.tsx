@@ -23,7 +23,7 @@ export function BookmarkContent() {
   });
 
   return (
-    <div className="grid h-full scrollbar-thin content-start gap-7 overflow-y-auto pt-5 pr-7 pb-9 pl-6">
+    <div className="grid h-full scrollbar-thin content-start gap-2 overflow-y-auto pt-5 pr-7 pb-9 pl-6">
       {visibleFolders.length > 0 ? (
         visibleFolders.map((folder) => <Folder folder={folder} key={folder.id} />)
       ) : (
