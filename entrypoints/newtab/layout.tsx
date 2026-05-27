@@ -82,7 +82,7 @@ function Header({
 
 function Footer() {
   return (
-    <footer className="bg-background shrink-0 px-6 py-4">
+    <footer className="bg-background h-14 shrink-0 px-6">
       <div className="text-muted-foreground flex items-end justify-end gap-4">
         <ShortcutHints />
         <div className="ml-auto flex shrink-0 items-center gap-2">

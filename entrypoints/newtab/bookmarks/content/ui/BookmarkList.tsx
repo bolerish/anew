@@ -16,7 +16,7 @@ export function BookmarkList({
   onBookmarksChange,
 }: BookmarkListProps) {
   return (
-    <div className="min-h-0 flex-1">
+    <div className="min-h-0 flex-1 overflow-hidden">
       <BookmarkProvider
         bookmarkIconMode={bookmarkIconMode}
         rootBookmarkId={rootBookmarkId}
