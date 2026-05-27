@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "experimentalSortImports": {
+    "case_sensitive": false,
+    "groups": ["external", "internal", ["parent", "sibling", "index"]]
+  },
+  "experimentalTailwindcss": {
+    "attributes": ["className"],
+    "functions": ["cn"]
+  },
+  "ignorePatterns": ["node_modules", "dist"]
+}
