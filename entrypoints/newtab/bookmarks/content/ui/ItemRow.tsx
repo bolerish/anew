@@ -39,7 +39,7 @@ export function ItemRow({ itemEntry, itemView, onEdit, onRemove, suppressBookmar
           >
             {showBookmarkIcon ? <ItemIcon icon={icon} label={deriveItemLabel(item)} marker={iconMarker} /> : null}
             <a
-              className="text-mds-bookmark-item text-foreground pointer-events-auto w-fit min-w-0 truncate text-left font-normal"
+              className="text-mds-bookmark-item text-foreground pointer-events-auto w-fit max-w-lg min-w-0 truncate text-left font-normal"
               href={item.url}
             >
               {deriveItemLabel(item)}
