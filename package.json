@@ -1,6 +1,6 @@
 {
   "name": "min",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "description": "A cleaner way to search, open, and organize your Chrome bookmarks.",
   "type": "module",

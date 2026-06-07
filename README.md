@@ -1,4 +1,4 @@
-# Min - Minimal new tab
+# Min - Minimal New Tab for Bookmarks
 
 ![Logo](/public/logo.svg)
 
