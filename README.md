@@ -1,10 +1,10 @@
-# Min - Minimal New Tab for Bookmarks
+# Min - New Tab for Bookmarks
 
 ![Logo](/public/logo.svg)
 
-Min turns your Chrome bookmarks into a clean, minimal new tab experience.
+Min is a minimal new tab page for Chrome bookmarks.
 
-Every time you open a new tab, you can search, open, and organize your Chrome bookmarks without leaving the page.
+Search, open, and organize your bookmarks in a minimal new tab page.
 
 ## Features
 
