@@ -1,0 +1,15 @@
+min_version: "1.6.0"
+
+pre-commit:
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx}"
+      run: pnpm exec oxlint --deny correctness --deny perf {staged_files}
+    format:
+      glob: "*.{js,jsx,ts,tsx,json,yml,yaml}"
+      run: pnpm exec oxfmt --check {staged_files}
+
+pre-push:
+  commands:
+    typecheck:
+      run: pnpm lint:types
