@@ -1,7 +1,8 @@
 import { browser } from "wxt/browser";
-import type { BookmarkFolder } from "~newtab/bookmarks/lib/model";
 
-import { resolveMatchingBookmark } from "./filter";
+import type { BookmarkFolder } from "~/entrypoints/newtab/bookmark";
+
+import { resolveMatchingBookmark } from "../lib/filter";
 
 type ExecuteSearchQueryInput = {
   folders: BookmarkFolder[];

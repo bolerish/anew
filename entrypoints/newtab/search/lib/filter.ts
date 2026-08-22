@@ -1,10 +1,13 @@
-import type { BookmarkFolder, BookmarkItem } from "~newtab/bookmarks/lib/model";
+import type { BookmarkFolder, BookmarkItem } from "~/entrypoints/newtab/bookmark";
 
-export function deriveVisibleBookmarkFolders(folders: BookmarkFolder[], searchQuery: string): BookmarkFolder[] {
+export function deriveVisibleBookmarkFolders(
+  folders: readonly BookmarkFolder[],
+  searchQuery: string,
+): BookmarkFolder[] {
   const normalizedQuery = normalizeSearchText(searchQuery);
 
   if (!normalizedQuery) {
-    return folders;
+    return [...folders];
   }
 
   return folders
@@ -19,7 +22,7 @@ export function deriveVisibleBookmarkFolders(folders: BookmarkFolder[], searchQu
     .filter((folder) => folder.items.length > 0);
 }
 
-export function resolveMatchingBookmark(folders: BookmarkFolder[], query: string): BookmarkItem | null {
+export function resolveMatchingBookmark(folders: readonly BookmarkFolder[], query: string): BookmarkItem | null {
   const normalizedQuery = normalizeSearchText(query);
   const visibleItems = deriveVisibleBookmarkFolders(folders, query).flatMap((folder) => folder.items);
 

@@ -1,9 +1,9 @@
-import { UI_LANGUAGE } from "~newtab/shared/lib/language";
-import { ToggleGroup, ToggleGroupItem } from "~newtab/shared/ui/toggle-group";
+import { SectionItem } from "~newtab/settings/ui/SettingsSection";
+import { UI_LANGUAGE } from "~shared/lib/language";
+import { ToggleGroup, ToggleGroupItem } from "~shared/ui/toggle-group";
 
-import { SectionItem } from "../../ui/Section";
-import type { BookmarkIconDisplayMode } from "../lib/types";
-import { updateAppearanceSetting } from "../lib/update";
+import type { BookmarkIconDisplayMode } from "../model/types";
+import { updateAppearanceSetting } from "../model/update";
 
 type BookmarkIconProps = { bookmarkIconDisplayMode: BookmarkIconDisplayMode };
 
@@ -11,6 +11,7 @@ export function BookmarkIcon({ bookmarkIconDisplayMode }: BookmarkIconProps) {
   return (
     <SectionItem description={UI_LANGUAGE.settings.appearance.bookmarkIcon.description} label="Icons">
       <ToggleGroup
+        aria-label="Bookmark icon display"
         className="grid h-7 w-full"
         size="sm"
         spacing={0}

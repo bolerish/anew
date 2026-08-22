@@ -16,10 +16,9 @@
   "menuAccent": "subtle",
   "registries": {},
   "aliases": {
-    "components": "~newtab/shared",
-    "utils": "~newtab/shared/lib/utils",
-    "ui": "~newtab/shared/ui",
-    "lib": "~newtab/shared/lib",
-    "hooks": "~newtab/shared/hooks"
+    "components": "~shared/ui",
+    "utils": "~shared/lib",
+    "ui": "~shared/ui",
+    "lib": "~shared/lib"
   }
 }

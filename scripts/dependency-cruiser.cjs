@@ -159,7 +159,7 @@ module.exports = {
         path: "^entrypoints/newtab/date/",
       },
       to: {
-        path: "^entrypoints/newtab/settings/",
+        path: "^entrypoints/sidepanel/settings/.+/ui/",
       },
     },
     {
@@ -167,7 +167,7 @@ module.exports = {
       severity: "error",
       comment: "Newtab shell modules should access the date domain through its public index entry.",
       from: {
-        path: "^entrypoints/newtab/(?:App|bootstrap|layout|main)[.]tsx?$",
+        path: "^entrypoints/newtab/(?:App|main)[.]tsx?$",
       },
       to: {
         path: "^entrypoints/newtab/date/(?!index[.]ts$)",
@@ -178,10 +178,10 @@ module.exports = {
       severity: "error",
       comment: "Newtab shell modules should access settings through public index entries.",
       from: {
-        path: "^entrypoints/newtab/(?:App|bootstrap|layout|main)[.]tsx?$",
+        path: "^entrypoints/newtab/(?:App|main)[.]tsx?$",
       },
       to: {
-        path: "^entrypoints/newtab/settings/(?!index[.]ts$|appearance/index[.]ts$)",
+        path: "^entrypoints/sidepanel/settings/.+/(?!index[.]ts$)",
       },
     },
     {

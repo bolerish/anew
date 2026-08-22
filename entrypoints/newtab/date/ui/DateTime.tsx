@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-import { dateStorage, getInitialDateSettings, type DateSettings } from "~newtab/settings/date";
-import { getInitialTimeSettings, timeStorage, type TimeSettings } from "~newtab/settings/time";
 
-import { useCurrentDateTime } from "../hooks/useCurrentDateTime";
+import {
+  dateStorage,
+  getInitialDateSettings,
+  getInitialTimeSettings,
+  timeStorage,
+  type DateSettings,
+  type TimeSettings,
+} from "~/entrypoints/newtab/settings/format";
+
 import { formatCurrentDate, formatCurrentTime } from "../lib/format";
+import { useCurrentDateTime } from "../model/useCurrentDateTime";
 
 export function DateTime() {
   const [settings, setSettings] = useState<DateSettings & TimeSettings>(deriveInitialDateTimeSettings);
@@ -12,6 +19,11 @@ export function DateTime() {
   const formattedTime = formatCurrentTime(currentDateTime, settings);
 
   useEffect(() => {
+    let isMounted = true;
+    void Promise.all([dateStorage.getValue(), timeStorage.getValue()]).then(([dateSettings, timeSettings]) => {
+      if (isMounted) setSettings({ ...dateSettings, ...timeSettings });
+    });
+
     const unwatchDateSettings = dateStorage.watch((dateSettings) => {
       setSettings((currentSettings) => ({ ...currentSettings, ...dateSettings }));
     });
@@ -20,6 +32,7 @@ export function DateTime() {
     });
 
     return () => {
+      isMounted = false;
       unwatchDateSettings();
       unwatchTimeSettings();
     };

@@ -1,9 +1,9 @@
-import { Slider } from "~newtab/shared/ui/slider";
+import { SectionItem } from "~newtab/settings/ui/SettingsSection";
+import { Slider } from "~shared/ui/slider";
 
-import { SectionItem } from "../../ui/Section";
-import { CORNER_RADIUS } from "../lib/constants";
-import type { AppearanceSettings } from "../lib/types";
-import { updateAppearanceSetting } from "../lib/update";
+import { CORNER_RADIUS } from "../model/constants";
+import type { AppearanceSettings } from "../model/types";
+import { updateAppearanceSetting } from "../model/update";
 
 const CORNER_RADIUS_SLIDER_STEP = 0.5;
 const CORNER_RADIUS_PREVIEW_INSET = 2;
@@ -15,6 +15,7 @@ export function CornerRadius({ cornerRadius }: CornerRadiusProps) {
     <SectionItem label="Corner radius">
       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
         <Slider
+          aria-label="Corner radius"
           className="mx-auto w-full max-w-xs"
           indicatorClassName="bg-primary"
           max={CORNER_RADIUS.max}

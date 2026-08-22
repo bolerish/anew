@@ -2,20 +2,20 @@
 
 ![Logo](/public/logo.svg)
 
-Min is a minimal new tab page for Chrome bookmarks.
+Min is a minimal new tab page for Chrome bookmark.
 
-Search, open, and organize your bookmarks in a minimal new tab page.
+Search, open, and organize your bookmark in a minimal new tab page.
 
 ## Features
 
 ### Bookmark management
 
-- View bookmarks by folder
-- Add, edit, delete, and reorder bookmarks
+- View bookmark by folder
+- Add, edit, delete, and reorder bookmark
 
 ### Quick access
 
-- Search bookmarks and the web
+- Search bookmark and the web
 - Navigate with the keyboard
 
 ### Display settings

@@ -1,5 +1,4 @@
-import type { DateFormat, DateSettings } from "~newtab/settings/date";
-import type { TimeSettings } from "~newtab/settings/time";
+import type { DateFormat, DateSettings, TimeSettings } from "~/entrypoints/newtab/settings/format";
 
 const LOCALIZED_DATE_FORMAT_OPTIONS = {
   "localized-long-weekday": {
@@ -60,7 +59,7 @@ function isLocalizedDateFormat(dateFormat: DateFormat): dateFormat is keyof type
 
 function formatDatePattern(date: Date, pattern: string, locale: string): string {
   const parts = deriveDateParts(date, locale);
-  const tokens: Record<string, string> = {
+  const tokenValues: Record<string, string> = {
     YYYY: parts.year,
     dddd: parts.longWeekday,
     ddd: parts.weekday,
@@ -70,10 +69,13 @@ function formatDatePattern(date: Date, pattern: string, locale: string): string 
     D: parts.day,
   };
 
-  return Object.entries(tokens).reduce(
-    (formattedDate, [token, value]) => formattedDate.replaceAll(token, value),
-    pattern,
-  );
+  let formattedDate = pattern;
+
+  for (const [token, value] of Object.entries(tokenValues)) {
+    formattedDate = formattedDate.replaceAll(token, value);
+  }
+
+  return formattedDate;
 }
 
 function deriveDateParts(date: Date, locale: string) {

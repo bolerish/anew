@@ -1,10 +1,10 @@
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
-import { UI_LANGUAGE } from "~newtab/shared/lib/language";
-import { Input } from "~newtab/shared/ui/input";
-import { Kbd } from "~newtab/shared/ui/kbd";
+import { UI_LANGUAGE } from "~shared/lib/language";
+import { Input } from "~shared/ui/input";
+import { Kbd } from "~shared/ui/kbd";
 
-import { useSearch } from "../hooks/useSearch";
+import { useSearch } from "../model/useSearch";
 
 export function SearchBar() {
   const { searchQuery, setSearchQuery, handleSearchSubmit } = useSearch();

@@ -5,7 +5,9 @@
     "jsx": "react-jsx",
     "paths": {
       "~/*": ["./*"],
-      "~newtab/*": ["./entrypoints/newtab/*"]
+      "~newtab/*": ["./entrypoints/newtab/*"],
+      "~sidepanel/*": ["./entrypoints/sidepanel/*"],
+      "~shared/*": ["./entrypoints/shared/*"]
     }
   }
 }

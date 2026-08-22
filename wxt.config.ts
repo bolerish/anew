@@ -18,7 +18,7 @@ export default defineConfig({
     short_name: "Min",
     description: "__MSG_extensionDescription__",
     default_locale: "en",
-    permissions: ["bookmarks", "favicon", "search", "storage"],
+    permissions: ["bookmarks", "favicon", "fontSettings", "search", "storage"],
     action: {
       default_title: "__MSG_extensionName__",
     },
@@ -34,6 +34,7 @@ export default defineConfig({
       alias: {
         "~": path.resolve(__dirname, "./"),
         "~newtab": path.resolve(__dirname, "./entrypoints/newtab"),
+        "~shared": path.resolve(__dirname, "./entrypoints/shared"),
       },
     },
   }),

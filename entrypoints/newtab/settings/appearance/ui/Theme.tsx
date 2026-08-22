@@ -1,7 +1,6 @@
-import { type Theme, useTheme } from "~newtab/shared/theme-provider";
-import { ToggleGroup, ToggleGroupItem } from "~newtab/shared/ui/toggle-group";
-
-import { SectionItem } from "../../ui/Section";
+import { SectionItem } from "~newtab/settings/ui/SettingsSection";
+import { type Theme, useTheme } from "~shared/ui/ThemeProvider";
+import { ToggleGroup, ToggleGroupItem } from "~shared/ui/toggle-group";
 
 const THEME_LABELS = {
   dark: "Dark",
@@ -15,6 +14,7 @@ export function Theme() {
   return (
     <SectionItem label="Theme">
       <ToggleGroup
+        aria-label="Theme"
         className="grid h-7 w-full"
         size="sm"
         spacing={0}

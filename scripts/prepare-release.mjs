@@ -1,6 +1,7 @@
+import packageJson from "../package.json" with { type: "json" };
+
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import packageJson from "../package.json" with { type: "json" };
 
 const requestedVersion = process.argv[2];
 
