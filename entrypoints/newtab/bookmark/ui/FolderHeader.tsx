@@ -181,7 +181,7 @@ function TitleRow({
           {canModifyFolder ? (
             <button
               aria-label={UI_LANGUAGE.bookmark.action.renameFolder}
-              className="focus-visible:ring-ring h-full min-h-7 rounded-sm outline-none focus-visible:ring-2"
+              className="focus-visible:ring-ring h-full min-h-7 cursor-text rounded-sm outline-none focus-visible:ring-2"
               type="button"
               onClick={onEditFolder}
             />

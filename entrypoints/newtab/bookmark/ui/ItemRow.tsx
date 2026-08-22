@@ -26,7 +26,7 @@ export function ItemRow({ itemEntry, itemView, onEdit, onRemove, suppressBookmar
         <div className="relative min-w-0">
           <button
             aria-hidden="true"
-            className="focus-visible:ring-ring absolute inset-0 rounded-sm outline-none focus-visible:ring-2"
+            className="focus-visible:ring-ring absolute inset-0 cursor-text rounded-sm outline-none focus-visible:ring-2"
             tabIndex={-1}
             type="button"
             onClick={onEdit}
@@ -48,7 +48,7 @@ export function ItemRow({ itemEntry, itemView, onEdit, onRemove, suppressBookmar
         </div>
         <button
           aria-label={UI_LANGUAGE.bookmark.action.edit}
-          className="focus-visible:ring-ring h-full min-h-7 rounded-sm outline-none focus-visible:ring-2"
+          className="focus-visible:ring-ring h-full min-h-7 cursor-text rounded-sm outline-none focus-visible:ring-2"
           type="button"
           onClick={onEdit}
         />
