@@ -1,11 +1,11 @@
 import { GearSixIcon } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { DateTime } from "~newtab/date";
 import { SearchBar, SearchProvider } from "~newtab/search";
 import { cn } from "~shared/lib/utils";
 import { Button } from "~shared/ui/button";
 import { Kbd, KbdGroup } from "~shared/ui/kbd";
-import { Popover, PopoverContent, PopoverTrigger } from "~shared/ui/popover";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, useSidebar } from "~shared/ui/sidebar";
 import { Toaster } from "~shared/ui/sonner";
 import { ThemeProvider } from "~shared/ui/ThemeProvider";
 
@@ -44,67 +44,85 @@ export function App() {
 
   return (
     <ThemeProvider>
-      <main className="bg-background text-foreground text-mds-content relative mx-auto flex h-dvh w-full max-w-3xl flex-col overflow-hidden font-sans">
-        <h1 className="sr-only">Bookmarks</h1>
-        <header className="text-foreground/75 mb-5 flex items-center gap-x-3 gap-y-2 px-8 pt-5 sm:pt-6">
-          <DateTime />
-          <div className="col-start-2 row-start-1 ml-auto flex max-w-full shrink-0 items-center gap-2">
-            <SourceSelect selectedSourceId={selectedSourceId} sources={sources} onSourceChange={setSelectedSource} />
-            <AddBookmarkDialog
-              folders={folders}
-              rootBookmarkId={selectedSourceId}
-              rootBookmarkTitle={selectedSourceTitle}
-              onBookmarksChange={loadBookmarks}
-            />
+      <SidebarProvider
+        className="flex-row-reverse"
+        defaultOpen={false}
+        style={{ "--sidebar-width": "min(calc(100vw - 3rem), 23rem)" } as CSSProperties}
+      >
+        <SettingsSidebar />
+        <SidebarInset className="min-w-0 transition-[width] duration-200 ease-linear">
+          <div className="bg-background text-foreground text-mds-content relative mx-auto flex h-dvh w-full max-w-3xl flex-col overflow-hidden font-sans">
+            <h1 className="sr-only">Bookmarks</h1>
+            <header className="text-foreground/75 mb-5 flex items-center gap-x-3 gap-y-2 px-8 pt-5 sm:pt-6">
+              <DateTime />
+              <div className="col-start-2 row-start-1 ml-auto flex max-w-full shrink-0 items-center gap-2">
+                <SourceSelect
+                  selectedSourceId={selectedSourceId}
+                  sources={sources}
+                  onSourceChange={setSelectedSource}
+                />
+                <AddBookmarkDialog
+                  folders={folders}
+                  rootBookmarkId={selectedSourceId}
+                  rootBookmarkTitle={selectedSourceTitle}
+                  onBookmarksChange={loadBookmarks}
+                />
+              </div>
+            </header>
+            <SearchProvider folders={folders}>
+              <SearchBar />
+              <BookmarkList
+                bookmarkIconMode={bookmarkIconMode}
+                rootBookmarkId={selectedSourceId}
+                rootBookmarkTitle={selectedSourceTitle}
+                onBookmarksChange={loadBookmarks}
+              />
+            </SearchProvider>
+            <footer className="bg-background h-14 shrink-0 px-6">
+              <div className="text-muted-foreground flex items-end justify-end gap-4">
+                <ShortcutHints />
+                <div className="ml-auto flex shrink-0 items-center gap-2">
+                  <SettingsTrigger />
+                </div>
+              </div>
+            </footer>
           </div>
-        </header>
-        <SearchProvider folders={folders}>
-          <SearchBar />
-          <BookmarkList
-            bookmarkIconMode={bookmarkIconMode}
-            rootBookmarkId={selectedSourceId}
-            rootBookmarkTitle={selectedSourceTitle}
-            onBookmarksChange={loadBookmarks}
-          />
-        </SearchProvider>
-        <footer className="bg-background h-14 shrink-0 px-6">
-          <div className="text-muted-foreground flex items-end justify-end gap-4">
-            <ShortcutHints />
-            <div className="ml-auto flex shrink-0 items-center gap-2">
-              <SettingsPopover />
-            </div>
-          </div>
-        </footer>
-      </main>
+        </SidebarInset>
+      </SidebarProvider>
       <Toaster />
     </ThemeProvider>
   );
 }
 
-function SettingsPopover() {
+function SettingsSidebar() {
   return (
-    <Popover>
-      <PopoverTrigger
-        render={
-          <Button aria-label="Open settings" size="icon" variant="outline">
-            <GearSixIcon className="size-4" />
-          </Button>
-        }
-      />
-      <PopoverContent
-        align="end"
-        aria-label="Settings"
-        className="bg-popover/78 text-popover-foreground max-h-available-height w-mds-settings-panel rounded-mds grid gap-3 overflow-y-auto py-3.5 shadow-md ring-1 backdrop-blur-2xl backdrop-saturate-150"
-        collisionAvoidance={{ align: "shift", fallbackAxisSide: "none", side: "none" }}
-        side="top"
-        sideOffset={8}
-      >
+    <Sidebar aria-label="Settings" side="right">
+      <SidebarHeader className="border-sidebar-border border-b px-4 py-3">
+        <h2 className="text-sm font-medium">Settings</h2>
+      </SidebarHeader>
+      <SidebarContent className="gap-3 px-4 py-3">
         <Date />
         <Time />
         <Appearance />
         <Shortcut />
-      </PopoverContent>
-    </Popover>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
+
+function SettingsTrigger() {
+  const { open, toggleSidebar } = useSidebar();
+
+  return (
+    <Button
+      aria-expanded={open}
+      aria-label={open ? "Close settings" : "Open settings"}
+      onClick={toggleSidebar}
+      size="icon"
+      variant="outline"
+    >
+      <GearSixIcon className="size-4" />
+    </Button>
   );
 }
 
