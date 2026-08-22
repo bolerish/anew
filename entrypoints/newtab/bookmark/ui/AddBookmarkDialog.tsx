@@ -1,5 +1,5 @@
 import { PlusIcon } from "@phosphor-icons/react";
-import { useEffect, useId, useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { UI_LANGUAGE } from "~shared/lib/language";
 import { Button } from "~shared/ui/button";
 import {
@@ -12,35 +12,20 @@ import {
   DialogTrigger,
 } from "~shared/ui/dialog";
 import { Input } from "~shared/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~shared/ui/select";
 
-import type { BookmarkFolder } from "../model/bookmark-model";
+import type { BookmarkLocation } from "../model/bookmark-model";
 import { useAddBookmarkForm } from "../model/useAddBookmarkForm";
+import { LocationSelect } from "./LocationSelect";
 
 type AddBookmarkDialogProps = {
-  folders: BookmarkFolder[];
-  rootBookmarkId: string | null;
-  rootBookmarkTitle: string | null;
+  locations: BookmarkLocation[];
   onBookmarksChange: () => Promise<void>;
+  selectedLocationId: string | null;
 };
 
-type BookmarkTarget = {
-  id: string;
-  title: string;
-};
-
-export function AddBookmarkDialog({
-  folders,
-  rootBookmarkId,
-  rootBookmarkTitle,
-  onBookmarksChange,
-}: AddBookmarkDialogProps) {
-  const targets = useMemo(
-    () => deriveBookmarkTargets({ folders, rootBookmarkId, rootBookmarkTitle }),
-    [folders, rootBookmarkId, rootBookmarkTitle],
-  );
-  const [targetId, setTargetId] = useState(targets[0]?.id ?? null);
-  const parentId = targetId && targets.some((target) => target.id === targetId) ? targetId : null;
+export function AddBookmarkDialog({ locations, onBookmarksChange, selectedLocationId }: AddBookmarkDialogProps) {
+  const [targetId, setTargetId] = useState(selectedLocationId);
+  const parentId = targetId && locations.some((location) => location.id === targetId) ? targetId : null;
   const addBookmark = useAddBookmarkForm({
     parentId,
     onCreated: onBookmarksChange,
@@ -49,16 +34,17 @@ export function AddBookmarkDialog({
   const urlErrorId = useId();
 
   useEffect(() => {
-    if (targetId && targets.some((target) => target.id === targetId)) {
+    if (targetId && locations.some((location) => location.id === targetId)) {
       return;
     }
 
-    setTargetId(targets[0]?.id ?? null);
-  }, [targetId, targets]);
+    setTargetId(selectedLocationId ?? locations[0]?.id ?? null);
+  }, [locations, selectedLocationId, targetId]);
 
   function handleOpenChange(open: boolean) {
     if (open) {
       addBookmark.resetForm();
+      setTargetId(selectedLocationId);
       return;
     }
 
@@ -119,65 +105,25 @@ export function AddBookmarkDialog({
               {UI_LANGUAGE.bookmark.error.invalidUrl}
             </p>
           ) : null}
-          {targets.length > 1 ? (
-            <BookmarkSelect targets={targets} parentId={parentId} onTargetChange={setTargetId} />
+          {locations.length > 1 ? (
+            <label className="grid gap-1">
+              <span className="text-muted-foreground text-mds-caption">{UI_LANGUAGE.bookmark.label.saveTo}</span>
+              <LocationSelect
+                ariaLabel={UI_LANGUAGE.bookmark.label.saveTo}
+                locations={locations}
+                selectedLocationId={parentId}
+                triggerClassName="w-full"
+                onLocationChange={setTargetId}
+              />
+            </label>
           ) : null}
-          <DialogFooter className="-mx-4 -mb-4" showCloseButton={false}>
-            <Button disabled={!addBookmark.canSave} type="submit">
+          <DialogFooter showCloseButton={false}>
+            <Button disabled={!addBookmark.canSave} type="submit" className="w-1/2 py-3">
               {UI_LANGUAGE.bookmark.action.save}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function deriveBookmarkTargets({
-  folders,
-  rootBookmarkId,
-  rootBookmarkTitle,
-}: Pick<AddBookmarkDialogProps, "folders" | "rootBookmarkId" | "rootBookmarkTitle">): BookmarkTarget[] {
-  const rootTarget = rootBookmarkId
-    ? [
-        {
-          id: rootBookmarkId,
-          title: rootBookmarkTitle ?? UI_LANGUAGE.bookmark.title.root,
-        },
-      ]
-    : [];
-  const folderTargets = folders
-    .filter((folder) => folder.id !== rootBookmarkId)
-    .map((folder) => ({
-      id: folder.id,
-      title: folder.displayTitle,
-    }));
-
-  return [...rootTarget, ...folderTargets];
-}
-
-type BookmarkSelectProps = {
-  targets: BookmarkTarget[];
-  parentId: string | null;
-  onTargetChange: (targetId: string) => void;
-};
-
-function BookmarkSelect({ targets, parentId, onTargetChange }: BookmarkSelectProps) {
-  return (
-    <label className="grid gap-1">
-      <span className="text-muted-foreground text-mds-caption">{UI_LANGUAGE.bookmark.label.saveTo}</span>
-      <Select value={parentId ?? undefined} onValueChange={onTargetChange}>
-        <SelectTrigger aria-label={UI_LANGUAGE.bookmark.label.saveTo} className="w-full" size="default">
-          <SelectValue>{(value) => targets.find((target) => target.id === value)?.title ?? value}</SelectValue>
-        </SelectTrigger>
-        <SelectContent className="font-mono" position="popper">
-          {targets.map((target) => (
-            <SelectItem key={target.id} value={target.id}>
-              {target.title}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </label>
   );
 }

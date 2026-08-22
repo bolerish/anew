@@ -1,5 +1,5 @@
 export { AddBookmarkDialog } from "./ui/AddBookmarkDialog";
 export { BookmarkList } from "./ui/BookmarkList";
-export { SourceSelect } from "./ui/BookmarkSourceSelect";
+export { LocationSelect } from "./ui/LocationSelect";
 export { useFolders } from "./model/useBookmarkFolders";
-export type { BookmarkFolder, BookmarkIconDisplayMode, BookmarkItem, BookmarkSource } from "./model/bookmark-model";
+export type { BookmarkFolder, BookmarkIconDisplayMode, BookmarkItem, BookmarkLocation } from "./model/bookmark-model";

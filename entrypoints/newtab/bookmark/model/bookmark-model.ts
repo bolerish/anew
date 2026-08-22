@@ -24,8 +24,10 @@ export type BookmarkFolder = {
   items: BookmarkItem[];
 };
 
-export type BookmarkSource = {
+export type BookmarkLocation = {
+  depth: number;
   id: string;
+  rootTitle: string;
   title: string;
 };
 

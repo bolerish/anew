@@ -1,34 +1,34 @@
 import { useMemo } from "react";
 
-import { deriveBookmarkFolders, deriveBookmarkSources } from "../lib/bookmark-tree";
-import type { BookmarkFolder, BookmarkSource } from "./bookmark-model";
+import { deriveLocations, deriveVisibleFolders } from "../lib/bookmark-tree";
+import type { BookmarkFolder, BookmarkLocation } from "./bookmark-model";
 import { useBookmarkTree } from "./useBookmarkTree";
-import { useSelectedBookmarkSource } from "./useSelectedBookmarkSource";
+import { useSelectedLocation } from "./useSelectedLocation";
 
 type FoldersState = {
   folders: BookmarkFolder[];
   loadBookmarks: () => Promise<void>;
-  selectedSourceId: string | null;
-  selectedSourceTitle: string | null;
-  setSelectedSource: (sourceId: string) => void;
-  sources: BookmarkSource[];
+  locations: BookmarkLocation[];
+  selectedLocationId: string | null;
+  selectedLocationTitle: string | null;
+  setSelectedLocation: (locationId: string) => void;
 };
 
 export function useFolders(): FoldersState {
   const { bookmarkTree, loadBookmarks } = useBookmarkTree();
-  const sources = useMemo(() => deriveBookmarkSources(bookmarkTree), [bookmarkTree]);
-  const { selectedSourceId, selectedSourceTitle, setSelectedSource } = useSelectedBookmarkSource(sources);
+  const locations = useMemo(() => deriveLocations(bookmarkTree), [bookmarkTree]);
+  const { selectedLocationId, selectedLocationTitle, setSelectedLocation } = useSelectedLocation(locations);
   const folders = useMemo(
-    () => deriveBookmarkFolders(bookmarkTree, selectedSourceId),
-    [bookmarkTree, selectedSourceId],
+    () => deriveVisibleFolders(bookmarkTree, selectedLocationId),
+    [bookmarkTree, selectedLocationId],
   );
 
   return {
     folders,
     loadBookmarks,
-    selectedSourceId,
-    selectedSourceTitle,
-    setSelectedSource,
-    sources,
+    locations,
+    selectedLocationId,
+    selectedLocationTitle,
+    setSelectedLocation,
   };
 }

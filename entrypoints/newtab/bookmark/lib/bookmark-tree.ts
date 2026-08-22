@@ -1,44 +1,67 @@
-import type { BookmarkFolder, BookmarkSource, BookmarkTreeNode } from "../model/bookmark-model";
+import type { BookmarkFolder, BookmarkLocation, BookmarkTreeNode } from "../model/bookmark-model";
 
 const DEFAULT_BOOKMARK_SOURCE_TITLE = "Bookmarks";
 
-export function deriveBookmarkSources(bookmarkTree: readonly BookmarkTreeNode[]): BookmarkSource[] {
-  return bookmarkTree.flatMap((node) => deriveRootBookmarkSources(node));
+export function deriveLocations(bookmarkTree: readonly BookmarkTreeNode[]): BookmarkLocation[] {
+  return bookmarkTree.flatMap((node) => deriveRootBookmarkLocations(node));
 }
 
-export function deriveBookmarkFolders(
+export function deriveVisibleFolders(
   bookmarkTree: readonly BookmarkTreeNode[],
-  selectedSourceId: string | null,
+  selectedLocationId: string | null,
 ): BookmarkFolder[] {
-  const selectedSource = resolveBookmarkNode(bookmarkTree, selectedSourceId);
+  const selectedLocation = resolveBookmarkNode(bookmarkTree, selectedLocationId);
 
-  if (!selectedSource) {
+  if (!selectedLocation) {
     return [];
   }
 
-  return deriveFoldersFromSource(selectedSource);
-}
-
-export function resolveSelectedSourceId(
-  sources: readonly BookmarkSource[],
-  storedSourceId: string | null,
-): string | null {
-  if (sources.some((source) => source.id === storedSourceId)) {
-    return storedSourceId;
+  if (selectedLocation.parentId === "0") {
+    return deriveFoldersFromSource(selectedLocation);
   }
 
-  return sources[0]?.id ?? null;
+  if (!isFolderNode(selectedLocation)) {
+    return [];
+  }
+
+  return [deriveBookmarkFolder(selectedLocation)];
 }
 
-function deriveRootBookmarkSources(node: BookmarkTreeNode): BookmarkSource[] {
+export function resolveLocationId(
+  locations: readonly BookmarkLocation[],
+  storedLocationId: string | null,
+): string | null {
+  if (locations.some((location) => location.id === storedLocationId)) {
+    return storedLocationId;
+  }
+
+  return locations[0]?.id ?? null;
+}
+
+function deriveRootBookmarkLocations(node: BookmarkTreeNode): BookmarkLocation[] {
   if (node.id !== "0") {
     return [];
   }
 
-  return (node.children ?? []).filter(isFolderNode).map((child) => ({
-    id: child.id,
-    title: child.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE,
-  }));
+  return (node.children ?? []).flatMap((child) =>
+    isFolderNode(child) ? deriveFolderLocations(child, child.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE, 0) : [],
+  );
+}
+
+function deriveFolderLocations(node: BookmarkTreeNode, rootTitle: string, depth: number): BookmarkLocation[] {
+  const title = node.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE;
+
+  return [
+    {
+      depth,
+      id: node.id,
+      rootTitle,
+      title,
+    },
+    ...(node.children ?? []).flatMap((child) =>
+      isFolderNode(child) ? deriveFolderLocations(child, rootTitle, depth + 1) : [],
+    ),
+  ];
 }
 
 function resolveBookmarkNode(
@@ -80,16 +103,7 @@ function deriveFoldersFromSource(source: BookmarkTreeNode): BookmarkFolder[] {
   const directItems = deriveBookmarkItems(source);
   const sourceFolder =
     directItems.length > 0
-      ? [
-          {
-            bookmarkIndex: source.index,
-            displayTitle: source.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE,
-            id: source.id,
-            items: directItems,
-            parentId: source.parentId,
-            title: source.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE,
-          },
-        ]
+      ? [createBookmarkFolder(source, source.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE, directItems)]
       : [];
   const nestedFolders = (source.children ?? []).flatMap((child) =>
     child.children ? deriveBookmarkFoldersFromNode(child, []) : [],
@@ -108,17 +122,28 @@ function deriveBookmarkFoldersFromNode(node: BookmarkTreeNode, parentTitles: rea
     child.children ? deriveBookmarkFoldersFromNode(child, nextParentTitles) : [],
   );
 
-  return [
-    {
-      bookmarkIndex: node.index,
-      displayTitle,
-      id: node.id,
-      parentId: node.parentId,
-      title: folderTitle || DEFAULT_BOOKMARK_SOURCE_TITLE,
-      items,
-    },
-    ...nestedFolders,
-  ];
+  return [createBookmarkFolder(node, displayTitle, items), ...nestedFolders];
+}
+
+function deriveBookmarkFolder(node: BookmarkTreeNode): BookmarkFolder {
+  const title = node.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE;
+
+  return createBookmarkFolder(node, title, deriveBookmarkItems(node));
+}
+
+function createBookmarkFolder(
+  node: BookmarkTreeNode,
+  displayTitle: string,
+  items: BookmarkFolder["items"],
+): BookmarkFolder {
+  return {
+    bookmarkIndex: node.index,
+    displayTitle,
+    id: node.id,
+    parentId: node.parentId,
+    title: node.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE,
+    items,
+  };
 }
 
 function deriveBookmarkItems(node: BookmarkTreeNode) {

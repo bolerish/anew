@@ -9,7 +9,7 @@ import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, 
 import { Toaster } from "~shared/ui/sonner";
 import { ThemeProvider } from "~shared/ui/ThemeProvider";
 
-import { AddBookmarkDialog, BookmarkList, SourceSelect, useFolders } from "~/entrypoints/newtab/bookmark";
+import { AddBookmarkDialog, BookmarkList, LocationSelect, useFolders } from "~/entrypoints/newtab/bookmark";
 
 import {
   Appearance,
@@ -21,7 +21,8 @@ import { Date, Time } from "./settings/format";
 import { getInitialShortcutSettings, Shortcut, shortcutStorage } from "./settings/shortcut";
 
 export function App() {
-  const { folders, selectedSourceId, selectedSourceTitle, sources, loadBookmarks, setSelectedSource } = useFolders();
+  const { folders, locations, selectedLocationId, selectedLocationTitle, loadBookmarks, setSelectedLocation } =
+    useFolders();
   const [bookmarkIconMode, setBookmarkIconMode] = useState<BookmarkIconDisplayMode>(
     () => getInitialAppearanceSettings().bookmarkIconDisplayMode,
   );
@@ -45,7 +46,6 @@ export function App() {
   return (
     <ThemeProvider>
       <SidebarProvider
-        className="flex-row-reverse"
         defaultOpen={false}
         style={{ "--sidebar-width": "min(calc(100vw - 3rem), 23rem)" } as CSSProperties}
       >
@@ -56,15 +56,15 @@ export function App() {
             <header className="text-foreground/75 mb-5 flex items-center gap-x-3 gap-y-2 px-8 pt-5 sm:pt-6">
               <DateTime />
               <div className="col-start-2 row-start-1 ml-auto flex max-w-full shrink-0 items-center gap-2">
-                <SourceSelect
-                  selectedSourceId={selectedSourceId}
-                  sources={sources}
-                  onSourceChange={setSelectedSource}
+                <LocationSelect
+                  locations={locations}
+                  selectedLocationId={selectedLocationId}
+                  onLocationChange={setSelectedLocation}
+                  size="sm"
                 />
                 <AddBookmarkDialog
-                  folders={folders}
-                  rootBookmarkId={selectedSourceId}
-                  rootBookmarkTitle={selectedSourceTitle}
+                  locations={locations}
+                  selectedLocationId={selectedLocationId}
                   onBookmarksChange={loadBookmarks}
                 />
               </div>
@@ -73,17 +73,15 @@ export function App() {
               <SearchBar />
               <BookmarkList
                 bookmarkIconMode={bookmarkIconMode}
-                rootBookmarkId={selectedSourceId}
-                rootBookmarkTitle={selectedSourceTitle}
+                rootBookmarkId={selectedLocationId}
+                rootBookmarkTitle={selectedLocationTitle}
                 onBookmarksChange={loadBookmarks}
               />
             </SearchProvider>
-            <footer className="bg-background h-14 shrink-0 px-6">
-              <div className="text-muted-foreground flex items-end justify-end gap-4">
+            <footer className="bg-background h-14 shrink-0 px-2">
+              <div className="text-muted-foreground flex items-center justify-between gap-4">
+                <SettingsTrigger />
                 <ShortcutHints />
-                <div className="ml-auto flex shrink-0 items-center gap-2">
-                  <SettingsTrigger />
-                </div>
               </div>
             </footer>
           </div>
@@ -95,8 +93,21 @@ export function App() {
 }
 
 function SettingsSidebar() {
+  const { open, setOpen } = useSidebar();
+
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && open) {
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [open, setOpen]);
+
   return (
-    <Sidebar aria-label="Settings" side="right">
+    <Sidebar aria-label="Settings" side="left">
       <SidebarHeader className="border-sidebar-border border-b px-4 py-3">
         <h2 className="text-sm font-medium">Settings</h2>
       </SidebarHeader>
@@ -146,7 +157,7 @@ function ShortcutHints() {
   return (
     <div
       className={cn(
-        "mr-auto hidden min-w-0 flex-wrap items-center gap-x-4 gap-y-2 transition duration-150 sm:flex",
+        "hidden min-w-0 flex-wrap items-center gap-x-4 gap-y-2 transition duration-150 sm:flex",
         showShortcutHints ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0",
       )}
     >
