@@ -54,7 +54,7 @@ export function ItemEditForm({
       <div className="grid min-w-0 gap-1">
         <Input
           aria-label={UI_LANGUAGE.bookmark.label.title}
-          className="text-mds-bookmark-item placeholder:text-mds-shortcut-label h-7 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
+          className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-7 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
           ref={titleInputRef}
           value={inlineEditor.inlineTitle}
           onChange={(event) => inlineEditor.setInlineTitle(event.target.value)}
@@ -63,7 +63,7 @@ export function ItemEditForm({
           aria-label={UI_LANGUAGE.bookmark.label.url}
           aria-describedby={isInlineUrlValid ? undefined : urlErrorId}
           aria-invalid={!isInlineUrlValid}
-          className="text-mds-bookmark-item placeholder:text-mds-shortcut-label h-7 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
+          className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-7 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
           title={isInlineUrlValid ? undefined : UI_LANGUAGE.bookmark.error.invalidUrl}
           value={inlineEditor.inlineUrl}
           onChange={(event) => inlineEditor.setInlineUrl(event.target.value)}

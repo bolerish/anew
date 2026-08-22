@@ -1,5 +1,5 @@
 import { PlusIcon } from "@phosphor-icons/react";
-import type { FocusEvent, FormEvent, MouseEvent, Ref } from "react";
+import { useEffect, useRef, type FocusEvent, type FormEvent, type MouseEvent, type Ref } from "react";
 import { UI_LANGUAGE } from "~shared/lib/language";
 import { cn } from "~shared/lib/utils";
 import { Button } from "~shared/ui/button";
@@ -127,11 +127,21 @@ type TitleFormProps = {
 };
 
 function TitleForm({ inlineEditor, onBlur, onRemoveFolder, onSubmit }: TitleFormProps) {
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const titleInput = titleInputRef.current;
+
+    titleInput?.focus();
+    titleInput?.select();
+  }, []);
+
   return (
     <form className="contents" data-inline-bookmark-editor="" onBlur={onBlur} onSubmit={onSubmit}>
       <Input
         aria-label={UI_LANGUAGE.bookmark.action.renameFolder}
-        className="text-mds-bookmark-section h-7 min-w-0 rounded-none border-0 bg-transparent px-0 focus-visible:ring-0"
+        className="text-mds-bookmark-section md:text-mds-bookmark-section h-7 min-w-0 rounded-none border-0 bg-transparent px-0 focus-visible:ring-0"
+        ref={titleInputRef}
         value={inlineEditor.inlineTitle}
         onChange={(event) => inlineEditor.setInlineTitle(event.target.value)}
       />
