@@ -49,7 +49,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
         isEditing && "border-border",
       )}
     >
-      {canModify && (
+      {canModify ? (
         <DragHandle
           kind="folder"
           isDragging={isDragging}
@@ -57,7 +57,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
           onMove={onMove}
           ref={handleRef}
         />
-      )}
+      ) : null}
       {isEditing && canModify ? (
         <form className="contents" data-inline-bookmark-editor="" onSubmit={handleSubmit}>
           <div className="flex min-w-0 items-center gap-1">

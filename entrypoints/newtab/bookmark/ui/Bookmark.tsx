@@ -62,11 +62,11 @@ function Content({ rootTitle, selectedLocationId }: ContentProps) {
         ? visibleFolders.map((folder) => <Folder folder={folder} key={folder.id} parentId={selectedLocationId} />)
         : null}
 
-      {visibleFolders.length === 0 && isSearchActive && (
+      {visibleFolders.length === 0 && isSearchActive ? (
         <output className="text-muted-foreground text-mds-bookmark-section px-7 py-3">
           {UI_LANGUAGE.bookmark.message.noResults}
         </output>
-      )}
+      ) : null}
 
       {visibleFolders.length === 0 && !isSearchActive && selectedLocationId ? (
         <RootFolder parentId={selectedLocationId} title={rootTitle} />

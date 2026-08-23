@@ -18,10 +18,13 @@ export function useDndMove({ folders, isSearchActive, onBookmarksChange }: UseDn
     if (!drop) return;
 
     try {
-      const moved =
-        drop.dragged.kind === "folder"
-          ? await moveFolderTo(drop.dragged.folder, drop.target)
-          : await moveItemTo(drop.dragged.item, drop.target);
+      let moved = false;
+
+      if (drop.dragged.kind === "folder") {
+        moved = await moveFolderTo(drop.dragged.folder, drop.target);
+      } else {
+        moved = await moveItemTo(drop.dragged.item, drop.target);
+      }
 
       if (moved) await onBookmarksChange();
     } catch (error) {

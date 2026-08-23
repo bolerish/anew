@@ -26,7 +26,17 @@ export function useItemDnd({ isActive, isEditing, item, itemIndex, onDropIndexCh
     function updateDropIndex(data: Record<string | symbol, unknown>) {
       const edge = resolveDropEdge(data);
 
-      onDropIndexChange(edge === "before" ? itemIndex : edge === "after" ? itemIndex + 1 : null);
+      if (edge === "before") {
+        onDropIndexChange(itemIndex);
+        return;
+      }
+
+      if (edge === "after") {
+        onDropIndexChange(itemIndex + 1);
+        return;
+      }
+
+      onDropIndexChange(null);
     }
 
     function clearDropIndex() {
