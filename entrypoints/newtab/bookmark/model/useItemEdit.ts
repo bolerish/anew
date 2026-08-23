@@ -1,4 +1,4 @@
-import { useCallback, useState, type FocusEvent, type FormEvent, type MouseEvent } from "react";
+import { useCallback, useState, type SubmitEvent, type MouseEvent, type PointerEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 
 import { canNormalizeUrl } from "../lib/url";
@@ -12,7 +12,7 @@ export function useItemEdit(item: BookmarkItem) {
   const isUrlValid = !isEditing || canNormalizeUrl(editor.inlineUrl);
 
   const openEditor = useCallback(
-    (event: MouseEvent<HTMLElement>) => {
+    (event: MouseEvent<HTMLElement> | PointerEvent<HTMLElement>) => {
       stopInteraction(event);
       setSuppressActions(true);
       editor.openInlineItemEditor(item);
@@ -20,19 +20,9 @@ export function useItemEdit(item: BookmarkItem) {
     [editor, item],
   );
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     await editor.updateCurrentInlineEditor();
-  }
-
-  function handleBlur(event: FocusEvent<HTMLFormElement>) {
-    const nextTarget = event.relatedTarget;
-
-    if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) {
-      return;
-    }
-
-    editor.cancelInlineEditor();
   }
 
   const showActions = useCallback(() => {
@@ -40,7 +30,6 @@ export function useItemEdit(item: BookmarkItem) {
   }, []);
 
   return {
-    handleBlur,
     handleSubmit,
     editor,
     isUrlValid,

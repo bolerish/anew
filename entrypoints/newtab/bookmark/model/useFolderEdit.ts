@@ -1,4 +1,4 @@
-import { useCallback, type FocusEvent, type FormEvent, type MouseEvent } from "react";
+import { useCallback, type SubmitEvent, type MouseEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 
 import { useBookmarkContext } from "./Provider";
@@ -16,23 +16,12 @@ export function useFolderEdit(folder: BookmarkFolder) {
     [editor, folder],
   );
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     await editor.updateCurrentInlineEditor();
   }
 
-  function handleBlur(event: FocusEvent<HTMLFormElement>) {
-    const nextTarget = event.relatedTarget;
-
-    if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) {
-      return;
-    }
-
-    editor.cancelInlineEditor();
-  }
-
   return {
-    handleBlur,
     handleSubmit,
     editor,
     isEditing,

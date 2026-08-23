@@ -10,10 +10,7 @@ export function DropIndicator(props: DropIndicatorProps) {
   return (
     <div
       aria-hidden="true"
-      className={cn(
-        "bg-primary pointer-events-none absolute right-0 left-0 z-20 h-[3px] rounded-full shadow-sm",
-        className,
-      )}
+      className={cn("bg-primary pointer-events-none absolute right-0 left-0 z-20 h-px rounded-full", className)}
     />
   );
 }
@@ -27,5 +24,5 @@ function getPlacementClassName(props: DropIndicatorProps): string {
     return props.edge === "before" ? "top-0" : "bottom-0";
   }
 
-  return props.edge === "before" ? "-top-1" : "-bottom-1";
+  return props.edge === "before" ? "top-0 -translate-y-1/2" : "bottom-0 translate-y-1/2";
 }

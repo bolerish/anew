@@ -11,3 +11,7 @@ export async function createItem(input: { parentId?: string; title: string; url:
     url: normalizedUrl,
   });
 }
+
+export async function createFolder(input: { index?: number; parentId: string; title: string }): Promise<void> {
+  await browser.bookmarks.create(input);
+}

@@ -25,7 +25,7 @@ export function SearchBar({ onSearch, onValueChange, value }: SearchBarProps) {
         return;
       }
 
-      if (isTextInputTarget(event.target)) {
+      if (isEditableTarget(event.target)) {
         return;
       }
 
@@ -36,7 +36,7 @@ export function SearchBar({ onSearch, onValueChange, value }: SearchBarProps) {
 
   return (
     <form
-      className="sticky top-0 z-10 h-8 shrink-0 px-4"
+      className="sticky top-0 z-10 mx-2 h-8 shrink-0 px-3"
       onSubmit={(event) => {
         event.preventDefault();
         void onSearch();
@@ -65,7 +65,7 @@ export function SearchBar({ onSearch, onValueChange, value }: SearchBarProps) {
   );
 }
 
-function isTextInputTarget(target: EventTarget | null): boolean {
+function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
     return false;
   }

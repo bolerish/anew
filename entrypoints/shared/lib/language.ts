@@ -1,22 +1,22 @@
 const settingsDescription = resolveSettingsDescription();
+const bookmarkCopy = resolveBookmarkCopy();
 
 export const UI_LANGUAGE = {
   bookmark: {
     action: {
       add: "Add",
-      cancel: "Cancel",
+      addBookmark: bookmarkCopy.addBookmark,
+      addFolder: bookmarkCopy.addFolder,
+      cancel: bookmarkCopy.cancel,
       edit: "Edit",
       move: "Move",
-      moveDown: "Move down",
       moveFolder: "Move",
-      moveFolderDown: "Move down",
-      moveFolderUp: "Move up",
-      moveUp: "Move up",
       remove: "Remove",
       removeFolder: "Remove folder",
       renameFolder: "Rename",
-      save: "Save",
+      save: bookmarkCopy.save,
       saveFolder: "Save",
+      toggleFolder: bookmarkCopy.toggleFolder,
     },
     description: {
       saveTo: "Choose a folder in this bookmark source.",
@@ -26,16 +26,18 @@ export const UI_LANGUAGE = {
     },
     label: {
       saveTo: "Save to",
+      folder: bookmarkCopy.folder,
       source: "Bookmarks",
       sourceGroup: "Bookmarks",
       title: "Title",
       url: "URL",
     },
     message: {
-      noResults: "No results.",
+      noResults: bookmarkCopy.noResults,
     },
     placeholder: {
       title: "Title",
+      folder: bookmarkCopy.folder,
       url: "URL",
     },
     title: {
@@ -76,6 +78,60 @@ export const UI_LANGUAGE = {
     },
   },
 } as const;
+
+function resolveBookmarkCopy() {
+  const copy = {
+    en: {
+      addBookmark: "Add bookmark",
+      addFolder: "Add folder",
+      cancel: "Cancel",
+      noResults: "No matching bookmarks.",
+      save: "Save",
+      toggleFolder: "Toggle folder",
+      folder: "Folder name",
+    },
+    es: {
+      addBookmark: "Añadir marcador",
+      addFolder: "Añadir carpeta",
+      cancel: "Cancelar",
+      noResults: "No hay marcadores que coincidan.",
+      save: "Guardar",
+      toggleFolder: "Alternar carpeta",
+      folder: "Nombre de carpeta",
+    },
+    ja: {
+      addBookmark: "ブックマークを追加",
+      addFolder: "フォルダを追加",
+      cancel: "キャンセル",
+      noResults: "一致するブックマークはありません。",
+      save: "保存",
+      toggleFolder: "フォルダを切り替え",
+      folder: "フォルダ名",
+    },
+    ko: {
+      addBookmark: "북마크 추가",
+      addFolder: "폴더 추가",
+      cancel: "취소",
+      noResults: "일치하는 북마크가 없어요.",
+      save: "저장",
+      toggleFolder: "폴더 펼치기 또는 접기",
+      folder: "폴더 이름",
+    },
+    zh: {
+      addBookmark: "添加书签",
+      addFolder: "添加文件夹",
+      cancel: "取消",
+      noResults: "没有匹配的书签。",
+      save: "保存",
+      toggleFolder: "切换文件夹",
+      folder: "文件夹名称",
+    },
+  } as const;
+
+  const locale = navigator.language.split("-")[0];
+
+  return locale in copy ? copy[locale as keyof typeof copy] : copy.en;
+}
 
 function resolveSettingsDescription() {
   const description = {

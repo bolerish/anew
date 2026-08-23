@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 
 import { createItem } from "../api/create";
 import { canNormalizeUrl } from "../lib/url";
@@ -15,16 +15,14 @@ export function useAddForm({ parentId, onCreated }: UseAddFormInput) {
   const isUrlValid = canNormalizeUrl(url);
   const canSave = Boolean(parentId) && isUrlValid;
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function closeForm() {
+    setIsAddingBookmark(false);
+    setTitle("");
+    setUrl("");
+  }
+
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    await createBookmarkFromForm();
-  }
-
-  async function createBookmark() {
-    await createBookmarkFromForm();
-  }
-
-  async function createBookmarkFromForm() {
     const trimmedTitle = title.trim();
     const trimmedUrl = url.trim();
 
@@ -41,18 +39,6 @@ export function useAddForm({ parentId, onCreated }: UseAddFormInput) {
     await onCreated();
   }
 
-  function closeForm() {
-    setIsAddingBookmark(false);
-    setTitle("");
-    setUrl("");
-  }
-
-  function resetForm() {
-    setTitle("");
-    setUrl("");
-    setIsAddingBookmark(true);
-  }
-
   function toggleForm() {
     if (isAddingBookmark) {
       closeForm();
@@ -65,10 +51,8 @@ export function useAddForm({ parentId, onCreated }: UseAddFormInput) {
   return {
     canSave,
     closeForm,
-    createBookmark,
     handleSubmit,
     isAddingBookmark,
-    resetForm,
     setTitle,
     setUrl,
     title,

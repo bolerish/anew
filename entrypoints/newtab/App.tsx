@@ -6,7 +6,7 @@ import { Button } from "~shared/ui/button";
 import { Kbd, KbdGroup } from "~shared/ui/kbd";
 import { SidebarInset, useSidebar } from "~shared/ui/sidebar";
 
-import { AddDialog, Bookmark, LocationPicker, useFolders } from "~/entrypoints/newtab/bookmark";
+import { Bookmark, LocationPicker, useFolders } from "~/entrypoints/newtab/bookmark";
 import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
 
 import { appearanceStorage, getInitialAppearanceSettings } from "./settings/appearance";
@@ -36,11 +36,6 @@ export default function App() {
                 onLocationChange={setSelectedLocation}
                 size="sm"
               />
-              <AddDialog
-                locations={locations}
-                selectedLocationId={selectedLocationId}
-                onBookmarksChange={loadBookmarks}
-              />
             </div>
           </header>
           <SearchBar onSearch={search.search} onValueChange={search.setQuery} value={search.query} />
@@ -48,12 +43,12 @@ export default function App() {
             bookmarkIconMode={appearanceSettings.bookmarkIconDisplayMode}
             folders={folders}
             isSearchActive={search.isActive}
-            rootId={selectedLocationId}
             rootTitle={selectedLocation?.title ?? null}
+            selectedLocationId={selectedLocationId}
             visibleFolders={search.visibleFolders}
             onBookmarksChange={loadBookmarks}
           />
-          <footer className="bg-background h-14 shrink-0 px-4">
+          <footer className="bg-background h-14 shrink-0 px-6">
             <div className="text-muted-foreground flex items-center justify-between gap-4">
               <Button
                 aria-expanded={open}

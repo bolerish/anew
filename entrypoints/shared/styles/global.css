@@ -201,44 +201,6 @@ body,
 }
 
 @layer utilities {
-  @keyframes collapsible-down {
-    from {
-      height: 0;
-      opacity: 0;
-    }
-    to {
-      height: var(--radix-collapsible-content-height);
-      opacity: 1;
-    }
-  }
-
-  @keyframes collapsible-up {
-    from {
-      height: var(--radix-collapsible-content-height);
-      opacity: 1;
-    }
-    to {
-      height: 0;
-      opacity: 0;
-    }
-  }
-
-  .collapsible-content {
-    overflow: hidden;
-  }
-
-  .collapsible-content[data-state="open"] {
-    animation: collapsible-down 90ms ease-out;
-  }
-
-  .collapsible-content[data-state="closed"] {
-    animation: collapsible-up 70ms ease-in;
-  }
-
-  .collapsible-content[data-state="closed"] [data-bookmark-edit-icon] {
-    visibility: hidden;
-  }
-
   .scrollbar-thin {
     scrollbar-color: transparent transparent;
     scrollbar-gutter: stable;
@@ -282,7 +244,7 @@ body,
     display: none;
   }
 }
-
+/*
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -292,4 +254,4 @@ body,
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
-}
+} */

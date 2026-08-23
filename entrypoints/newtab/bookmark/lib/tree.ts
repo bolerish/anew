@@ -105,24 +105,9 @@ function deriveFoldersFromSource(source: BookmarkTreeNode): BookmarkFolder[] {
     directItems.length > 0
       ? [createBookmarkFolder(source, source.title.trim() || DEFAULT_BOOKMARK_SOURCE_TITLE, directItems)]
       : [];
-  const nestedFolders = (source.children ?? []).flatMap((child) =>
-    child.children ? deriveBookmarkFoldersFromNode(child, []) : [],
-  );
+  const nestedFolders = (source.children ?? []).filter(isFolderNode).map(deriveBookmarkFolder);
 
   return [...sourceFolder, ...nestedFolders];
-}
-
-function deriveBookmarkFoldersFromNode(node: BookmarkTreeNode, parentTitles: readonly string[]): BookmarkFolder[] {
-  const children = node.children ?? [];
-  const folderTitle = node.title.trim();
-  const nextParentTitles = folderTitle ? [...parentTitles, folderTitle] : parentTitles;
-  const displayTitle = nextParentTitles.length > 0 ? nextParentTitles.join(" / ") : DEFAULT_BOOKMARK_SOURCE_TITLE;
-  const items = deriveBookmarkItems(node);
-  const nestedFolders = children.flatMap((child) =>
-    child.children ? deriveBookmarkFoldersFromNode(child, nextParentTitles) : [],
-  );
-
-  return [createBookmarkFolder(node, displayTitle, items), ...nestedFolders];
 }
 
 function deriveBookmarkFolder(node: BookmarkTreeNode): BookmarkFolder {

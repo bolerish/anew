@@ -1,62 +1,69 @@
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 
-import { type DropEdge, isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
+import { isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
 import type { BookmarkItem } from "./types";
 
 type UseItemDndInput = {
   isActive: boolean;
   isEditing: boolean;
   item: BookmarkItem;
+  itemIndex: number;
+  onDropIndexChange: (index: number | null) => void;
 };
 
-export function useItemDnd({ isActive, isEditing, item }: UseItemDndInput) {
+export function useItemDnd({ isActive, isEditing, item, itemIndex, onDropIndexChange }: UseItemDndInput) {
   const [handleElement, setHandleElement] = useState<HTMLButtonElement | null>(null);
   const [itemElement, setItemElement] = useState<HTMLElement | null>(null);
   const [isDragSource, setIsDragSource] = useState(false);
-  const [dropEdge, setDropEdge] = useState<DropEdge | null>(null);
-
-  function updateDropIndicator(data: Record<string | symbol, unknown>) {
-    setDropEdge(resolveDropEdge(data));
-  }
-
-  function clearDropIndicator() {
-    setDropEdge(null);
-  }
 
   useEffect(() => {
     if (!itemElement) {
       return;
     }
 
+    function updateDropIndex(data: Record<string | symbol, unknown>) {
+      const edge = resolveDropEdge(data);
+
+      onDropIndexChange(edge === "before" ? itemIndex : edge === "after" ? itemIndex + 1 : null);
+    }
+
+    function clearDropIndex() {
+      onDropIndexChange(null);
+    }
+
     return combine(
-      draggable({
-        element: itemElement,
-        dragHandle: handleElement ?? undefined,
-        getInitialData: () => ({ kind: "item", item }),
-        onGenerateDragPreview: () => {
-          flushSync(() => setIsDragSource(true));
-        },
-        onDragStart: () => setIsDragSource(true),
-        onDrop: () => setIsDragSource(false),
-      }),
+      handleElement
+        ? draggable({
+            element: itemElement,
+            dragHandle: handleElement,
+            getInitialData: () => ({ kind: "item", item }),
+            onDragStart: () => {
+              setIsDragSource(true);
+            },
+            onDrop: () => {
+              setIsDragSource(false);
+              clearDropIndex();
+            },
+          })
+        : () => {},
       dropTargetForElements({
         element: itemElement,
         canDrop: ({ source }) => isItemDragData(source.data) && source.data.item.id !== item.id,
+        getIsSticky: () => true,
         getData: ({ input, element }) => ({
           edge: resolveVerticalEdge(input.clientY, element),
           item,
           kind: "item",
         }),
-        onDrag: ({ self }) => updateDropIndicator(self.data),
-        onDragEnter: ({ self }) => updateDropIndicator(self.data),
-        onDragLeave: clearDropIndicator,
-        onDrop: clearDropIndicator,
+        onDrag: ({ self }) => updateDropIndex(self.data),
+        onDragEnter: ({ self }) => updateDropIndex(self.data),
+        onDragLeave: clearDropIndex,
+        onDrop: clearDropIndex,
       }),
     );
-  }, [handleElement, item, itemElement]);
+  }, [handleElement, item, itemElement, itemIndex, onDropIndexChange]);
 
   useEffect(() => {
     if (!isActive || isEditing) {
@@ -68,9 +75,7 @@ export function useItemDnd({ isActive, isEditing, item }: UseItemDndInput) {
 
   return {
     handleRef: setHandleElement,
-    dropEdge,
     isDragSource,
-    isDropTarget: dropEdge !== null,
     setItemElement,
   };
 }

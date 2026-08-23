@@ -17,6 +17,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       </SidebarProvider>
       <Toaster />
     </ThemeProvider>
-    );
   </React.StrictMode>,
 );

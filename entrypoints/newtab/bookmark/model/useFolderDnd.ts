@@ -23,6 +23,13 @@ export function useFolderDnd(folder: BookmarkFolder) {
     setFolderDropEdge(null);
   }
 
+  function updateItemDropTarget(
+    location: { current: { dropTargets: readonly { element: Element }[] } },
+    element: Element,
+  ) {
+    setIsFolderDropTarget(location.current.dropTargets[0]?.element === element);
+  }
+
   useEffect(() => {
     if (!folderElement) {
       return;
@@ -66,7 +73,8 @@ export function useFolderDnd(folder: BookmarkFolder) {
       element: folderDropElement,
       canDrop: ({ source }) => isItemDragData(source.data),
       getData: () => ({ folder, kind: "folder" }),
-      onDragEnter: () => setIsFolderDropTarget(true),
+      onDrag: ({ location, self }) => updateItemDropTarget(location, self.element),
+      onDragEnter: ({ location, self }) => updateItemDropTarget(location, self.element),
       onDragLeave: () => setIsFolderDropTarget(false),
       onDrop: () => setIsFolderDropTarget(false),
     });

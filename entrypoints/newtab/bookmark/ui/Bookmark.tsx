@@ -1,15 +1,12 @@
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { PlusIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { UI_LANGUAGE } from "~shared/lib/language";
-import { Button } from "~shared/ui/button";
 
 import { BookmarkProvider, useBookmarkContext } from "../model/Provider";
 import type { BookmarkFolder, BookmarkIconDisplayMode } from "../model/types";
-import { useAddForm } from "../model/useAddForm";
 import { useDndMove } from "../model/useDndMove";
 import { useKeyboardNavigation } from "../model/useKeyboardNavigation";
-import { AddForm } from "./AddForm";
+import { AddFolder } from "./AddFolder";
 import { Folder } from "./Folder";
 
 type BookmarkProps = {
@@ -17,8 +14,8 @@ type BookmarkProps = {
   folders: BookmarkFolder[];
   isSearchActive: boolean;
   onBookmarksChange: () => Promise<void>;
-  rootId: string | null;
   rootTitle: string | null;
+  selectedLocationId: string | null;
   visibleFolders: BookmarkFolder[];
 };
 
@@ -27,8 +24,8 @@ export function Bookmark({
   folders,
   isSearchActive,
   onBookmarksChange,
-  rootId,
   rootTitle,
+  selectedLocationId,
   visibleFolders,
 }: BookmarkProps) {
   return (
@@ -40,15 +37,15 @@ export function Bookmark({
         onBookmarksChange={onBookmarksChange}
         visibleFolders={visibleFolders}
       >
-        <Content rootId={rootId} rootTitle={rootTitle} />
+        <Content rootTitle={rootTitle} selectedLocationId={selectedLocationId} />
       </BookmarkProvider>
     </div>
   );
 }
 
-type ContentProps = Pick<BookmarkProps, "rootId" | "rootTitle">;
+type ContentProps = Pick<BookmarkProps, "rootTitle" | "selectedLocationId">;
 
-function Content({ rootId, rootTitle }: ContentProps) {
+function Content({ rootTitle, selectedLocationId }: ContentProps) {
   const { activeBookmark, editor, folders, isSearchActive, onBookmarksChange, setActiveBookmark, visibleFolders } =
     useBookmarkContext();
   const dnd = useDndMove({ folders, isSearchActive, onBookmarksChange });
@@ -60,42 +57,38 @@ function Content({ rootId, rootTitle }: ContentProps) {
   useKeyboardNavigation({ activeBookmark, editor, setActiveBookmark, visibleFolders });
 
   return (
-    <div className="over grid h-full scrollbar-thin content-start gap-2 overflow-x-hidden overflow-y-auto pt-5 pb-9">
-      {visibleFolders.length > 0 ? (
-        visibleFolders.map((folder) => <Folder folder={folder} key={folder.id} />)
-      ) : (
-        <EmptyState rootId={rootId} rootTitle={rootTitle} />
+    <div className="grid h-full scrollbar-thin content-start overflow-x-hidden overflow-y-auto pt-5 pb-9">
+      {selectedLocationId
+        ? visibleFolders.map((folder) => <Folder folder={folder} key={folder.id} parentId={selectedLocationId} />)
+        : null}
+
+      {visibleFolders.length === 0 && isSearchActive && (
+        <p className="text-muted-foreground text-mds-bookmark-section px-7 py-3">
+          {UI_LANGUAGE.bookmark.message.noResults}
+        </p>
       )}
+
+      {visibleFolders.length === 0 && !isSearchActive && selectedLocationId ? (
+        <RootFolder parentId={selectedLocationId} title={rootTitle} />
+      ) : null}
     </div>
   );
 }
 
-type EmptyStateProps = Pick<BookmarkProps, "rootId" | "rootTitle">;
+type RootFolderProps = {
+  parentId: string;
+  title: string | null;
+};
 
-function EmptyState({ rootId, rootTitle }: EmptyStateProps) {
-  const { onBookmarksChange } = useBookmarkContext();
-  const form = useAddForm({ parentId: rootId, onCreated: onBookmarksChange });
-
+function RootFolder({ parentId, title }: RootFolderProps) {
   return (
-    <div className="grid gap-3">
-      <div className="grid gap-2">
-        <div className="group/bookmark-folder hover:bg-accent grid min-h-7 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-1 transition-colors">
-          <h2 className="text-mds-bookmark-section text-muted-foreground truncate tracking-wide">
-            {rootTitle ?? UI_LANGUAGE.bookmark.title.root}
-          </h2>
-          <Button
-            aria-label={UI_LANGUAGE.bookmark.action.add}
-            size="icon-sm"
-            title={UI_LANGUAGE.bookmark.action.add}
-            variant="secondary"
-            onClick={form.toggleForm}
-          >
-            <PlusIcon className="size-4" />
-          </Button>
-        </div>
-        <p className="text-muted-foreground text-mds-content p-1">{UI_LANGUAGE.bookmark.message.noResults}</p>
-        <AddForm form={form} onCancel={form.closeForm} />
-      </div>
-    </div>
+    <section className="mx-4 grid">
+      <header className="border-border grid min-h-6 items-center border-b p-1">
+        <h2 className="text-mds-bookmark-section text-muted-foreground truncate tracking-wide">
+          {title ?? UI_LANGUAGE.bookmark.title.root}
+        </h2>
+      </header>
+      <AddFolder alwaysVisible parentId={parentId} />
+    </section>
   );
 }

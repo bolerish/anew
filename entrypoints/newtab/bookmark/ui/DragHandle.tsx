@@ -4,19 +4,25 @@ import { cn } from "~shared/lib/utils";
 
 type DragHandleProps = {
   isDragging?: boolean;
+  kind: "folder" | "item";
   label: string;
   ref?: Ref<HTMLButtonElement>;
 };
 
-export function DragHandle({ isDragging = false, label, ref }: DragHandleProps) {
+export function DragHandle({ isDragging = false, kind, label, ref }: DragHandleProps) {
+  const hoverClass =
+    kind === "folder" ? "group-hover/bookmark-folder-header:opacity-100" : "group-hover/bookmark-row:opacity-100";
+
   return (
     <div
       className={cn(
-        "absolute top-1 -left-6 z-10 flex h-7 justify-end opacity-0 transition-opacity group-hover/bookmark-folder:opacity-100 group-hover/bookmark-item:opacity-100 group-hover/bookmark-row:opacity-100 group-data-suppress-bookmark-actions/bookmark-item:opacity-0! focus-within:opacity-100",
+        "absolute top-1 -left-6 z-10 flex h-7 justify-end opacity-0 transition-opacity group-data-suppress-bookmark-actions/bookmark-item:opacity-0! focus-within:opacity-100",
+        hoverClass,
+        isDragging && "opacity-100",
       )}
     >
       <button
-        aria-hidden="true"
+        aria-label={label}
         className={cn(
           "text-muted-foreground hover:text-muted-foreground rounded-mds grid h-7 w-6 cursor-grab place-items-center active:cursor-grabbing",
           isDragging && "bg-accent text-foreground",

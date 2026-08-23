@@ -59,12 +59,22 @@ export function useEditor() {
       }
     }
 
+    function handleDocumentFocusIn(event: globalThis.FocusEvent) {
+      if (!currentInlineEditorRef.current || isInsideInlineEditor(event.target)) {
+        return;
+      }
+
+      cancelInlineEditor();
+    }
+
     document.addEventListener("pointerdown", handleDocumentPointerDown);
     document.addEventListener("keydown", handleDocumentKeyDown);
+    document.addEventListener("focusin", handleDocumentFocusIn);
 
     return () => {
       document.removeEventListener("pointerdown", handleDocumentPointerDown);
       document.removeEventListener("keydown", handleDocumentKeyDown);
+      document.removeEventListener("focusin", handleDocumentFocusIn);
     };
   }, [cancelInlineEditor, updateCurrentInlineEditor]);
 

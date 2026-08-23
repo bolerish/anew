@@ -1,5 +1,5 @@
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
-import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
+import { CaretDownIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { cn } from "~shared/lib/utils";
 
 function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
@@ -34,11 +34,11 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
         {...props}
       >
         {children}
-        <CaretDownIcon
+        <CaretRightIcon
           data-slot="accordion-trigger-icon"
           className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
         />
-        <CaretUpIcon
+        <CaretDownIcon
           data-slot="accordion-trigger-icon"
           className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
         />
@@ -49,11 +49,7 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
 
 function AccordionContent({ className, children, ...props }: AccordionPrimitive.Panel.Props) {
   return (
-    <AccordionPrimitive.Panel
-      data-slot="accordion-content"
-      className="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden px-2 text-xs/relaxed"
-      {...props}
-    >
+    <AccordionPrimitive.Panel data-slot="accordion-content" className="overflow-hidden px-2 text-xs/relaxed" {...props}>
       <div
         className={cn(
           "[&_a]:hover:text-foreground h-accordion-panel pt-0 pb-4 data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4",
