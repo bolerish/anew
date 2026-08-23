@@ -1,4 +1,5 @@
 import { GearSixIcon } from "@phosphor-icons/react";
+import { useEffect, useRef } from "react";
 import { DateTime } from "~newtab/date";
 import { SearchBar, useSearch } from "~newtab/search";
 import { cn } from "~shared/lib/utils";
@@ -19,13 +20,24 @@ export default function App() {
   const selectedLocation = locations.find((location) => location.id === selectedLocationId);
   const appearanceSettings = useStorageValue(appearanceStorage, getInitialAppearanceSettings);
   const shortcutSettings = useStorageValue(shortcutStorage, getInitialShortcutSettings);
-  const { open, toggleSidebar } = useSidebar();
+  const { isMobile, open, openMobile, toggleSidebar } = useSidebar();
+  const settingsButtonRef = useRef<HTMLButtonElement | null>(null);
+  const isSidebarOpen = isMobile ? openMobile : open;
+  const wasSidebarOpenRef = useRef(isSidebarOpen);
+
+  useEffect(() => {
+    if (wasSidebarOpenRef.current && !isSidebarOpen) {
+      settingsButtonRef.current?.focus();
+    }
+
+    wasSidebarOpenRef.current = isSidebarOpen;
+  }, [isSidebarOpen]);
 
   return (
     <>
       <Sidebar />
       <SidebarInset className="min-w-0 transition-[width] duration-200 ease-linear">
-        <div className="bg-background text-foreground text-mds-content relative mx-auto flex h-dvh w-full max-w-3xl flex-col overflow-hidden px-2 font-sans">
+        <main className="bg-background text-foreground text-mds-content relative mx-auto flex h-dvh w-full max-w-3xl flex-col overflow-hidden px-2 font-sans">
           <header className="text-foreground/75 mb-5 flex items-center gap-x-3 gap-y-2 px-4 pt-5 sm:pt-6">
             <h1 className="sr-only">Bookmarks</h1>
             <DateTime />
@@ -51,9 +63,10 @@ export default function App() {
           <footer className="bg-background h-14 shrink-0 px-6">
             <div className="text-muted-foreground flex items-center justify-between gap-4">
               <Button
-                aria-expanded={open}
-                aria-label={open ? "Close settings" : "Open settings"}
+                aria-expanded={isSidebarOpen}
+                aria-label={isSidebarOpen ? "Close settings" : "Open settings"}
                 onClick={toggleSidebar}
+                ref={settingsButtonRef}
                 size="icon"
                 variant="outline"
               >
@@ -76,7 +89,7 @@ export default function App() {
               </div>
             </div>
           </footer>
-        </div>
+        </main>
       </SidebarInset>
     </>
   );

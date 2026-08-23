@@ -50,19 +50,21 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
       onPointerMove={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
     >
-      {!form.isAdding ? (
-        <Button
-          className="text-muted-foreground hover:text-foreground w-full justify-center gap-2 py-4"
-          size="sm"
-          type="button"
-          variant="ghost"
-          onClick={form.openForm}
-        >
-          <span aria-hidden="true" className="h-px flex-1 bg-current" />
-          {UI_LANGUAGE.bookmark.action.addFolder}
-          <span aria-hidden="true" className="h-px flex-1 bg-current" />
-        </Button>
-      ) : null}
+      <Collapsible open={!form.isAdding}>
+        <CollapsibleContent className="overflow-hidden transition-[height,opacity] duration-200 ease-out data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0">
+          <Button
+            className="text-muted-foreground hover:text-foreground w-full justify-center gap-2 py-4"
+            size="sm"
+            type="button"
+            variant="ghost"
+            onClick={form.openForm}
+          >
+            <span aria-hidden="true" className="h-px flex-1 bg-current" />
+            {UI_LANGUAGE.bookmark.action.addFolder}
+            <span aria-hidden="true" className="h-px flex-1 bg-current" />
+          </Button>
+        </CollapsibleContent>
+      </Collapsible>
       <Collapsible open={form.isAdding}>
         <CollapsibleContent>
           <form

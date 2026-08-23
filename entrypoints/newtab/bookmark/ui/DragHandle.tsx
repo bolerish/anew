@@ -6,10 +6,11 @@ type DragHandleProps = {
   isDragging?: boolean;
   kind: "folder" | "item";
   label: string;
+  onMove?: (direction: "down" | "up") => void;
   ref?: Ref<HTMLButtonElement>;
 };
 
-export function DragHandle({ isDragging = false, kind, label, ref }: DragHandleProps) {
+export function DragHandle({ isDragging = false, kind, label, onMove, ref }: DragHandleProps) {
   const hoverClass =
     kind === "folder" ? "group-hover/bookmark-folder-header:opacity-100" : "group-hover/bookmark-row:opacity-100";
 
@@ -23,14 +24,24 @@ export function DragHandle({ isDragging = false, kind, label, ref }: DragHandleP
     >
       <button
         aria-label={label}
+        aria-keyshortcuts={onMove ? "Alt+ArrowUp Alt+ArrowDown" : undefined}
         className={cn(
           "text-muted-foreground hover:text-muted-foreground rounded-mds grid h-7 w-6 cursor-grab place-items-center active:cursor-grabbing",
           isDragging && "bg-accent text-foreground",
         )}
-        tabIndex={-1}
-        title={label}
+        tabIndex={onMove ? 0 : -1}
+        title={onMove ? `${label} (Option+Up/Down)` : label}
         type="button"
         ref={ref}
+        onKeyDown={(event) => {
+          if (!onMove || !event.altKey || (event.key !== "ArrowUp" && event.key !== "ArrowDown")) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+          onMove(event.key === "ArrowUp" ? "up" : "down");
+        }}
       >
         <DotsSixVerticalIcon className="h-4 w-4" />
       </button>

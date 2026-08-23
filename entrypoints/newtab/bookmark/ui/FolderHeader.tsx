@@ -16,16 +16,17 @@ type FolderHeaderProps = {
   folder: BookmarkFolder;
   handleRef: Ref<HTMLButtonElement>;
   isDragging: boolean;
+  onMove: (direction: "down" | "up") => void;
 };
 
-export function FolderHeader({ folder, handleRef, isDragging }: FolderHeaderProps) {
+export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHeaderProps) {
   const titleInputRef = useRef<HTMLInputElement | null>(null);
   const canModify = !isRootBookmarkFolder(folder);
   const { editor, handleSubmit, isEditing, openEditor } = useFolderEdit(folder);
   const folderToggle = (
     <AccordionTrigger
       aria-label={`${folder.displayTitle} ${UI_LANGUAGE.bookmark.action.toggleFolder}`}
-      className="size-5 flex-none shrink-0 items-center justify-center gap-0 p-0 hover:no-underline **:data-[slot=accordion-trigger-icon]:m-0 **:data-[slot=accordion-trigger-icon]:size-3"
+      className="size-6 flex-none shrink-0 items-center justify-center gap-0 p-0 hover:no-underline **:data-[slot=accordion-trigger-icon]:m-0 **:data-[slot=accordion-trigger-icon]:size-3"
       type="button"
     />
   );
@@ -53,6 +54,7 @@ export function FolderHeader({ folder, handleRef, isDragging }: FolderHeaderProp
           kind="folder"
           isDragging={isDragging}
           label={UI_LANGUAGE.bookmark.action.moveFolder}
+          onMove={onMove}
           ref={handleRef}
         />
       )}

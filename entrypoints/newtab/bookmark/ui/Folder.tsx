@@ -6,6 +6,7 @@ import { cn } from "~shared/lib/utils";
 import { Accordion, AccordionContent, AccordionItem } from "~shared/ui/accordion";
 import { Button } from "~shared/ui/button";
 
+import { moveFolder as moveBookmarkFolder } from "../api/move";
 import { isItemDragData } from "../lib/dnd";
 import { useBookmarkContext } from "../model/Provider";
 import type { BookmarkFolder } from "../model/types";
@@ -23,7 +24,7 @@ type FolderProps = {
 };
 
 export function Folder({ folder, parentId }: FolderProps) {
-  const { isSearchActive, onBookmarksChange } = useBookmarkContext();
+  const { folders, isSearchActive, onBookmarksChange } = useBookmarkContext();
   const { drop, sort } = useFolderDnd(folder);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
   const addForm = useAddForm({
@@ -32,12 +33,34 @@ export function Folder({ folder, parentId }: FolderProps) {
   });
   const activeDropIndex = drop.isDropTarget ? folder.items.length : dropIndex;
 
+  async function moveFolder(direction: "down" | "up") {
+    if (isSearchActive || folder.bookmarkIndex === undefined) {
+      return;
+    }
+
+    const currentIndex = folders.findIndex((candidate) => candidate.id === folder.id);
+    const nextFolder = folders[currentIndex + (direction === "up" ? -1 : 1)];
+
+    if (!nextFolder) {
+      return;
+    }
+
+    const targetIndex = direction === "up" ? folder.bookmarkIndex - 1 : folder.bookmarkIndex + 2;
+
+    try {
+      await moveBookmarkFolder(folder, { index: targetIndex, parentId });
+      await onBookmarksChange();
+    } catch (error) {
+      console.error("[newtab:bookmark] failed to move bookmark folder", error);
+    }
+  }
+
   return (
     <section className={cn("relative grid", sort.isDragSource && "opacity-20")} ref={sort.ref}>
       {sort.isDropTarget && sort.dropEdge ? <DropIndicator edge={sort.dropEdge} placement="outside" /> : null}
       <Accordion className="overflow-visible rounded-none border-0" defaultValue={[folder.id]}>
         <AccordionItem className="border-0 data-open:bg-transparent" value={folder.id}>
-          <FolderHeader folder={folder} handleRef={sort.handleRef} isDragging={sort.isDragSource} />
+          <FolderHeader folder={folder} handleRef={sort.handleRef} isDragging={sort.isDragSource} onMove={moveFolder} />
           <AccordionContent className="h-auto p-0 [&_a]:no-underline">
             <div className="relative -mx-2 grid" ref={drop.ref}>
               <div className="relative grid">

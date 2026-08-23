@@ -6,6 +6,7 @@ import { cn } from "~shared/lib/utils";
 import { Button } from "~shared/ui/button";
 import { Input } from "~shared/ui/input";
 
+import { moveItem as moveBookmarkItem } from "../api/move";
 import { deleteItem as deleteBookmarkItem } from "../api/update";
 import { deriveBookmarkItemView, deriveItemLabel, type BookmarkItemEntry } from "../lib/item-view";
 import { useBookmarkContext } from "../model/Provider";
@@ -21,7 +22,7 @@ type ItemProps = {
 
 export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
   const { item, itemIndex } = itemEntry;
-  const { activeBookmark, bookmarkIconMode } = useBookmarkContext();
+  const { activeBookmark, bookmarkIconMode, folders, isSearchActive, onBookmarksChange } = useBookmarkContext();
   const view = deriveBookmarkItemView(item, bookmarkIconMode);
   const { icon, iconMarker, showBookmarkIcon } = view;
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -40,6 +41,28 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
     void deleteBookmarkItem(item);
   }
 
+  async function moveItem(direction: "down" | "up") {
+    if (isSearchActive || item.bookmarkIndex === undefined) {
+      return;
+    }
+
+    const parentFolder = folders.find((folder) => folder.id === item.parentId);
+    const nextItem = parentFolder?.items[itemIndex + (direction === "up" ? -1 : 1)];
+
+    if (!nextItem) {
+      return;
+    }
+
+    const targetIndex = direction === "up" ? item.bookmarkIndex - 1 : item.bookmarkIndex + 2;
+
+    try {
+      await moveBookmarkItem(item, { index: targetIndex, parentId: item.parentId });
+      await onBookmarksChange();
+    } catch (error) {
+      console.error("[newtab:bookmark] failed to move bookmark item", error);
+    }
+  }
+
   useEffect(() => {
     if (!isEditing) return;
 
@@ -55,7 +78,13 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
       onMouseMove={suppressActions ? showActions : undefined}
     >
       <div className="group/bookmark-row relative min-h-8">
-        <DragHandle kind="item" isDragging={isDragSource} label={UI_LANGUAGE.bookmark.action.move} ref={handleRef} />
+        <DragHandle
+          kind="item"
+          isDragging={isDragSource}
+          label={UI_LANGUAGE.bookmark.action.move}
+          onMove={moveItem}
+          ref={handleRef}
+        />
         {!isEditing ? (
           <div
             className={cn(

@@ -63,9 +63,9 @@ function Content({ rootTitle, selectedLocationId }: ContentProps) {
         : null}
 
       {visibleFolders.length === 0 && isSearchActive && (
-        <p className="text-muted-foreground text-mds-bookmark-section px-7 py-3">
+        <output className="text-muted-foreground text-mds-bookmark-section px-7 py-3">
           {UI_LANGUAGE.bookmark.message.noResults}
-        </p>
+        </output>
       )}
 
       {visibleFolders.length === 0 && !isSearchActive && selectedLocationId ? (
