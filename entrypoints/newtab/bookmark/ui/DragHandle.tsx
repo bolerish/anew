@@ -17,7 +17,7 @@ export function DragHandle({ isDragging = false, kind, label, onMove, ref }: Dra
   return (
     <div
       className={cn(
-        "absolute top-1 -left-6 z-10 flex h-7 justify-end opacity-0 transition-opacity group-data-suppress-bookmark-actions/bookmark-item:opacity-0! focus-within:opacity-100",
+        "absolute top-0 -left-6 z-10 flex h-6 justify-end opacity-0 transition-opacity group-data-suppress-bookmark-actions/bookmark-item:opacity-0! focus-within:opacity-100",
         hoverClass,
         isDragging && "opacity-100",
       )}
@@ -26,7 +26,7 @@ export function DragHandle({ isDragging = false, kind, label, onMove, ref }: Dra
         aria-label={label}
         aria-keyshortcuts={onMove ? "Alt+ArrowUp Alt+ArrowDown" : undefined}
         className={cn(
-          "text-muted-foreground hover:text-muted-foreground rounded-mds grid h-7 w-6 cursor-grab place-items-center active:cursor-grabbing",
+          "text-muted-foreground hover:text-muted-foreground rounded-mds grid h-6 w-6 cursor-grab place-items-center active:cursor-grabbing",
           isDragging && "bg-accent text-foreground",
         )}
         tabIndex={onMove ? 0 : -1}

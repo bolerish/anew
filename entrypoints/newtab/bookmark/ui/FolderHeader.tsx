@@ -45,7 +45,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
   return (
     <header
       className={cn(
-        "group/bookmark-folder-header hover:bg-accent grid-cols-mds-bookmark-folder relative mx-4 grid min-h-6 items-center gap-2 border-b border-transparent p-1 transition-colors",
+        "group/bookmark-folder-header hover:bg-accent grid-cols-mds-bookmark-folder relative mx-4 grid min-h-6 items-center gap-2 border-b border-transparent px-1 transition-colors",
         isEditing && "border-border",
       )}
     >

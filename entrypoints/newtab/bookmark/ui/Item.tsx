@@ -88,7 +88,7 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
         {!isEditing ? (
           <div
             className={cn(
-              "hover:bg-accent grid-cols-mds-bookmark-item grid min-h-7 min-w-0 items-center gap-2 border-b border-transparent p-1 transition-colors",
+              "hover:bg-accent grid-cols-mds-bookmark-item grid min-h-6 min-w-0 items-center gap-2 border-b border-transparent px-1 transition-colors",
               isActive && "bg-accent",
             )}
           >
@@ -141,21 +141,21 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
         {isEditing ? (
           <form
             className={cn(
-              "border-border grid min-w-0 items-start gap-x-2 gap-y-1 border-b p-1",
+              "border-border grid min-w-0 items-start gap-x-2 gap-y-1 border-b px-1",
               showBookmarkIcon ? "grid-cols-mds-bookmark-item-icon" : "grid-cols-[minmax(0,1fr)_auto]",
             )}
             data-inline-bookmark-editor=""
             onSubmit={handleSubmit}
           >
             {showBookmarkIcon ? (
-              <div className="row-span-2 flex h-7 items-center" data-bookmark-edit-icon="">
+              <div className="row-span-2 flex h-6 items-center" data-bookmark-edit-icon="">
                 <ItemIcon icon={icon} label={deriveItemLabel(item)} marker={iconMarker} />
               </div>
             ) : null}
             <div className="grid min-w-0 gap-1">
               <Input
                 aria-label={UI_LANGUAGE.bookmark.label.title}
-                className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-7 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
+                className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-6 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
                 ref={titleInputRef}
                 value={editor.inlineTitle}
                 onChange={(event) => editor.setInlineTitle(event.target.value)}
@@ -164,7 +164,7 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
                 aria-label={UI_LANGUAGE.bookmark.label.url}
                 aria-describedby={isUrlValid ? undefined : urlErrorId}
                 aria-invalid={!isUrlValid}
-                className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-7 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
+                className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-6 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
                 title={isUrlValid ? undefined : UI_LANGUAGE.bookmark.error.invalidUrl}
                 value={editor.inlineUrl}
                 onChange={(event) => editor.setInlineUrl(event.target.value)}
@@ -175,7 +175,7 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
                 </p>
               ) : null}
             </div>
-            <div className="flex h-7 items-center justify-end gap-0">
+            <div className="flex h-6 items-center justify-end gap-0">
               <Button
                 aria-label={UI_LANGUAGE.bookmark.action.save}
                 className="text-muted-foreground hover:text-muted-foreground hover:bg-transparent"

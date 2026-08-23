@@ -44,8 +44,8 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
   return (
     <div
       className={cn(
-        "mb-2 ml-5 h-fit p-0 transition-all duration-200",
-        form.isAdding || alwaysVisible || isHovered ? "opacity-100" : "h-1 pb-2 opacity-0 focus-within:opacity-100",
+        "my-1 ml-5 h-fit p-0 transition-all duration-200",
+        form.isAdding || alwaysVisible || isHovered ? "mb-2 opacity-100" : "h-px opacity-0 focus-within:opacity-100",
       )}
       onPointerMove={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
