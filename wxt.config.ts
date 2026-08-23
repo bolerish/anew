@@ -1,4 +1,6 @@
+import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
+import { reactCompilerPreset } from "@vitejs/plugin-react";
 import "@wxt-dev/auto-icons";
 import { defineConfig } from "wxt";
 
@@ -29,7 +31,7 @@ export default defineConfig({
   },
 
   vite: () => ({
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), babel({ presets: [reactCompilerPreset()] })],
     resolve: {
       alias: {
         "~": path.resolve(__dirname, "./"),

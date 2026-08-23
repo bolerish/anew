@@ -1,4 +1,4 @@
-import { useCallback, useState, type SubmitEvent, type MouseEvent, type PointerEvent } from "react";
+import { useState, type SubmitEvent, type MouseEvent, type PointerEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 
 import { canNormalizeUrl } from "../lib/url";
@@ -11,23 +11,20 @@ export function useItemEdit(item: BookmarkItem) {
   const isEditing = isInlineEditingItem(editor.inlineEditingBookmark, item);
   const isUrlValid = !isEditing || canNormalizeUrl(editor.inlineUrl);
 
-  const openEditor = useCallback(
-    (event: MouseEvent<HTMLElement> | PointerEvent<HTMLElement>) => {
-      stopInteraction(event);
-      setSuppressActions(true);
-      editor.openInlineItemEditor(item);
-    },
-    [editor, item],
-  );
+  function openEditor(event: MouseEvent<HTMLElement> | PointerEvent<HTMLElement>) {
+    stopInteraction(event);
+    setSuppressActions(true);
+    editor.openInlineItemEditor(item);
+  }
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     await editor.updateCurrentInlineEditor();
   }
 
-  const showActions = useCallback(() => {
+  function showActions() {
     setSuppressActions(false);
-  }, []);
+  }
 
   return {
     handleSubmit,

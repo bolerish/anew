@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
 import type { BookmarkContextValue } from "./Provider";
 
@@ -13,7 +13,7 @@ export function useKeyboardNavigation({
   setActiveBookmark,
   visibleFolders,
 }: UseBookmarkKeyboardNavigationInput) {
-  const keyboardItems = useMemo(() => visibleFolders.flatMap((folder) => folder.items), [visibleFolders]);
+  const keyboardItems = visibleFolders.flatMap((folder) => folder.items);
 
   useEffect(() => {
     if (keyboardItems.length === 0 || activeBookmark?.kind !== "item") {

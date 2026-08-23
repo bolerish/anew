@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { deriveLocations, deriveVisibleFolders } from "../lib/tree";
 import type { BookmarkFolder, BookmarkLocation } from "./types";
 import { useLocation } from "./useLocation";
@@ -15,12 +13,9 @@ type FoldersState = {
 
 export function useFolders(): FoldersState {
   const { bookmarkTree, loadBookmarks } = useTree();
-  const locations = useMemo(() => deriveLocations(bookmarkTree), [bookmarkTree]);
+  const locations = deriveLocations(bookmarkTree);
   const { selectedLocationId, setSelectedLocation } = useLocation(locations);
-  const folders = useMemo(
-    () => deriveVisibleFolders(bookmarkTree, selectedLocationId),
-    [bookmarkTree, selectedLocationId],
-  );
+  const folders = deriveVisibleFolders(bookmarkTree, selectedLocationId);
 
   return {
     folders,

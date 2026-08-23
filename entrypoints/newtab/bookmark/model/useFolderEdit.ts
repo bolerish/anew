@@ -1,4 +1,4 @@
-import { useCallback, type SubmitEvent, type MouseEvent } from "react";
+import type { SubmitEvent, MouseEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 
 import { useBookmarkContext } from "./Provider";
@@ -8,13 +8,10 @@ export function useFolderEdit(folder: BookmarkFolder) {
   const { editor } = useBookmarkContext();
   const isEditing = isInlineEditingFolder(editor.inlineEditingBookmark, folder);
 
-  const openEditor = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
-      stopInteraction(event);
-      editor.openInlineFolderEditor(folder);
-    },
-    [editor, folder],
-  );
+  function openEditor(event: MouseEvent<HTMLButtonElement>) {
+    stopInteraction(event);
+    editor.openInlineFolderEditor(folder);
+  }
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
