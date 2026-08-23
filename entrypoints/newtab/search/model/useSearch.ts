@@ -1,13 +1,15 @@
-import { useContext } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import { SearchContext, type SearchContextValue } from "./SearchProvider";
+import type { BookmarkFolder } from "~/entrypoints/newtab/bookmark";
 
-export function useSearch(): SearchContextValue {
-  const context = useContext(SearchContext);
+import { deriveVisibleBookmarkFolders } from "../lib/filter";
+import { executeSearchQuery } from "../lib/navigation";
 
-  if (!context) {
-    throw new Error("useSearch must be used within SearchProvider");
-  }
+export function useSearch(folders: readonly BookmarkFolder[]) {
+  const [query, setQuery] = useState("");
+  const isActive = query.trim().length > 0;
+  const visibleFolders = useMemo(() => deriveVisibleBookmarkFolders(folders, query), [folders, query]);
+  const search = useCallback(() => executeSearchQuery({ folders, query }), [folders, query]);
 
-  return context;
+  return { isActive, query, search, setQuery, visibleFolders };
 }

@@ -1,42 +1,20 @@
-import { useEffect, useState } from "react";
-
 import {
   dateStorage,
   getInitialDateSettings,
   getInitialTimeSettings,
   timeStorage,
-  type DateSettings,
-  type TimeSettings,
 } from "~/entrypoints/newtab/settings/format";
+import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
 
 import { formatCurrentDate, formatCurrentTime } from "../lib/format";
 import { useCurrentDateTime } from "../model/useCurrentDateTime";
 
 export function DateTime() {
-  const [settings, setSettings] = useState<DateSettings & TimeSettings>(deriveInitialDateTimeSettings);
+  const dateSettings = useStorageValue(dateStorage, getInitialDateSettings);
+  const timeSettings = useStorageValue(timeStorage, getInitialTimeSettings);
   const currentDateTime = useCurrentDateTime();
-  const formattedDate = settings.showDate ? formatCurrentDate(currentDateTime, settings) : null;
-  const formattedTime = formatCurrentTime(currentDateTime, settings);
-
-  useEffect(() => {
-    let isMounted = true;
-    void Promise.all([dateStorage.getValue(), timeStorage.getValue()]).then(([dateSettings, timeSettings]) => {
-      if (isMounted) setSettings({ ...dateSettings, ...timeSettings });
-    });
-
-    const unwatchDateSettings = dateStorage.watch((dateSettings) => {
-      setSettings((currentSettings) => ({ ...currentSettings, ...dateSettings }));
-    });
-    const unwatchTimeSettings = timeStorage.watch((timeSettings) => {
-      setSettings((currentSettings) => ({ ...currentSettings, ...timeSettings }));
-    });
-
-    return () => {
-      isMounted = false;
-      unwatchDateSettings();
-      unwatchTimeSettings();
-    };
-  }, []);
+  const formattedDate = dateSettings.showDate ? formatCurrentDate(currentDateTime, dateSettings) : null;
+  const formattedTime = formatCurrentTime(currentDateTime, timeSettings);
 
   if (!formattedDate && !formattedTime) {
     return null;
@@ -51,11 +29,4 @@ export function DateTime() {
       </div>
     </div>
   );
-}
-
-function deriveInitialDateTimeSettings(): DateSettings & TimeSettings {
-  return {
-    ...getInitialDateSettings(),
-    ...getInitialTimeSettings(),
-  };
 }

@@ -4,10 +4,13 @@ import { UI_LANGUAGE } from "~shared/lib/language";
 import { Input } from "~shared/ui/input";
 import { Kbd } from "~shared/ui/kbd";
 
-import { useSearch } from "../model/useSearch";
+type SearchBarProps = {
+  onSearch: () => Promise<void>;
+  onValueChange: (value: string) => void;
+  value: string;
+};
 
-export function SearchBar() {
-  const { searchQuery, setSearchQuery, handleSearchSubmit } = useSearch();
+export function SearchBar({ onSearch, onValueChange, value }: SearchBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -32,20 +35,26 @@ export function SearchBar() {
   }, []);
 
   return (
-    <form onSubmit={handleSearchSubmit} className="sticky top-0 z-10 h-8 shrink-0 px-6">
-      <div className="group border-border focus-within:border-b-ring mx-1 flex items-center justify-start border-b bg-transparent transition-colors">
+    <form
+      className="sticky top-0 z-10 h-8 shrink-0 px-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void onSearch();
+      }}
+    >
+      <div className="group border-border focus-within:border-b-ring flex items-center justify-start border-b bg-transparent transition-colors">
         <MagnifyingGlassIcon className="text-muted-foreground mr-1 ml-2 size-4" />
         <Input
           aria-label={UI_LANGUAGE.search.label}
           ref={inputRef}
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
+          value={value}
+          onChange={(event) => onValueChange(event.target.value)}
           onKeyDown={(event) => {
             if (event.key !== "Escape") {
               return;
             }
             event.preventDefault();
-            setSearchQuery("");
+            onValueChange("");
           }}
           placeholder={UI_LANGUAGE.search.placeholder}
           className="text-mds-input-placeholder placeholder:text-mds-input-placeholder h-8 rounded-none border-0 bg-transparent focus-visible:ring-0 dark:bg-transparent"

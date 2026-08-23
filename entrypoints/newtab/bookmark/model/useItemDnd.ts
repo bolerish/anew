@@ -3,9 +3,8 @@ import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-d
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-import { isBookmarkItemDragData, resolveBookmarkDropEdge, resolveVerticalDropEdge } from "../lib/bookmark-dnd";
-import type { BookmarkDropEdge } from "../lib/bookmark-drag-drop";
-import type { BookmarkItem } from "./bookmark-model";
+import { type DropEdge, isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
+import type { BookmarkItem } from "./types";
 
 type UseItemDndInput = {
   isActive: boolean;
@@ -17,10 +16,10 @@ export function useItemDnd({ isActive, isEditing, item }: UseItemDndInput) {
   const [handleElement, setHandleElement] = useState<HTMLButtonElement | null>(null);
   const [itemElement, setItemElement] = useState<HTMLElement | null>(null);
   const [isDragSource, setIsDragSource] = useState(false);
-  const [dropEdge, setDropEdge] = useState<BookmarkDropEdge | null>(null);
+  const [dropEdge, setDropEdge] = useState<DropEdge | null>(null);
 
   function updateDropIndicator(data: Record<string | symbol, unknown>) {
-    setDropEdge(resolveBookmarkDropEdge(data));
+    setDropEdge(resolveDropEdge(data));
   }
 
   function clearDropIndicator() {
@@ -45,9 +44,9 @@ export function useItemDnd({ isActive, isEditing, item }: UseItemDndInput) {
       }),
       dropTargetForElements({
         element: itemElement,
-        canDrop: ({ source }) => isBookmarkItemDragData(source.data) && source.data.item.id !== item.id,
+        canDrop: ({ source }) => isItemDragData(source.data) && source.data.item.id !== item.id,
         getData: ({ input, element }) => ({
-          edge: resolveVerticalDropEdge(input.clientY, element),
+          edge: resolveVerticalEdge(input.clientY, element),
           item,
           kind: "item",
         }),

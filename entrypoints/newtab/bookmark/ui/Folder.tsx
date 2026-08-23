@@ -1,43 +1,44 @@
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useEffect, useState } from "react";
 import { cn } from "~shared/lib/utils";
 
-import type { BookmarkFolder as BookmarkFolderValue } from "../model/bookmark-model";
-import { useAddBookmarkForm } from "../model/useAddBookmarkForm";
+import { isItemDragData } from "../lib/dnd";
+import { useBookmarkContext } from "../model/Provider";
+import type { BookmarkFolder } from "../model/types";
+import { useAddForm } from "../model/useAddForm";
 import { useFolderDnd } from "../model/useFolderDnd";
-import { AddBookmarkForm } from "./AddBookmarkForm";
-import { useBookmarkContext } from "./BookmarkProvider";
+import { AddForm } from "./AddForm";
+import { DropIndicator } from "./DropIndicator";
 import { FolderHeader } from "./FolderHeader";
-import { FolderStartDropZone } from "./FolderStartDropZone";
 import { Item } from "./Item";
 
 type FolderProps = {
-  folder: BookmarkFolderValue;
+  folder: BookmarkFolder;
 };
 
 export function Folder({ folder }: FolderProps) {
   const { onBookmarksChange } = useBookmarkContext();
-  const { folderDrop, folderSort } = useFolderDnd(folder);
-  const addBookmark = useAddBookmarkForm({
+  const { drop, sort } = useFolderDnd(folder);
+  const addForm = useAddForm({
     parentId: folder.id,
     onCreated: onBookmarksChange,
   });
 
   return (
-    <section className={cn("relative grid", folderSort.isDragSource && "opacity-20")} ref={folderSort.ref}>
-      {folderSort.isDropTarget && folderSort.dropEdge ? <DropIndicator edge={folderSort.dropEdge} /> : null}
+    <section className={cn("relative grid", sort.isDragSource && "opacity-20")} ref={sort.ref}>
+      {sort.isDropTarget && sort.dropEdge ? <DropIndicator edge={sort.dropEdge} placement="outside" /> : null}
       <FolderHeader
         folder={folder}
-        dnd={{
-          handleRef: folderSort.handleRef,
-          isDragSource: folderSort.isDragSource,
-        }}
-        onAddItem={addBookmark.toggleForm}
+        handleRef={sort.handleRef}
+        isDragging={sort.isDragSource}
+        onAddItem={addForm.toggleForm}
       />
 
-      <AddBookmarkForm addBookmark={addBookmark} onCancel={addBookmark.closeForm} />
+      <AddForm form={addForm} onCancel={addForm.closeForm} />
 
-      <div className="relative grid" ref={folderDrop.ref}>
-        {folderDrop.isDropTarget ? <FolderDropIndicator /> : null}
-        <FolderStartDropZone folderId={folder.id} />
+      <div className="relative grid" ref={drop.ref}>
+        {drop.isDropTarget ? <FolderDropIndicator /> : null}
+        <ItemStartDropZone folderId={folder.id} />
         {folder.items.map((item, itemIndex) => (
           <Item itemEntry={{ item, itemIndex }} key={item.id} />
         ))}
@@ -55,14 +56,32 @@ function FolderDropIndicator() {
   );
 }
 
-function DropIndicator({ edge }: { edge: "after" | "before" }) {
+type ItemStartDropZoneProps = { folderId: string };
+
+function ItemStartDropZone({ folderId }: ItemStartDropZoneProps) {
+  const [element, setElement] = useState<HTMLDivElement | null>(null);
+  const [isDropTarget, setIsDropTarget] = useState(false);
+
+  useEffect(() => {
+    if (!element) return;
+
+    return dropTargetForElements({
+      element,
+      canDrop: ({ source }) => isItemDragData(source.data),
+      getData: () => ({ kind: "item-start", parentId: folderId }),
+      onDragEnter: () => setIsDropTarget(true),
+      onDragLeave: () => setIsDropTarget(false),
+      onDrop: () => setIsDropTarget(false),
+    });
+  }, [element, folderId]);
+
   return (
     <div
       aria-hidden="true"
-      className={cn(
-        "bg-primary pointer-events-none absolute right-0 left-0 z-20 h-[3px] rounded-full shadow-sm",
-        edge === "before" ? "-top-1" : "-bottom-1",
-      )}
-    />
+      className={cn("relative -mb-3 h-3 opacity-0", isDropTarget && "opacity-100")}
+      ref={setElement}
+    >
+      {isDropTarget ? <DropIndicator placement="center" /> : null}
+    </div>
   );
 }

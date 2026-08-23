@@ -1,26 +1,13 @@
-import { useEffect, useState } from "react";
-import { Section, SectionContent, SectionHeader } from "~newtab/settings/ui/SettingsSection";
 import { Switch } from "~shared/ui/switch";
 
-import { type DateSettings, dateStorage, getInitialDateSettings, updateDateSetting } from "../model/date";
+import { Section, SectionContent, SectionHeader } from "~/entrypoints/newtab/settings/ui/Section";
+import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
+
+import { dateStorage, getInitialDateSettings, updateDateSetting } from "../model/date";
 import { FormatSelect } from "./FormatSelect";
 
 export function Date() {
-  const [{ customDateFormat, dateFormat, showDate }, setDateSettings] = useState<DateSettings>(getInitialDateSettings);
-
-  useEffect(() => {
-    let isMounted = true;
-    void dateStorage.getValue().then((settings) => {
-      if (isMounted) setDateSettings(settings);
-    });
-
-    const unwatchDate = dateStorage.watch(setDateSettings);
-
-    return () => {
-      isMounted = false;
-      unwatchDate();
-    };
-  }, []);
+  const { customDateFormat, dateFormat, showDate } = useStorageValue(dateStorage, getInitialDateSettings);
 
   return (
     <Section>

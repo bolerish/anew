@@ -1,34 +1,15 @@
-import { useEffect, useState } from "react";
-import { Section, SectionContent, SectionHeader, SectionItem } from "~newtab/settings/ui/SettingsSection";
 import { UI_LANGUAGE } from "~shared/lib/language";
 import { Button } from "~shared/ui/button";
 import { Switch } from "~shared/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "~shared/ui/toggle-group";
 
-import {
-  getInitialTimeSettings,
-  timeStorage,
-  type TimeFormat,
-  type TimeSettings,
-  updateTimeSetting,
-} from "../model/time";
+import { Section, SectionContent, SectionHeader, SectionItem } from "~/entrypoints/newtab/settings/ui/Section";
+import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
+
+import { getInitialTimeSettings, timeStorage, type TimeFormat, updateTimeSetting } from "../model/time";
 
 export function Time() {
-  const [{ showTime, showTimeSeconds, timeFormat }, setTimeSettings] = useState<TimeSettings>(getInitialTimeSettings);
-
-  useEffect(() => {
-    let isMounted = true;
-    void timeStorage.getValue().then((settings) => {
-      if (isMounted) setTimeSettings(settings);
-    });
-
-    const unwatchTime = timeStorage.watch(setTimeSettings);
-
-    return () => {
-      isMounted = false;
-      unwatchTime();
-    };
-  }, []);
+  const { showTime, showTimeSeconds, timeFormat } = useStorageValue(timeStorage, getInitialTimeSettings);
 
   return (
     <Section>

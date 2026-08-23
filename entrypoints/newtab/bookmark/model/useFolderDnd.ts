@@ -3,15 +3,8 @@ import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-d
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-import {
-  isBookmarkFolderDragData,
-  isBookmarkItemDragData,
-  resolveBookmarkDropEdge,
-  resolveVerticalDropEdge,
-} from "../lib/bookmark-dnd";
-import type { BookmarkDropEdge } from "../lib/bookmark-drag-drop";
-import type { BookmarkFolder } from "./bookmark-model";
-import { isRootBookmarkFolder } from "./bookmark-model";
+import { type DropEdge, isFolderDragData, isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
+import { isRootBookmarkFolder, type BookmarkFolder } from "./types";
 
 export function useFolderDnd(folder: BookmarkFolder) {
   const [folderElement, setFolderElement] = useState<HTMLElement | null>(null);
@@ -19,11 +12,11 @@ export function useFolderDnd(folder: BookmarkFolder) {
   const [handleElement, setHandleElement] = useState<HTMLButtonElement | null>(null);
   const [isFolderDragSource, setIsFolderDragSource] = useState(false);
   const [isFolderDropTarget, setIsFolderDropTarget] = useState(false);
-  const [folderDropEdge, setFolderDropEdge] = useState<BookmarkDropEdge | null>(null);
+  const [folderDropEdge, setFolderDropEdge] = useState<DropEdge | null>(null);
   const canDragFolder = !isRootBookmarkFolder(folder);
 
   function updateFolderDropIndicator(data: Record<string | symbol, unknown>) {
-    setFolderDropEdge(resolveBookmarkDropEdge(data));
+    setFolderDropEdge(resolveDropEdge(data));
   }
 
   function clearFolderDropIndicator() {
@@ -38,9 +31,9 @@ export function useFolderDnd(folder: BookmarkFolder) {
     return combine(
       dropTargetForElements({
         element: folderElement,
-        canDrop: ({ source }) => isBookmarkFolderDragData(source.data) && source.data.folder.id !== folder.id,
+        canDrop: ({ source }) => isFolderDragData(source.data) && source.data.folder.id !== folder.id,
         getData: ({ input, element }) => ({
-          edge: resolveVerticalDropEdge(input.clientY, element),
+          edge: resolveVerticalEdge(input.clientY, element),
           folder,
           kind: "folder",
         }),
@@ -71,7 +64,7 @@ export function useFolderDnd(folder: BookmarkFolder) {
 
     return dropTargetForElements({
       element: folderDropElement,
-      canDrop: ({ source }) => isBookmarkItemDragData(source.data),
+      canDrop: ({ source }) => isItemDragData(source.data),
       getData: () => ({ folder, kind: "folder" }),
       onDragEnter: () => setIsFolderDropTarget(true),
       onDragLeave: () => setIsFolderDropTarget(false),
@@ -80,11 +73,11 @@ export function useFolderDnd(folder: BookmarkFolder) {
   }, [folder, folderDropElement]);
 
   return {
-    folderDrop: {
+    drop: {
       isDropTarget: isFolderDropTarget,
       ref: setFolderDropElement,
     },
-    folderSort: {
+    sort: {
       dropEdge: folderDropEdge,
       handleRef: setHandleElement,
       isDragSource: isFolderDragSource,

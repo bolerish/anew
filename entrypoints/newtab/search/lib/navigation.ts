@@ -5,7 +5,7 @@ import type { BookmarkFolder } from "~/entrypoints/newtab/bookmark";
 import { resolveMatchingBookmark } from "../lib/filter";
 
 type ExecuteSearchQueryInput = {
-  folders: BookmarkFolder[];
+  folders: readonly BookmarkFolder[];
   query: string;
 };
 
