@@ -30,6 +30,10 @@ export default defineConfig({
     startUrls: ["chrome://newtab/"],
   },
 
+  analysis: {
+    outputFile: ".analyzer/.rollup-visualizer/stats.html",
+  },
+
   vite: () => ({
     plugins: [tailwindcss(), babel({ presets: [reactCompilerPreset()] })],
     resolve: {

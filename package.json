@@ -26,7 +26,7 @@
     "submit:chrome": "wxt submit --chrome-zip .output/min-$npm_package_version-chrome.zip",
     "submit:chrome:dry-run": "wxt submit --dry-run --chrome-zip .output/min-$npm_package_version-chrome.zip",
     "prepare": "wxt prepare",
-    "dep:graph": "mkdir -p dependency-graph && depcruise entrypoints/newtab --config scripts/dependency-cruiser.cjs --include-only '^entrypoints/newtab' --output-type dot | dot -T svg > dependency-graph/dep-graph.svg"
+    "dep:graph": "mkdir -p .analyzer/.dependency-graph && depcruise entrypoints/newtab --config scripts/dependency-cruiser.cjs --include-only '^entrypoints/newtab' --output-type dot | dot -T svg > .analyzer/.dependency-graph/dep-graph.svg"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.8.1",

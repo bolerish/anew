@@ -1,6 +1,6 @@
 # Min - New Tab for Bookmarks
 
-![Logo](/public/logo.svg)
+![Logo](./public/logo.svg)
 
 Min is a minimal new tab page for Chrome bookmark.
 
