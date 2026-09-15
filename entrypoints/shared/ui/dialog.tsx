@@ -142,6 +142,7 @@ type DialogContentProps = Omit<ComponentProps<typeof DialogPrimitive.Popup>, "cl
   /** Accessible name for the optional close button. @default "Close" */
   closeLabel?: string;
   showCloseButton?: boolean;
+  showBackdrop?: boolean;
   xstyle?: stylex.StyleXStyles;
 };
 
@@ -167,12 +168,13 @@ export function DialogContent({
   children,
   closeLabel = "Close",
   showCloseButton = true,
+  showBackdrop = true,
   xstyle,
   ...props
 }: DialogContentProps) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Backdrop {...stylex.props(styles.backdrop)} />
+      {showBackdrop ? <DialogPrimitive.Backdrop {...stylex.props(styles.backdrop)} /> : null}
       <DialogPrimitive.Viewport {...stylex.props(styles.viewport)}>
         <DialogPrimitive.Popup {...props} {...stylex.props(styles.popup, xstyle)}>
           {children}

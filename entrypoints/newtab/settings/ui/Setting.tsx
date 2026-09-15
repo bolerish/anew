@@ -49,7 +49,8 @@ const styles = stylex.create({
     padding: 0,
     gap: 0,
     justifyContent: "flex-start",
-    ":is([data-starting-style], [data-ending-style])": { opacity: 0, transform: "none" },
+    transitionProperty: "none",
+    ":is([data-starting-style], [data-ending-style])": { opacity: 1, transform: "none" },
   },
   readerBack: { position: "sticky", top: 0, alignSelf: "flex-start", margin: spacingVars.space4 },
 
@@ -186,7 +187,7 @@ export function Setting({ open, onOpenChange, xstyle }: SettingProps) {
           if (!open) updates.close();
         }}
       >
-        <DialogContent xstyle={styles.reader} showCloseButton={false}>
+        <DialogContent xstyle={styles.reader} showCloseButton={false} showBackdrop={false}>
           <div {...stylex.props(styles.hiddenTitle)}>
             <DialogTitle>{UI_LANGUAGE.settings.updates}</DialogTitle>
           </div>
