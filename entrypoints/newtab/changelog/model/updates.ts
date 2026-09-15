@@ -1,17 +1,10 @@
-import { useStorageValue } from "~shared/hooks/useStorageValue";
+import { updatesMessages } from "~shared/locales/updates";
 
-import { storage } from "#imports";
-
-export const LATEST_UPDATE_VERSION = "1.2.0";
-export const lastReadUpdateStorage = storage.defineItem<string | null>("local:newtab:last-read-update", {
-  fallback: "",
-});
-
-export function useUnreadUpdates() {
-  const lastRead = useStorageValue(lastReadUpdateStorage, () => null);
-  return lastRead !== null && lastRead !== LATEST_UPDATE_VERSION;
-}
-
-export async function markUpdatesRead() {
-  await lastReadUpdateStorage.setValue(LATEST_UPDATE_VERSION);
+/** Release metadata stays attached to its translated notes, newest first. */
+export function getUpdateEntries(language: keyof typeof updatesMessages) {
+  const copy = updatesMessages[language];
+  return [
+    { version: "1.2.0", date: "2026-09-15", sections: copy.currentSections },
+    { version: "1.1.3", date: "2026-08-25", sections: [{ title: "", items: copy.releasedItems }] },
+  ];
 }

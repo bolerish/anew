@@ -1,30 +1,26 @@
 export const updatesMessages = {
   ko: {
-    unread: "읽지 않은 업데이트 기록",
     latest: "최신",
     currentSections: [
       {
-        title: "북마크 배치·표시",
+        title: "북마크",
         items: [
           "폴더를 여러 행과 열로 배치하고 열 너비와 폴더 높이를 조절할 수 있습니다. 조절 핸들을 두 번 클릭하면 기본 크기로 돌아갑니다.",
           "폴더마다 목록·그리드 보기, 아이콘, 제목과 도메인 표시를 선택할 수 있습니다. 그리드 아이콘과 항목 크기를 더 촘촘하게 조정했습니다.",
           "접은 폴더는 새로고침하거나 새 탭을 열어도 접힌 상태를 유지합니다. 북마크나 폴더를 제자리에 놓으면 순서가 바뀌지 않습니다.",
-        ],
-      },
-      {
-        title: "편집·저장",
-        items: [
           "편집 모드에서 실행 취소·다시 실행·저장·취소를 사용할 수 있습니다. 추가 입력 중 다른 곳을 누르면 입력창이 닫힙니다.",
           "같은 폴더에 같은 주소를 추가하면 중복 저장을 막고 알림으로 알려줍니다. 편집 중 아직 저장하지 않은 북마크도 확인합니다.",
           "북마크 입력·저장 오류를 입력란 아래에 표시하고 입력값을 유지합니다. 저장 중 연속 제출을 막고, 위치 검색의 처리 상태와 오류를 구분해 안내합니다.",
+          "목차에서 폴더로 이동하고, 호버하거나 키보드로 포커스하면 폴더명을 확인할 수 있습니다. 목차로 이동한 뒤에는 직접 스크롤을 조작할 때까지 선택한 항목의 강조를 유지합니다. 이동한 폴더의 테두리는 잠시 뒤 사라지며, 목차 선택과 키보드 포커스는 유지됩니다.",
+          "여러 열에서 보이지 않는 컬럼 추가 영역이 드래그 핸들을 가로채지 않도록 수정했습니다.",
         ],
       },
       {
-        title: "검색·탐색",
+        title: "검색과 탐색",
         items: [
           "검색 제안에서 북마크를 찾고 Google·Bing·DuckDuckGo·Brave 중 검색엔진을 선택할 수 있습니다.",
-          "목차에서 폴더로 이동하고, 호버하거나 키보드로 포커스하면 폴더명을 확인할 수 있습니다. 목차로 이동한 뒤에는 직접 스크롤을 조작할 때까지 선택한 항목의 강조를 유지합니다.",
           "방향키로 북마크 사이를 이동하고 /로 검색, E로 편집을 시작할 수 있습니다. Escape로 검색 포커스를 해제하고, 다른 동작이 없을 때 설정을 열 수 있습니다. 편집 후 포커스 복귀와 화면 읽기 프로그램용 안내도 개선했습니다.",
+          "설정 상세 화면과 업데이트 기록에서 브라우저 뒤로·앞으로가기를 사용할 수 있습니다.",
         ],
       },
       {
@@ -34,7 +30,7 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "화면 설정",
+        title: "설정",
         items: [
           "제목과 콘텐츠 글꼴을 따로 설정하고 콘텐츠 너비와 5개 표시 언어를 선택할 수 있습니다. 레이아웃에서 폴더 구분선과 단축키 표시를 켜고 끌 수 있습니다.",
           "모바일에서는 상단 정보를 오른쪽으로 정렬합니다. 단축키가 숨겨져도 설정 버튼은 오른쪽에 유지됩니다.",
@@ -43,9 +39,9 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "업데이트 기록",
+        title: "업데이트",
         items: [
-          "새 탭 안에서 업데이트 기록을 읽고 브라우저 뒤로·앞으로가기를 사용할 수 있습니다. 기록을 열면 읽지 않음 알림 점이 사라집니다.",
+          "새 버전으로 업데이트한 뒤 처음 새 탭을 열면 한 번만 안내합니다. 안내의 버튼을 눌러 업데이트 기록을 볼 수 있습니다.",
         ],
       },
     ],
@@ -55,33 +51,31 @@ export const updatesMessages = {
       "북마크 폴더를 접거나 펼칠 수 있습니다.",
       "북마크를 저장할 때 하위 폴더도 선택할 수 있습니다.",
     ],
+    updated: "업데이트했어요",
+    viewUpdates: "업데이트 기록 보기",
   },
   en: {
-    unread: "Unread update history",
     latest: "Latest",
     currentSections: [
       {
-        title: "Bookmark layout and display",
+        title: "Bookmarks",
         items: [
           "Arrange folders in rows and resizable columns, resize folder heights, and double-click a resize handle to reset it.",
           "Choose list or grid view, icon style, titles and domain visibility for each folder. Grid tiles are more compact.",
           "Keep folders collapsed after reloading or opening a new tab. Dropping an item or folder onto itself keeps it in place.",
-        ],
-      },
-      {
-        title: "Editing and saving",
-        items: [
           "Edit with undo, redo, save and cancel. Close an add form by moving to another control.",
           "Adding the same address to the same folder shows a notification instead of creating a duplicate, including bookmarks not yet saved in edit mode.",
           "Bookmark input and save errors appear below the fields without clearing your entries. Repeated submissions are blocked while saving, and location searches distinguish loading from errors.",
+          "Use the table of contents to navigate to folders and reveal their names on hover or keyboard focus. A clicked item stays highlighted until you manually scroll. The destination folder outline fades after a short delay while the table-of-contents selection and keyboard focus remain.",
+          "Fixed invisible add-column areas intercepting drag handles in multi-column layouts.",
         ],
       },
       {
         title: "Search and navigation",
         items: [
           "Find bookmarks with search suggestions and choose Google, Bing, DuckDuckGo or Brave.",
-          "Use the table of contents to navigate to folders and reveal their names on hover or keyboard focus. A clicked item stays highlighted until you manually scroll.",
           "Navigate bookmarks with arrow keys, focus search with /, and enter editing with E. Escape leaves search focus and opens settings when idle. Editing restores focus, with improved screen-reader guidance.",
+          "Use browser back and forward navigation in settings detail screens and update history.",
         ],
       },
       {
@@ -91,7 +85,7 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "Display settings",
+        title: "Settings",
         items: [
           "Set heading and content fonts separately, adjust content width, and choose from five languages. Toggle folder dividers and keyboard shortcuts in Layout.",
           "Keep the header right-aligned on mobile and the settings button on the right when shortcuts are hidden.",
@@ -100,9 +94,9 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "Update history",
+        title: "Updates",
         items: [
-          "Read update history without leaving the new tab and navigate with browser Back and Forward. Unread dots disappear after opening the history.",
+          "After a version update, a one-time message appears when you first open a new tab. Use its button to read the update history.",
         ],
       },
     ],
@@ -112,33 +106,31 @@ export const updatesMessages = {
       "Bookmark folders can expand and collapse.",
       "Choose nested folders when saving a bookmark.",
     ],
+    updated: "Updated",
+    viewUpdates: "View update history",
   },
   ja: {
-    unread: "未読の更新履歴",
     latest: "最新",
     currentSections: [
       {
-        title: "ブックマークの配置と表示",
+        title: "ブックマーク",
         items: [
           "フォルダを複数の行と列に配置し、列幅とフォルダの高さを調整できます。ハンドルをダブルクリックするとサイズをリセットできます。",
           "フォルダごとにリスト・グリッド表示、アイコン、タイトル、ドメイン表示を選べます。グリッドのアイコンと項目をコンパクトにしました。",
           "再読み込みや新しいタブでもフォルダの折りたたみ状態を保持します。元の位置にドロップしても順序は変わりません。",
-        ],
-      },
-      {
-        title: "編集と保存",
-        items: [
           "編集モードで元に戻す・やり直す・保存・キャンセルを使えます。追加フォームは別の場所をクリックすると閉じます。",
           "同じフォルダーに同じアドレスを追加すると、重複して保存せず通知します。編集モードで未保存のブックマークも確認します。",
           "ブックマークの入力・保存エラーを入力欄の下に表示し、入力内容を保持します。保存中の連続送信を防ぎ、場所の検索では読み込み中とエラーを区別します。",
+          "目次からフォルダーへ移動し、ホバーやキーボードフォーカスで名前を確認できます。クリックした項目は、手動でスクロールするまで強調表示を保持します。 移動先フォルダーの枠線は少し経つと消えます。目次の選択とキーボードフォーカスは維持されます。",
+          "複数列の配置で、見えない列追加領域がドラッグハンドルの操作を妨げる問題を修正しました。",
         ],
       },
       {
         title: "検索と移動",
         items: [
           "検索候補からブックマークを探し、Google・Bing・DuckDuckGo・Braveを選べます。",
-          "目次からフォルダーへ移動し、ホバーやキーボードフォーカスで名前を確認できます。クリックした項目は、手動でスクロールするまで強調表示を保持します。",
           "矢印キーでブックマーク間を移動し、/で検索、Eで編集を開始できます。Escapeで検索のフォーカスを外し、操作中でなければ設定を開けます。編集後のフォーカス復帰とスクリーンリーダー向けの案内も改善しました。",
+          "設定の詳細画面と更新履歴で、ブラウザーの戻る・進むを使えます。",
         ],
       },
       {
@@ -148,7 +140,7 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "画面設定",
+        title: "設定",
         items: [
           "見出しと本文のフォント、コンテンツ幅、5つの表示言語を設定できます。レイアウトでフォルダの区切り線とショートカット表示を切り替えられます。",
           "モバイルでは上部の情報を右揃えにします。ショートカットを非表示にしても設定ボタンは右側に残ります。",
@@ -157,10 +149,8 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "更新履歴",
-        items: [
-          "新しいタブ内で更新履歴を読み、ブラウザの戻る・進むを使えます。履歴を開くと未読の通知マークが消えます。",
-        ],
+        title: "アップデート",
+        items: ["アップデート後、初めて新しいタブを開くと一度だけお知らせします。ボタンから更新履歴を確認できます。"],
       },
     ],
     releasedItems: [
@@ -169,33 +159,31 @@ export const updatesMessages = {
       "ブックマークフォルダを開閉できるようになりました。",
       "保存先として子フォルダも選べるようになりました。",
     ],
+    updated: "アップデートしました",
+    viewUpdates: "更新履歴を見る",
   },
   es: {
-    unread: "Historial de actualizaciones sin leer",
     latest: "Más reciente",
     currentSections: [
       {
-        title: "Diseño y visualización de marcadores",
+        title: "Marcadores",
         items: [
           "Organiza carpetas en filas y columnas ajustables y cambia su altura. Haz doble clic en un control de tamaño para restablecerlo.",
           "Elige lista o cuadrícula, iconos, títulos y dominios por carpeta. Las tarjetas de la cuadrícula son más compactas.",
           "Las carpetas contraídas se mantienen así al recargar o abrir otra pestaña. Soltar un elemento sobre sí mismo conserva su posición.",
-        ],
-      },
-      {
-        title: "Edición y guardado",
-        items: [
           "Edita con Deshacer, Rehacer, Guardar y Cancelar. El formulario de añadir se cierra al pulsar en otro control.",
           "Al añadir una dirección que ya existe en la misma carpeta, se muestra una notificación en lugar de duplicarla. También se comprueban los marcadores pendientes de guardar en el modo de edición.",
           "Los errores de entrada y guardado aparecen debajo de los campos sin borrar los datos. Se bloquean los envíos repetidos durante el guardado y se distinguen los estados de carga y error al buscar ubicaciones.",
+          "Usa el índice para ir a una carpeta y ver su nombre al pasar el cursor o enfocarla con el teclado. El elemento elegido permanece resaltado hasta que te desplazas manualmente. El contorno de la carpeta de destino desaparece tras un breve intervalo; la selección del índice y el foco del teclado se mantienen.",
+          "Se corrigieron las áreas invisibles para añadir columnas que interceptaban los controles de arrastre en diseños de varias columnas.",
         ],
       },
       {
         title: "Búsqueda y navegación",
         items: [
           "Busca marcadores en las sugerencias y elige Google, Bing, DuckDuckGo o Brave.",
-          "Usa el índice para ir a una carpeta y ver su nombre al pasar el cursor o enfocarla con el teclado. El elemento elegido permanece resaltado hasta que te desplazas manualmente.",
           "Usa las flechas para moverte entre marcadores, / para buscar y E para editar. Escape quita el foco de la búsqueda y abre los ajustes cuando no hay otra acción en curso. Se ha mejorado la recuperación del foco y la información para lectores de pantalla.",
+          "Usa los botones de atrás y adelante del navegador en los detalles de ajustes y el historial de actualizaciones.",
         ],
       },
       {
@@ -205,7 +193,7 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "Ajustes de pantalla",
+        title: "Ajustes",
         items: [
           "Configura fuentes distintas para títulos y contenido, ajusta el ancho y elige entre cinco idiomas. Activa separadores y atajos en Diseño.",
           "La cabecera se alinea a la derecha en móviles. El botón de ajustes permanece a la derecha cuando se ocultan los atajos.",
@@ -214,9 +202,9 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "Historial de actualizaciones",
+        title: "Actualizaciones",
         items: [
-          "Lee el historial dentro de la nueva pestaña y usa Atrás y Adelante. Los indicadores de novedades desaparecen al abrir el historial.",
+          "Tras actualizar, verás un aviso una sola vez al abrir una pestaña nueva. Su botón abre el historial de actualizaciones.",
         ],
       },
     ],
@@ -226,33 +214,31 @@ export const updatesMessages = {
       "Las carpetas de marcadores se pueden expandir y contraer.",
       "Puedes elegir subcarpetas al guardar un marcador.",
     ],
+    updated: "Se ha actualizado",
+    viewUpdates: "Ver historial de actualizaciones",
   },
   zh: {
-    unread: "未读更新记录",
     latest: "最新",
     currentSections: [
       {
-        title: "书签布局与显示",
+        title: "书签",
         items: [
           "将文件夹排列为多行多列，并调整列宽和文件夹高度。双击调整手柄可恢复默认尺寸。",
           "为每个文件夹选择列表或网格视图、图标、标题和域名显示。网格图标和项目布局更加紧凑。",
           "刷新或打开新标签页后保留文件夹的折叠状态。将书签或文件夹放回原位不会改变顺序。",
-        ],
-      },
-      {
-        title: "编辑与保存",
-        items: [
           "编辑模式支持撤销、重做、保存和取消。点击其他位置会关闭添加表单。",
           "向同一文件夹添加相同网址时，会显示通知而不重复保存。编辑模式中尚未保存的书签也会纳入检查。",
           "书签输入和保存错误显示在输入框下方，已输入内容会保留。保存期间会阻止重复提交，位置搜索也会区分加载状态和错误。",
+          "通过目录跳转到文件夹，悬停或使用键盘聚焦时可查看文件夹名称。点击的目录项会保持高亮，直到手动滚动。 目标文件夹的边框会稍后淡出，目录选中状态和键盘焦点保持不变。",
+          "修复了多列布局中不可见的添加列区域阻挡拖动手柄操作的问题。",
         ],
       },
       {
         title: "搜索与导航",
         items: [
           "通过搜索建议查找书签，并选择 Google、Bing、DuckDuckGo 或 Brave。",
-          "通过目录跳转到文件夹，悬停或使用键盘聚焦时可查看文件夹名称。点击的目录项会保持高亮，直到手动滚动。",
           "使用方向键在书签间移动，按 / 搜索，按 E 编辑。Escape 可取消搜索焦点，空闲时可打开设置。还改进了编辑后的焦点恢复和屏幕阅读器提示。",
+          "在设置详情和更新记录中，可以使用浏览器的后退和前进功能。",
         ],
       },
       {
@@ -260,7 +246,7 @@ export const updatesMessages = {
         items: ["通过城市搜索或当前位置查看天气。可选择摄氏或华氏，以及是否显示城市名。缓存天气数据以减少重复请求。"],
       },
       {
-        title: "显示设置",
+        title: "设置",
         items: [
           "分别设置标题和正文的字体，调整内容宽度，并从五种界面语言中选择。在布局中切换文件夹分隔线和快捷键显示。",
           "在手机上将顶部信息右对齐。隐藏快捷键时，设置按钮仍保留在右侧。",
@@ -269,8 +255,8 @@ export const updatesMessages = {
         ],
       },
       {
-        title: "更新记录",
-        items: ["在新标签页内阅读更新记录，并使用浏览器的后退和前进。打开记录后未读提示点会消失。"],
+        title: "更新",
+        items: ["版本更新后，首次打开新标签页时会显示一次提示。点击提示中的按钮即可查看更新记录。"],
       },
     ],
     releasedItems: [
@@ -279,5 +265,7 @@ export const updatesMessages = {
       "书签文件夹可以展开和折叠。",
       "保存书签时可以选择子文件夹。",
     ],
+    updated: "已更新",
+    viewUpdates: "查看更新记录",
   },
-} as const;
+};

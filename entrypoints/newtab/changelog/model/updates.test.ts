@@ -1,21 +1,18 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
-import { LATEST_UPDATE_VERSION, lastReadUpdateStorage, markUpdatesRead, useUnreadUpdates } from "./updates";
+import { browser } from "#imports";
 
-test("reading updates clears both notices and persists across mounts", async () => {
-  const first = renderHook(useUnreadUpdates);
-  const second = renderHook(useUnreadUpdates);
-  await waitFor(() => expect(first.result.current).toBe(true));
-  await act(markUpdatesRead);
-  await waitFor(() => {
-    expect(first.result.current).toBe(false);
-    expect(second.result.current).toBe(false);
-  });
-  expect(await lastReadUpdateStorage.getValue()).toBe(LATEST_UPDATE_VERSION);
-  first.unmount();
-  const reopened = renderHook(useUnreadUpdates);
-  await waitFor(() => expect(reopened.result.current).toBe(false));
-  await act(() => lastReadUpdateStorage.setValue("1.1.3"));
-  await waitFor(() => expect(reopened.result.current).toBe(true));
+import { scheduleUpdateAnnouncement, claimUpdateAnnouncement } from "../../../background/update-announcement";
+
+test("first installation stays quiet", async () => {
+  await scheduleUpdateAnnouncement("install");
+  expect(await claimUpdateAnnouncement()).toBeNull();
+});
+test("a version update is announced only once", async () => {
+  vi.spyOn(browser.runtime, "getManifest").mockReturnValue({ version: "1.2.0", manifest_version: 3, name: "Min" });
+  await scheduleUpdateAnnouncement("update", "1.1.3");
+  expect(await claimUpdateAnnouncement()).toBe("1.2.0");
+  expect(await claimUpdateAnnouncement()).toBeNull();
+  await scheduleUpdateAnnouncement("update", "1.2.0");
+  expect(await claimUpdateAnnouncement()).toBeNull();
 });

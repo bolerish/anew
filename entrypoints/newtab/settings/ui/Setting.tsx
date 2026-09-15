@@ -22,8 +22,8 @@ import { useStack } from "~shared/ui/stack/useStack";
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "~shared/ui/tooltip";
 
 import { version } from "../../../../package.json";
+import { useUpdateAnnouncement } from "../../changelog/model/useUpdateAnnouncement";
 import { useUpdatesPage } from "../../changelog/model/useUpdatesPage";
-import { UpdateNotice } from "../../changelog/ui/UpdateNotice";
 import { WeatherSettings } from "../../weather/ui/WeatherSettings";
 import { CornerRadiusField } from "../appearance/ui/CornerRadius";
 import { FontField } from "../appearance/ui/FontField";
@@ -152,36 +152,56 @@ type SettingProps = {
 
 export function Setting({ open, onOpenChange, xstyle }: SettingProps) {
   const UI_LANGUAGE = useLanguage();
+  const updates = useUpdatesPage();
+  useUpdateAnnouncement(updates.open);
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} swipeDirection="right" modal={false} overlay="none">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <DrawerTrigger
-                aria-label={UI_LANGUAGE.settings.settings}
-                render={
-                  <Button data-settings-trigger="" variant="outline" size="icon-sm" xstyle={xstyle}>
-                    <GearSixIcon aria-hidden="true" />
-                    <UpdateNotice floating />
-                  </Button>
-                }
-              />
-            }
-          />
-          <TooltipContent>{UI_LANGUAGE.settings.settings}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DrawerContent xstyle={styles.content}>
-        <Stack>
-          <Screens />
-        </Stack>
-      </DrawerContent>
-    </Drawer>
+    <>
+      <Drawer open={open} onOpenChange={onOpenChange} swipeDirection="right" modal={false} overlay="none">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <DrawerTrigger
+                  aria-label={UI_LANGUAGE.settings.settings}
+                  render={
+                    <Button data-settings-trigger="" variant="outline" size="icon-sm" xstyle={xstyle}>
+                      <GearSixIcon aria-hidden="true" />
+                    </Button>
+                  }
+                />
+              }
+            />
+            <TooltipContent>{UI_LANGUAGE.settings.settings}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <DrawerContent xstyle={styles.content}>
+          <Stack>
+            <Screens updates={updates} />
+          </Stack>
+        </DrawerContent>
+      </Drawer>
+      <Dialog
+        open={updates.isOpen}
+        onOpenChange={(open) => {
+          if (!open) updates.close();
+        }}
+      >
+        <DialogContent xstyle={styles.reader} showCloseButton={false}>
+          <div {...stylex.props(styles.hiddenTitle)}>
+            <DialogTitle>{UI_LANGUAGE.settings.updates}</DialogTitle>
+          </div>
+          <Suspense fallback={<output>{UI_LANGUAGE.settings.updates}</output>}>
+            <UpdatesPage onBack={updates.close} />
+          </Suspense>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
-function Screens() {
+type UpdatesNavigation = ReturnType<typeof useUpdatesPage>;
+
+function Screens({ updates }: { updates: UpdatesNavigation }) {
   const UI_LANGUAGE = useLanguage();
   const stack = useStack<Record<"home" | SettingsPage, Record<string, never>>>({
     id: "settings-stack",
@@ -256,7 +276,7 @@ function Screens() {
 
       <Separator />
       <stack.Render
-        home={() => <SettingsHome onNavigate={navigateSettings} />}
+        home={() => <SettingsHome onNavigate={navigateSettings} updates={updates} />}
         dateTime={() => (
           <div {...stylex.props(styles.home)}>
             <Date />
@@ -282,10 +302,15 @@ function Screens() {
   );
 }
 
-function SettingsHome({ onNavigate }: { onNavigate: (page: SettingsPage) => void }) {
+function SettingsHome({
+  onNavigate,
+  updates,
+}: {
+  onNavigate: (page: SettingsPage) => void;
+  updates: UpdatesNavigation;
+}) {
   const weatherLabel = weatherMessages[usePreferences().language].title;
   const { settings: labels, search } = useLanguage();
-  const updates = useUpdatesPage();
 
   const sections: { title: string; icon: ReactNode; items: [SettingsPage, string][] }[] = [
     {
@@ -339,28 +364,13 @@ function SettingsHome({ onNavigate }: { onNavigate: (page: SettingsPage) => void
           </div>
         </section>
       ))}
-      <Dialog
-        open={updates.isOpen}
-        onOpenChange={(open) => {
-          if (!open) updates.close();
-        }}
-      >
-        <DialogContent xstyle={styles.reader} showCloseButton={false}>
-          <div {...stylex.props(styles.hiddenTitle)}>
-            <DialogTitle>{labels.updates}</DialogTitle>
-          </div>
-          <Suspense fallback={<output>{labels.updates}</output>}>
-            <UpdatesPage onBack={updates.close} />
-          </Suspense>
-        </DialogContent>
-      </Dialog>
+
       <Separator />
       <div {...stylex.props(styles.navigationList)}>
         <Button type="button" variant="ghost" align="space-between" xstyle={styles.navigation} onClick={updates.open}>
           <span {...stylex.props(styles.linkLabel)}>
             {labels.updates}
             <Badge variant="secondary">{version}</Badge>
-            <UpdateNotice />
           </span>
           <CaretRightIcon aria-hidden="true" />
         </Button>

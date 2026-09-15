@@ -1,6 +1,5 @@
 import { CaretLeftIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
-import { useEffect } from "react";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
 import { updatesMessages } from "~shared/locales/updates";
 import { colorVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
@@ -16,7 +15,7 @@ import {
 } from "~shared/ui/timeline";
 
 import { contentLayout } from "../../layout.stylex";
-import { LATEST_UPDATE_VERSION, markUpdatesRead } from "../model/updates";
+import { getUpdateEntries } from "../model/updates";
 const styles = stylex.create({
   page: {
     flexShrink: 0,
@@ -59,17 +58,10 @@ const styles = stylex.create({
   text: { whiteSpace: "pre-wrap", overflowWrap: "anywhere", lineHeight: typographyVars.lineHeightNormal },
 });
 export function UpdatesPage({ onBack }: { onBack?: () => void }) {
-  useEffect(() => {
-    void markUpdatesRead();
-  }, []);
   const { width, language } = usePreferences();
   const copy = updatesMessages[language];
-  const currentReleaseDate = new Intl.DateTimeFormat(language, { dateStyle: "long", timeZone: "UTC" }).format(
-    new Date("2026-09-15T00:00:00Z"),
-  );
-  const releaseDate = new Intl.DateTimeFormat(language, { dateStyle: "long", timeZone: "UTC" }).format(
-    new Date("2026-08-25T00:00:00Z"),
-  );
+  const entries = getUpdateEntries(language);
+  const dateFormat = new Intl.DateTimeFormat(language, { dateStyle: "long", timeZone: "UTC" });
   const { settings: labels } = useLanguage();
   return (
     <div {...stylex.props(styles.page, contentLayout.page, contentLayout.width(width))}>
@@ -90,44 +82,32 @@ export function UpdatesPage({ onBack }: { onBack?: () => void }) {
       </header>
       <div {...stylex.props(styles.content)}>
         <Timeline>
-          <TimelineItem>
-            <TimelineIndicator />
-            <TimelineContent>
-              <TimelineTitle>
-                <div {...stylex.props(styles.version)}>
-                  <h2 {...stylex.props(styles.sectionTitle)}>{LATEST_UPDATE_VERSION}</h2>
-                  <Badge variant="primary">{copy.latest}</Badge>
-                </div>
-              </TimelineTitle>
-              <TimelineTime dateTime="2026-09-15">{currentReleaseDate}</TimelineTime>
-              {copy.currentSections.map((section) => (
-                <section key={section.title} {...stylex.props(styles.releaseSection)}>
-                  <h3 {...stylex.props(styles.releaseHeading)}>{section.title}</h3>
-                  <ul {...stylex.props(styles.list)}>
-                    {section.items.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </section>
-              ))}
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineIndicator />
-            <TimelineContent>
-              <TimelineTitle>
-                <div {...stylex.props(styles.version)}>
-                  <h2 {...stylex.props(styles.sectionTitle)}>1.1.3</h2>
-                </div>
-              </TimelineTitle>
-              <TimelineTime dateTime="2026-08-25">{releaseDate}</TimelineTime>
-              <ul {...stylex.props(styles.list)}>
-                {copy.releasedItems.map((item) => (
-                  <li key={item}>{item}</li>
+          {entries.map((entry, index) => (
+            <TimelineItem key={entry.version}>
+              <TimelineIndicator />
+              <TimelineContent>
+                <TimelineTitle>
+                  <div {...stylex.props(styles.version)}>
+                    <h2 {...stylex.props(styles.sectionTitle)}>{entry.version}</h2>
+                    {index === 0 ? <Badge variant="primary">{copy.latest}</Badge> : null}
+                  </div>
+                </TimelineTitle>
+                <TimelineTime dateTime={entry.date}>
+                  {dateFormat.format(new Date(`${entry.date}T00:00:00Z`))}
+                </TimelineTime>
+                {entry.sections.map((section) => (
+                  <div key={section.title} {...stylex.props(styles.releaseSection)}>
+                    {section.title ? <h3 {...stylex.props(styles.releaseHeading)}>{section.title}</h3> : null}
+                    <ul {...stylex.props(styles.list)}>
+                      {section.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
-              </ul>
-            </TimelineContent>
-          </TimelineItem>
+              </TimelineContent>
+            </TimelineItem>
+          ))}
         </Timeline>
       </div>
     </div>
