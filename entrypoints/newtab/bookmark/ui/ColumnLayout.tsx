@@ -41,6 +41,7 @@ const styles = stylex.create({
   },
   columnIndicator: { position: "absolute", inset: 0, pointerEvents: "none", opacity: 0 },
   indicatorActive: { opacity: 1 },
+  inactiveDropArea: { pointerEvents: "none" },
 });
 
 export function ColumnLayout({
@@ -196,7 +197,15 @@ function Column({
   children: ReactNode;
 }) {
   const labels = useLanguage().settings;
-  const { ref, active } = useColumnDrop({ index, layout, sourceId, editable, newColumn, newRow, row });
+  const { ref, active, isFolderDragging } = useColumnDrop({
+    index,
+    layout,
+    sourceId,
+    editable,
+    newColumn,
+    newRow,
+    row,
+  });
   let label: string | undefined;
   if (newRow) label = labels.newRow;
   else if (newColumn) label = labels.newColumn;
@@ -205,7 +214,12 @@ function Column({
       ref={ref}
       data-bookmark-column={newColumn || newRow ? undefined : index}
       aria-label={label}
-      {...stylex.props(styles.column, newColumn && styles.newColumn, newRow && styles.newRow)}
+      {...stylex.props(
+        styles.column,
+        newColumn && styles.newColumn,
+        newRow && styles.newRow,
+        (newColumn || newRow) && !isFolderDragging && styles.inactiveDropArea,
+      )}
     >
       {newColumn || newRow ? (
         <div {...stylex.props(styles.columnIndicator, active && styles.indicatorActive)}>

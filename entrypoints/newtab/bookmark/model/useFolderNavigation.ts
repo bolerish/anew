@@ -3,11 +3,22 @@ import { useEffect, useRef, useState } from "react";
 import { resolveActiveFolder } from "../lib/active-folder";
 import type { BookmarkFolder } from "./types";
 
+const FOLDER_HIGHLIGHT_DURATION_MS = 1500;
+
 /** Owns scroll tracking and explicit table-of-contents navigation. */
 export function useFolderNavigation(folders: readonly BookmarkFolder[]) {
   const [active, setActive] = useState<string | undefined>(folders[0]?.id);
   const selectedFolder = useRef(folders[0]?.id);
   const navigating = useRef(false);
+  const highlightTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const highlightedFolder = useRef<HTMLElement | null>(null);
+  useEffect(
+    () => () => {
+      clearTimeout(highlightTimer.current);
+      if (highlightedFolder.current) delete highlightedFolder.current.dataset.contentsFocus;
+    },
+    [],
+  );
   useEffect(() => {
     const scroll = document.querySelector<HTMLElement>("[data-bookmark-scroll]");
     if (!scroll) return;
@@ -72,7 +83,13 @@ export function useFolderNavigation(folders: readonly BookmarkFolder[]) {
           ? "instant"
           : "smooth",
     });
+    clearTimeout(highlightTimer.current);
+    if (highlightedFolder.current) delete highlightedFolder.current.dataset.contentsFocus;
+    highlightedFolder.current = target;
     if (target) {
+      highlightTimer.current = setTimeout(() => {
+        delete target.dataset.contentsFocus;
+      }, FOLDER_HIGHLIGHT_DURATION_MS);
       target.dataset.contentsFocus = "true";
       target.focus({ preventScroll: true });
     }

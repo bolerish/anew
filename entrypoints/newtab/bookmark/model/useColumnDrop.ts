@@ -1,4 +1,4 @@
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { dropTargetForElements, monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useRef, useState } from "react";
 
 import { moveLayoutFolder, moveLayoutFolderToRow, moveLayoutFolderBeside } from "../../settings/bookmark/lib/layout";
@@ -25,6 +25,15 @@ export function useColumnDrop({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
+  const [isFolderDragging, setIsFolderDragging] = useState(false);
+  useEffect(() => {
+    if (!editable || (!newColumn && !newRow)) return;
+    return monitorForElements({
+      canMonitor: ({ source }) => isFolderDragData(source.data),
+      onDragStart: () => setIsFolderDragging(true),
+      onDrop: () => setIsFolderDragging(false),
+    });
+  }, [editable, newColumn, newRow]);
   useEffect(() => {
     if (!editable || !ref.current) return;
     return dropTargetForElements({
@@ -80,5 +89,5 @@ export function useColumnDrop({
       },
     });
   }, [editable, index, layout, sourceId, row, newRow, newColumn]);
-  return { ref, active };
+  return { ref, active, isFolderDragging };
 }
