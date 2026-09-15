@@ -1,16 +1,45 @@
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { useEffect, useRef } from "react";
-import { UI_LANGUAGE } from "~shared/lib/language";
-import { Input } from "~shared/ui/input";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import { useEffect, useRef, useState } from "react";
+import { resolvePageIconUrl } from "~newtab/bookmark/lib/item-view";
+import type { BookmarkItem } from "~newtab/bookmark/model/types";
+import { isKeyboardShortcutTarget } from "~newtab/bookmark/model/useKeyboardNavigation";
+import { ItemIcon } from "~newtab/bookmark/ui/ItemIcon";
+import { EngineSelect } from "~newtab/settings/ui/Preferences";
+import { useLanguage } from "~shared/lib/preferences";
+import { spacingVars, colorVars, typographyVars } from "~shared/styles/semantic.stylex";
+import { Combobox, ComboboxInput, ComboboxPopup, ComboboxList, ComboboxItem, ComboboxEmpty } from "~shared/ui/combobox";
 import { Kbd } from "~shared/ui/kbd";
 
+const styles = stylex.create({
+  popup: {
+    width: "var(--anchor-width)",
+    minWidth: 0,
+    maxWidth: "var(--available-width)",
+    boxSizing: "border-box",
+  },
+  result: { display: "grid", minWidth: 0 },
+  url: {
+    color: colorVars.fgSecondary,
+    fontSize: typographyVars.fontSizeXs,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  form: { marginInline: spacingVars.space4, flexShrink: 0 },
+});
+
 type SearchBarProps = {
+  results: BookmarkItem[];
   onSearch: () => Promise<void>;
   onValueChange: (value: string) => void;
   value: string;
 };
 
-export function SearchBar({ onSearch, onValueChange, value }: SearchBarProps) {
+export function SearchBar({ onSearch, onValueChange, value, results }: SearchBarProps) {
+  const UI_LANGUAGE = useLanguage();
+  const [open, setOpen] = useState(false);
+  const highlighted = useRef<BookmarkItem | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -20,55 +49,95 @@ export function SearchBar({ onSearch, onValueChange, value }: SearchBarProps) {
       window.removeEventListener("keydown", handleSearchFocusShortcut);
     };
 
-    function handleSearchFocusShortcut(event: KeyboardEvent) {
-      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) {
+    function handleSearchFocusShortcut(e: KeyboardEvent) {
+      if (e.isComposing || e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) {
         return;
       }
 
-      if (isEditableTarget(event.target)) {
+      if (isKeyboardShortcutTarget(e.target, true)) {
         return;
       }
 
-      event.preventDefault();
+      e.preventDefault();
       inputRef.current?.focus();
     }
   }, []);
 
+  const handleKeyDown: NonNullable<ComponentProps<typeof ComboboxInput>["onKeyDown"]> = (e) => {
+    if (e.nativeEvent.isComposing) return;
+    if (e.key === "Enter" && !highlighted.current) {
+      e.preventDefault();
+      e.preventBaseUIHandler();
+      void onSearch();
+      return;
+    }
+    if (e.key !== "Escape") {
+      return;
+    }
+    e.preventDefault();
+    e.preventBaseUIHandler();
+    e.stopPropagation();
+    inputRef.current?.blur();
+    setOpen(false);
+    highlighted.current = undefined;
+    onValueChange("");
+  };
+
   return (
-    <form
-      className="sticky top-0 z-10 mx-2 h-8 shrink-0 px-3"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void onSearch();
+    <Combobox<BookmarkItem>
+      items={results}
+      filter={null}
+      autoHighlight={false}
+      highlightItemOnHover={false}
+      value={null}
+      inputValue={value}
+      onInputValueChange={(next) => {
+        onValueChange(next);
+        highlighted.current = undefined;
+      }}
+      open={open && Boolean(value.trim())}
+      onOpenChange={setOpen}
+      itemToStringLabel={(item) => item.title}
+      onItemHighlighted={(item) => {
+        highlighted.current = item;
+      }}
+      onValueChange={(item) => {
+        if (item) window.location.assign(item.url);
       }}
     >
-      <div className="group border-border focus-within:border-b-ring flex items-center justify-start border-b bg-transparent transition-colors">
-        <MagnifyingGlassIcon className="text-muted-foreground mr-1 ml-2 size-4" />
-        <Input
+      <form
+        {...stylex.props(styles.form)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          void onSearch();
+        }}
+      >
+        <ComboboxInput
+          variant="inline"
+          startAddon={<EngineSelect compact />}
+          endAddon={<Kbd>/</Kbd>}
           aria-label={UI_LANGUAGE.search.label}
           ref={inputRef}
-          value={value}
-          onChange={(event) => onValueChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key !== "Escape") {
-              return;
-            }
-            event.preventDefault();
-            onValueChange("");
-          }}
+          onKeyDown={handleKeyDown}
           placeholder={UI_LANGUAGE.search.placeholder}
-          className="text-mds-input-placeholder placeholder:text-mds-input-placeholder h-8 rounded-none border-0 bg-transparent focus-visible:ring-0 dark:bg-transparent"
         />
-        <Kbd className="outline-border text-muted-foreground mx-1 h-6 bg-transparent outline">/</Kbd>
-      </div>
-    </form>
+      </form>
+      <ComboboxPopup xstyle={styles.popup}>
+        <ComboboxEmpty>{UI_LANGUAGE.bookmark.noResults}</ComboboxEmpty>
+        <ComboboxList>
+          {(item: BookmarkItem) => (
+            <ComboboxItem key={item.id} value={item}>
+              <span aria-hidden="true">
+                <ItemIcon icon={resolvePageIconUrl(item.url)} label={item.title || item.url} />
+              </span>
+              <span {...stylex.props(styles.result)}>
+                <span>{item.title || item.url}</span>
+                <span {...stylex.props(styles.url)}>{item.url}</span>
+              </span>
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxPopup>
+    </Combobox>
   );
-}
-
-function isEditableTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) {
-    return false;
-  }
-
-  return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target.isContentEditable;
 }

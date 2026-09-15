@@ -1,21 +1,36 @@
 import React from "react";
-import { type CSSProperties } from "react";
-import "~shared/styles/global.css";
 import ReactDOM from "react-dom/client";
+import "~shared/styles/reset.css";
+import { loadInitialPreferences } from "~shared/lib/preferences";
+import "~shared/styles/global.css";
 
-import { ThemeProvider, Toaster } from "../shared/ui";
-import { SidebarProvider } from "../shared/ui/sidebar";
+import { initializeTheme } from "../shared/lib/theme";
 import App from "./App";
+import { loadInitialCollapsedFolders } from "./bookmark/model/expansion";
+import { loadInitialBookmarkLocation } from "./bookmark/model/useLocation";
+import { loadInitialBookmarkTree } from "./bookmark/model/useTree";
+import { loadInitialAppearanceSettings } from "./settings/appearance";
+import { loadInitialBookmarkSettings } from "./settings/bookmark/model/settings";
+import { loadInitialDateSettings, loadInitialTimeSettings } from "./settings/format";
+import { loadInitialShortcutSettings } from "./settings/shortcut";
 
-const SIDEBAR_STYLE = { "--sidebar-width": "min(calc(100vw - 3rem), 23rem)" };
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <ThemeProvider>
-      <SidebarProvider defaultOpen={false} style={SIDEBAR_STYLE as CSSProperties}>
-        <App />
-      </SidebarProvider>
-      <Toaster />
-    </ThemeProvider>
-  </React.StrictMode>,
-);
+async function main() {
+  await Promise.all([
+    initializeTheme(),
+    loadInitialBookmarkTree().catch(console.error),
+    loadInitialBookmarkLocation().catch(console.error),
+    loadInitialPreferences(),
+    loadInitialBookmarkSettings(),
+    loadInitialCollapsedFolders(),
+    loadInitialAppearanceSettings(),
+    loadInitialDateSettings(),
+    loadInitialTimeSettings(),
+    loadInitialShortcutSettings(),
+  ]);
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+}
+void main();
