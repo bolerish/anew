@@ -64,6 +64,8 @@ const styles = stylex.create({
   },
   drawerOpen: { paddingRight: { default: 0, "@media (min-width: 900px)": `min(75vw, ${sizeVars.contentSm})` } },
   root: {
+    containerType: "inline-size",
+    containerName: "newtab-content",
     marginInline: "auto",
     width: "100%",
     maxWidth: "72rem",
@@ -77,8 +79,8 @@ const styles = stylex.create({
     alignItems: "center",
     flexWrap: "wrap",
     gap: spacingVars.space3,
-    justifyContent: { default: "flex-start", "@media (width < 600px)": "flex-end" },
-    width: { default: "auto", "@media (width < 600px)": "100%" },
+    justifyContent: { default: "flex-start", "@container newtab-content (max-width: 500px)": "flex-end" },
+    width: { default: "auto", "@container newtab-content (max-width: 500px)": "100%" },
   },
   header: {
     display: "flex",
