@@ -1,15 +1,24 @@
 import { browser } from "wxt/browser";
+import { z } from "zod";
 
 import { resolveBookmarkNode } from "../lib/tree";
-import { normalizeUrl } from "../lib/url";
+import { bookmarkUrlSchema } from "../lib/url";
 import { getEditSession, performBookmarkCommand } from "../model/edit-session";
 
-export async function createItem(input: {
-  parentId: string;
-  title: string;
-  url: string;
-}): Promise<"created" | "duplicate"> {
-  const normalizedUrl = normalizeUrl(input.url);
+export const createItemSchema = z.object({
+  parentId: z.string().min(1),
+  title: z.string(),
+  url: bookmarkUrlSchema,
+});
+export const createFolderSchema = z.object({
+  index: z.number().int().nonnegative().optional(),
+  parentId: z.string().min(1),
+  title: z.string().trim().min(1),
+});
+
+export async function createItem(rawInput: z.input<typeof createItemSchema>): Promise<"created" | "duplicate"> {
+  const input = createItemSchema.parse(rawInput);
+  const normalizedUrl = input.url;
   const session = getEditSession();
   const children =
     session.active && session.draft
@@ -37,6 +46,6 @@ export async function createItem(input: {
   return "created";
 }
 
-export async function createFolder(input: { index?: number; parentId: string; title: string }): Promise<void> {
-  await performBookmarkCommand({ type: "create", id: crypto.randomUUID(), input });
+export async function createFolder(input: z.input<typeof createFolderSchema>): Promise<void> {
+  await performBookmarkCommand({ type: "create", id: crypto.randomUUID(), input: createFolderSchema.parse(input) });
 }

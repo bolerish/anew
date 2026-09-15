@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
 
 import { storage } from "#imports";
@@ -53,12 +54,14 @@ export async function updateTimeSettings(patch: Partial<TimeSettings>): Promise<
   }
 }
 
+const settingsSchema = z
+  .object({
+    showTime: z.boolean().catch(true),
+    showTimeSeconds: z.boolean().catch(false),
+    timeFormat: z.enum(["24h", "12h"]).catch("12h"),
+  })
+  .catch(() => ({ ...DEFAULT_TIME_SETTINGS }));
+
 function sanitizeTimeSettings(value: unknown): TimeSettings {
-  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-  return {
-    showTime: typeof settings.showTime === "boolean" ? settings.showTime : DEFAULT_TIME_SETTINGS.showTime,
-    showTimeSeconds:
-      typeof settings.showTimeSeconds === "boolean" ? settings.showTimeSeconds : DEFAULT_TIME_SETTINGS.showTimeSeconds,
-    timeFormat: settings.timeFormat === "24h" ? "24h" : DEFAULT_TIME_SETTINGS.timeFormat,
-  };
+  return settingsSchema.parse(value);
 }

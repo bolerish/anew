@@ -39,7 +39,8 @@
     "es-toolkit": "^1.52.0",
     "ky": "^2.1.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@rolldown/plugin-babel": "^0.2.3",

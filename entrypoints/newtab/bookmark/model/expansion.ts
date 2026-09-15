@@ -1,12 +1,15 @@
+import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
+import { validateStorage } from "~shared/lib/validated-storage";
 
 import { storage } from "#imports";
 
-export const collapsedFoldersStorage = storage.defineItem<Record<string, boolean>>(
-  "local:newtab:collapsed-folders:v1",
-  {
+const collapsedFoldersSchema = z.record(z.string(), z.boolean().catch(false)).catch({});
+export const collapsedFoldersStorage = validateStorage(
+  storage.defineItem<Record<string, boolean>>("local:newtab:collapsed-folders:v1", {
     fallback: {},
-  },
+  }),
+  collapsedFoldersSchema,
 );
 let initialCollapsedFolders: Record<string, boolean> = {};
 

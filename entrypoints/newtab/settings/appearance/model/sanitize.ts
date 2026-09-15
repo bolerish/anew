@@ -1,55 +1,49 @@
 import { clamp } from "es-toolkit";
+import { z } from "zod";
 
 import { CORNER_RADIUS, DEFAULT_APPEARANCE_SETTINGS, TEXT_SCALE } from "./constants";
-import type { AppearanceSettings, BookmarkIconDisplayMode } from "./types";
+import type { AppearanceSettings } from "./types";
 
 const LEGACY_FONT_SIZE = { min: 10, max: 16, base: 12.25 };
 
-export function sanitizeAppearanceSettings(value: unknown): AppearanceSettings {
-  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-  const bookmarkIconDisplayMode = settings.bookmarkIconDisplayMode;
+export const appearanceSchema = z.object({
+  bookmarkIconDisplayMode: z
+    .enum(["dash", "none", "original", "square"])
+    .catch(DEFAULT_APPEARANCE_SETTINGS.bookmarkIconDisplayMode),
+  cornerRadius: z
+    .number()
+    .transform((value) => clamp(value, CORNER_RADIUS.min, CORNER_RADIUS.max))
+    .catch(DEFAULT_APPEARANCE_SETTINGS.cornerRadius),
+  fontFamily: z.string().trim().catch(DEFAULT_APPEARANCE_SETTINGS.fontFamily),
+  headingFontFamily: z.string().trim().catch(DEFAULT_APPEARANCE_SETTINGS.fontFamily),
+  fontScale: z
+    .number()
+    .transform((value) => clamp(value, TEXT_SCALE.min, TEXT_SCALE.max))
+    .catch(TEXT_SCALE.default),
+  headingScale: z
+    .number()
+    .transform((value) => clamp(value, TEXT_SCALE.min, TEXT_SCALE.max))
+    .catch(TEXT_SCALE.default),
+});
+const storedAppearanceSchema = z.record(z.string(), z.unknown()).catch({});
+const legacyFontSizeSchema = z
+  .number()
+  .transform((value) => clamp(value, LEGACY_FONT_SIZE.min, LEGACY_FONT_SIZE.max) / LEGACY_FONT_SIZE.base);
 
-  return {
-    bookmarkIconDisplayMode: isBookmarkIconMode(bookmarkIconDisplayMode)
-      ? bookmarkIconDisplayMode
-      : DEFAULT_APPEARANCE_SETTINGS.bookmarkIconDisplayMode,
-    cornerRadius: sanitizeCornerRadius(settings.cornerRadius),
-    fontFamily: sanitizeFontFamily(settings.fontFamily),
-    headingFontFamily: sanitizeFontFamily(settings.headingFontFamily ?? settings.fontFamily),
-    fontScale: sanitizeTextScale(settings.fontScale, settings.fontSize),
-    headingScale: sanitizeTextScale(
+export function sanitizeAppearanceSettings(value: unknown): AppearanceSettings {
+  const settings = storedAppearanceSchema.parse(value);
+  return appearanceSchema.parse({
+    ...settings,
+    headingFontFamily: settings.headingFontFamily ?? settings.fontFamily,
+    fontScale: migrateTextScale(settings.fontScale, settings.fontSize),
+    headingScale: migrateTextScale(
       settings.headingScale,
       settings.dateTimeFontSize === undefined ? settings.fontSize : settings.dateTimeFontSize,
     ),
-  };
+  });
 }
 
-function sanitizeCornerRadius(value: unknown): number {
-  if (typeof value !== "number" || !Number.isFinite(value)) return DEFAULT_APPEARANCE_SETTINGS.cornerRadius;
-  return clamp(value, CORNER_RADIUS.min, CORNER_RADIUS.max);
-}
-
-function sanitizeFontFamily(value: unknown): string {
-  if (typeof value !== "string") return DEFAULT_APPEARANCE_SETTINGS.fontFamily;
-  return value.trim();
-}
-
-function sanitizeTextScale(value: unknown, legacySize: unknown): number {
-  // Legacy content used 0.875rem at 0.875 density (12.25px with a 16px root).
-  if (value === undefined && typeof legacySize === "number" && Number.isFinite(legacySize)) {
-    value = clamp(legacySize, LEGACY_FONT_SIZE.min, LEGACY_FONT_SIZE.max) / LEGACY_FONT_SIZE.base;
-  }
-  if (typeof value !== "number" || !Number.isFinite(value)) return TEXT_SCALE.default;
-  return clamp(value, TEXT_SCALE.min, TEXT_SCALE.max);
-}
-
-const BOOKMARK_ICON_MODES = [
-  "dash",
-  "none",
-  "original",
-  "square",
-] as const satisfies readonly BookmarkIconDisplayMode[];
-
-function isBookmarkIconMode(value: unknown): value is BookmarkIconDisplayMode {
-  return typeof value === "string" && (BOOKMARK_ICON_MODES as readonly string[]).includes(value);
+function migrateTextScale(value: unknown, legacySize: unknown): unknown {
+  if (value !== undefined) return value;
+  return legacyFontSizeSchema.safeParse(legacySize).data;
 }

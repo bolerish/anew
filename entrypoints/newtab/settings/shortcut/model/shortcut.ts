@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
 
 import { storage } from "#imports";
@@ -44,12 +45,12 @@ export async function updateShortcutSetting<SettingName extends keyof ShortcutSe
   }
 }
 
+const settingsSchema = z
+  .object({
+    showShortcutHints: z.boolean().catch(true),
+  })
+  .catch(() => ({ ...DEFAULT_SHORTCUT_SETTINGS }));
+
 function sanitizeShortcutSettings(value: unknown): ShortcutSettings {
-  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-  return {
-    showShortcutHints:
-      typeof settings.showShortcutHints === "boolean"
-        ? settings.showShortcutHints
-        : DEFAULT_SHORTCUT_SETTINGS.showShortcutHints,
-  };
+  return settingsSchema.parse(value);
 }

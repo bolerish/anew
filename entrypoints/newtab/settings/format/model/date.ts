@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
 
 import { storage } from "#imports";
@@ -41,7 +42,7 @@ const DATE_FORMATS = [
   "numeric-dot",
   "numeric-dash",
   "custom",
-] satisfies readonly DateFormat[];
+] as const satisfies readonly DateFormat[];
 
 export async function loadInitialDateSettings(): Promise<void> {
   initialDateSettings = sanitizeDateSettings(await dateStorage.getValue());
@@ -65,18 +66,14 @@ export async function updateDateSetting<SettingName extends keyof DateSettings>(
   }
 }
 
-function sanitizeDateSettings(value: unknown): DateSettings {
-  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-  return {
-    customDateFormat:
-      typeof settings.customDateFormat === "string"
-        ? settings.customDateFormat
-        : DEFAULT_DATE_SETTINGS.customDateFormat,
-    dateFormat: isDateFormat(settings.dateFormat) ? settings.dateFormat : DEFAULT_DATE_SETTINGS.dateFormat,
-    showDate: typeof settings.showDate === "boolean" ? settings.showDate : DEFAULT_DATE_SETTINGS.showDate,
-  };
-}
+const settingsSchema = z
+  .object({
+    customDateFormat: z.string().catch(DEFAULT_DATE_SETTINGS.customDateFormat),
+    dateFormat: z.enum(DATE_FORMATS).catch(DEFAULT_DATE_SETTINGS.dateFormat),
+    showDate: z.boolean().catch(true),
+  })
+  .catch(() => ({ ...DEFAULT_DATE_SETTINGS }));
 
-function isDateFormat(value: unknown): value is DateFormat {
-  return typeof value === "string" && DATE_FORMATS.includes(value as DateFormat);
+function sanitizeDateSettings(value: unknown): DateSettings {
+  return settingsSchema.parse(value);
 }

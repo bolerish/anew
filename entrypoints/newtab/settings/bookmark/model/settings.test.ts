@@ -147,3 +147,11 @@ test("invalid columns do not shift neighboring width and row metadata", () => {
   });
   assert.deepEqual(value.layouts.root, { columns: [["a"], ["b"]], widths: [2, 3], rows: [0, 1] });
 });
+
+test("drag payloads reject incomplete bookmark objects", () => {
+  assert.equal(dnd.isDragData({ kind: "item", item: {} }), false);
+  assert.equal(dnd.isDragData({ kind: "folder", folder: {} }), false);
+  const item = { id: "1", parentId: "0", title: "Site", url: "https://example.com" };
+  assert.equal(dnd.isDragData({ kind: "item", item }), true);
+  assert.equal(dnd.isDropData({ kind: "item", item, edge: "sideways" }), false);
+});

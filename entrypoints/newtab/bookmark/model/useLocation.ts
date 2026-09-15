@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
+import { z } from "zod";
+import { validateStorage } from "~shared/lib/validated-storage";
 
 import { storage } from "#imports";
 
 import { resolveLocationId } from "../lib/tree";
 import type { BookmarkLocation } from "./types";
 
-const bookmarkLocationStorage = storage.defineItem<string | null>("local:newtab:bookmark-source-id:v1", {
-  fallback: null,
-});
+const locationIdSchema = z.string().min(1).nullable().catch(null);
+const bookmarkLocationStorage = validateStorage(
+  storage.defineItem<string | null>("local:newtab:bookmark-source-id:v1", {
+    fallback: null,
+  }),
+  locationIdSchema,
+);
 
 type SelectedLocationState = {
   selectedLocationId: string | null;

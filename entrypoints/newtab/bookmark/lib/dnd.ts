@@ -1,15 +1,21 @@
 import type { ElementEventBasePayload } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { z } from "zod";
 
-import type { BookmarkFolder, BookmarkItem } from "../model/types";
+import { bookmarkFolderSchema, bookmarkItemSchema, type BookmarkFolder, type BookmarkItem } from "../model/types";
 
-export type DropEdge = "after" | "before";
-
-export type DragData = { kind: "folder"; folder: BookmarkFolder } | { kind: "item"; item: BookmarkItem };
-
-export type DropData =
-  | { edge?: DropEdge; kind: "folder"; folder: BookmarkFolder }
-  | { edge?: DropEdge; kind: "item"; item: BookmarkItem }
-  | { kind: "item-start"; parentId: string };
+const dropEdgeSchema = z.enum(["after", "before"]);
+const dropEdgeDataSchema = z.object({ edge: dropEdgeSchema });
+const folderDragSchema = z.object({ kind: z.literal("folder"), folder: bookmarkFolderSchema });
+export type DropEdge = z.output<typeof dropEdgeSchema>;
+const itemDragSchema = z.object({ kind: z.literal("item"), item: bookmarkItemSchema });
+export const dragDataSchema = z.discriminatedUnion("kind", [folderDragSchema, itemDragSchema]);
+export const dropDataSchema = z.discriminatedUnion("kind", [
+  folderDragSchema.extend({ edge: dropEdgeSchema.optional() }),
+  itemDragSchema.extend({ edge: dropEdgeSchema.optional() }),
+  z.object({ kind: z.literal("item-start"), parentId: z.string().min(1) }),
+]);
+export type DragData = z.output<typeof dragDataSchema>;
+export type DropData = z.output<typeof dropDataSchema>;
 
 type Drop = {
   dragged: DragData;
@@ -43,19 +49,7 @@ export function resolveDragData(value: unknown): DragData | null {
 }
 
 export function isDragData(value: unknown): value is DragData {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  if (value.kind === "folder") {
-    return isRecord(value.folder);
-  }
-
-  if (value.kind === "item") {
-    return isRecord(value.item);
-  }
-
-  return false;
+  return dragDataSchema.safeParse(value).success;
 }
 
 export function isItemDragData(value: unknown): value is Extract<DragData, { kind: "item" }> {
@@ -79,11 +73,7 @@ export function resolveHorizontalEdge(clientX: number, element: Element): DropEd
 }
 
 export function resolveDropEdge(value: unknown): DropEdge | null {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  return value.edge === "after" || value.edge === "before" ? value.edge : null;
+  return dropEdgeDataSchema.safeParse(value).data?.edge ?? null;
 }
 
 function resolveDropData(value: unknown): DropData | null {
@@ -91,31 +81,7 @@ function resolveDropData(value: unknown): DropData | null {
 }
 
 export function isDropData(value: unknown): value is DropData {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  if (value.kind === "item-start") {
-    return typeof value.parentId === "string";
-  }
-
-  if (value.kind === "folder") {
-    return isRecord(value.folder) && isOptionalDropEdge(value.edge);
-  }
-
-  if (value.kind === "item") {
-    return isRecord(value.item) && isOptionalDropEdge(value.edge);
-  }
-
-  return false;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object";
-}
-
-function isOptionalDropEdge(value: unknown): boolean {
-  return value === undefined || value === "after" || value === "before";
+  return dropDataSchema.safeParse(value).success;
 }
 
 export function computeItemInsertIndex(

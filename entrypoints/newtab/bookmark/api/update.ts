@@ -1,20 +1,25 @@
-import { normalizeUrl } from "../lib/url";
+import { z } from "zod";
+
+import { bookmarkUrlSchema } from "../lib/url";
 import { performBookmarkCommand } from "../model/edit-session";
 import { isRootBookmarkFolder, type BookmarkFolder, type BookmarkItem } from "../model/types";
 
+export const bookmarkTitleSchema = z.string().trim().min(1);
+export const updateItemSchema = z.object({ title: z.string(), url: bookmarkUrlSchema });
+
 export async function updateTitle(bookmarkId: string, title: string): Promise<void> {
-  await performBookmarkCommand({ type: "update", id: bookmarkId, input: { title } });
+  await performBookmarkCommand({ type: "update", id: bookmarkId, input: { title: bookmarkTitleSchema.parse(title) } });
 }
 
-export async function updateItem(item: BookmarkItem, input: { title: string; url: string }): Promise<void> {
-  const normalizedUrl = normalizeUrl(input.url);
+export async function updateItem(item: BookmarkItem, input: z.input<typeof updateItemSchema>): Promise<void> {
+  const validated = updateItemSchema.parse(input);
 
   await performBookmarkCommand({
     type: "update",
     id: item.id,
     input: {
-      title: input.title,
-      url: normalizedUrl,
+      title: validated.title,
+      url: validated.url,
     },
   });
 }

@@ -1,3 +1,4 @@
+import { z } from "zod";
 export type BookmarkTreeNode = {
   children?: BookmarkTreeNode[];
   id: string;
@@ -9,22 +10,23 @@ export type BookmarkTreeNode = {
 
 export const ROOT_BOOKMARK_ID = "0";
 
-export type BookmarkItem = {
-  bookmarkIndex?: number;
-  id: string;
-  parentId: string;
-  title: string;
-  url: string;
-};
-
-export type BookmarkFolder = {
-  bookmarkIndex?: number;
-  displayTitle: string;
-  id: string;
-  parentId?: string;
-  title: string;
-  items: BookmarkItem[];
-};
+export const bookmarkItemSchema = z.object({
+  bookmarkIndex: z.number().int().nonnegative().optional(),
+  id: z.string().min(1),
+  parentId: z.string().min(1),
+  title: z.string(),
+  url: z.string(),
+});
+export const bookmarkFolderSchema = z.object({
+  bookmarkIndex: z.number().int().nonnegative().optional(),
+  displayTitle: z.string(),
+  id: z.string().min(1),
+  parentId: z.string().optional(),
+  title: z.string(),
+  items: z.array(bookmarkItemSchema),
+});
+export type BookmarkItem = z.output<typeof bookmarkItemSchema>;
+export type BookmarkFolder = z.output<typeof bookmarkFolderSchema>;
 
 export type BookmarkLocation = {
   depth: number;

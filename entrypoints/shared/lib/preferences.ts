@@ -1,4 +1,5 @@
 import { clamp } from "es-toolkit";
+import { z } from "zod";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { notifyError } from "~shared/lib/notify-error";
 
@@ -42,28 +43,28 @@ export async function loadInitialPreferences() {
 export function getInitialPreferences() {
   return initialPreferences;
 }
+const contentWidthSchema = z
+  .union([
+    z.literal("narrow").transform(() => CONTENT_WIDTH.legacyNarrow),
+    z.literal("wide").transform(() => CONTENT_WIDTH.max),
+    z.number().transform((width) => clamp(width, CONTENT_WIDTH.min, CONTENT_WIDTH.max)),
+  ])
+  .catch(CONTENT_WIDTH.default);
+export const preferencesSchema = z
+  .object({
+    language: z.enum(["ko", "en", "zh", "ja", "es"]).catch(preferenceDefaults.language),
+    motion: z.enum(MOTION_MODES).catch(preferenceDefaults.motion),
+    engine: z.enum(SEARCH_ENGINES).catch(preferenceDefaults.engine),
+    engineDisplay: z.enum(ENGINE_DISPLAYS).catch(preferenceDefaults.engineDisplay),
+    searchEnabled: z.boolean().catch(true),
+    folderDividers: z.boolean().catch(false),
+    width: contentWidthSchema,
+  })
+  .catch(() => ({ ...preferenceDefaults }));
+
 /** Validate persisted settings and migrate the previous named width choices. */
 export function sanitizePreferences(value: unknown): Preferences {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return { ...preferenceDefaults };
-  const input = value as Record<string, unknown>;
-  const language = (Object.keys(languages) as Language[]).find((language) => language === input.language);
-  return {
-    language: language ?? preferenceDefaults.language,
-    motion: MOTION_MODES.find((mode) => mode === input.motion) ?? preferenceDefaults.motion,
-    engine: SEARCH_ENGINES.find((engine) => engine === input.engine) ?? preferenceDefaults.engine,
-    engineDisplay:
-      ENGINE_DISPLAYS.find((display) => display === input.engineDisplay) ?? preferenceDefaults.engineDisplay,
-    searchEnabled: input.searchEnabled !== false,
-    folderDividers: input.folderDividers === true,
-    width: sanitizeContentWidth(input.width),
-  };
-}
-
-function sanitizeContentWidth(value: unknown): number {
-  if (value === "narrow") return CONTENT_WIDTH.legacyNarrow;
-  if (value === "wide") return CONTENT_WIDTH.max;
-  if (typeof value !== "number" || !Number.isFinite(value)) return CONTENT_WIDTH.default;
-  return clamp(value, CONTENT_WIDTH.min, CONTENT_WIDTH.max);
+  return preferencesSchema.parse(value);
 }
 
 export async function updatePreference<K extends keyof Preferences>(key: K, value: Preferences[K]) {

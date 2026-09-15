@@ -1,5 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { useLayoutEffect, useState } from "react";
+import { z } from "zod";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { compactSizeTheme, compactSpacingTheme, compactTypographyTheme } from "~shared/styles/density.stylex";
 import { colorVars, typographyVars, radiusVars } from "~shared/styles/semantic.stylex";
@@ -24,7 +25,8 @@ const baseStyles = stylex.create({
   },
 });
 
-export type Theme = "dark" | "light" | "system";
+export const themeSchema = z.enum(["dark", "light", "system"]);
+export type Theme = z.output<typeof themeSchema>;
 
 const THEME_STORAGE_KEY = "newtab:theme-mode";
 const THEME_CACHE_KEY = `${THEME_STORAGE_KEY}:cache`;
@@ -88,7 +90,7 @@ function getCachedTheme(defaultTheme: Theme): Theme {
 }
 
 function sanitizeTheme(theme: unknown, defaultTheme: Theme): Theme {
-  return theme === "dark" || theme === "light" || theme === "system" ? theme : defaultTheme;
+  return themeSchema.safeParse(theme).data ?? defaultTheme;
 }
 
 function syncThemeStyles(theme: Theme, systemPrefersDark: boolean) {
