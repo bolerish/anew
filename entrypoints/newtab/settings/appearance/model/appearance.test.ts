@@ -42,3 +42,9 @@ test("invalid persisted appearance values fall back safely", () => {
   assert.equal(sanitizeAppearanceSettings(null).fontScale, 1);
   assert.equal(sanitizeAppearanceSettings("invalid").headingFontFamily, "");
 });
+
+test("legacy square and current dot settings both resolve to dot", () => {
+  for (const bookmarkIconDisplayMode of ["square", "dot"]) {
+    assert.equal(sanitizeAppearanceSettings({ bookmarkIconDisplayMode }).bookmarkIconDisplayMode, "dot");
+  }
+});

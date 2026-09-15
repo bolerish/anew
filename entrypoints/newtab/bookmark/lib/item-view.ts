@@ -2,7 +2,7 @@ import { browser } from "wxt/browser";
 
 import type { BookmarkIconDisplayMode, BookmarkItem } from "../model/types";
 
-export type BookmarkIconMarker = "dash" | "square";
+export type BookmarkIconMarker = "dash" | "dot";
 
 export type BookmarkItemEntry = {
   item: BookmarkItem;
@@ -38,7 +38,7 @@ export function deriveBookmarkItemView(
 }
 
 function resolveIconMarker(bookmarkIconMode: BookmarkIconDisplayMode): BookmarkIconMarker | undefined {
-  if (bookmarkIconMode === "dash" || bookmarkIconMode === "square") {
+  if (bookmarkIconMode === "dash" || bookmarkIconMode === "dot") {
     return bookmarkIconMode;
   }
 

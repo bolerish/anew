@@ -155,3 +155,17 @@ test("drag payloads reject incomplete bookmark objects", () => {
   assert.equal(dnd.isDragData({ kind: "item", item }), true);
   assert.equal(dnd.isDropData({ kind: "item", item, edge: "sideways" }), false);
 });
+
+test("legacy square folder markers migrate without losing display settings", () => {
+  for (const icon of ["square", "dot"]) {
+    const result = settings.sanitizeBookmarkSettings({
+      folderDisplays: { folder: { icon, showTitle: true, showUrl: true, minHeight: 24 } },
+    });
+    assert.deepEqual(result.folderDisplays?.folder, {
+      icon: "dot",
+      showTitle: true,
+      showUrl: true,
+      minHeight: 24,
+    });
+  }
+});

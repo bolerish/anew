@@ -305,7 +305,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                 <DropdownMenuRadioGroup
                   value={display.icon}
                   onValueChange={(icon) => {
-                    if (icon === "original" || icon === "square" || icon === "dash" || icon === "none")
+                    if (icon === "original" || icon === "dot" || icon === "dash" || icon === "none")
                       void setFolderDisplay(folder.id, { ...display, icon });
                   }}
                 >
@@ -313,13 +313,13 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                   {(
                     [
                       ["original", UI_LANGUAGE.settings.websiteIcon, GlobeIcon],
-                      ["square", UI_LANGUAGE.settings.square, CircleIcon],
+                      ["dot", UI_LANGUAGE.settings.dot, CircleIcon],
                       ["dash", UI_LANGUAGE.settings.dash, MinusIcon],
                       ["none", UI_LANGUAGE.settings.none, null],
                     ] as const
                   ).map(([value, label, Icon]) => (
                     <DropdownMenuRadioItem key={value} value={value}>
-                      {Icon ? <Icon aria-hidden="true" weight={value === "square" ? "fill" : "regular"} /> : null}
+                      {Icon ? <Icon aria-hidden="true" weight={value === "dot" ? "fill" : "regular"} /> : null}
                       {label}
                     </DropdownMenuRadioItem>
                   ))}

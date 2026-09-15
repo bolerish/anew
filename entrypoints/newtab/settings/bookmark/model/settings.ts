@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { bookmarkIconDisplayModeSchema } from "~shared/config/appearance";
 import { notifyError } from "~shared/lib/notify-error";
 
 import { storage } from "#imports";
@@ -8,10 +9,9 @@ import { compactLayout } from "../lib/layout";
 export const MAX_FOLDER_HEIGHT_REM = 200;
 
 export const folderViewSchema = z.enum(["list", "icons"]);
-const folderIconSchema = z.enum(["original", "square", "dash", "none"]);
 export const folderDisplaySchema = z
   .object({
-    icon: folderIconSchema,
+    icon: bookmarkIconDisplayModeSchema,
     showTitle: z.boolean().catch(true),
     showUrl: z.boolean().catch(false),
     minHeight: z

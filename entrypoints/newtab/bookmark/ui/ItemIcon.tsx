@@ -41,7 +41,7 @@ const styles = stylex.create({
 type ItemIconProps = {
   icon: string | undefined;
   label: string;
-  marker?: "dash" | "square";
+  marker?: "dash" | "dot";
   size?: "default" | "grid";
 };
 
@@ -58,7 +58,7 @@ export function ItemIcon({ icon, label, marker, size = "default" }: ItemIconProp
   if (marker) {
     return (
       <span aria-hidden="true" {...stylex.props(styles.marker, size === "grid" && styles.gridIcon)}>
-        {marker === "square" ? <CircleIcon aria-hidden="true" weight="fill" {...stylex.props(styles.dot)} /> : "—"}
+        {marker === "dot" ? <CircleIcon aria-hidden="true" weight="fill" {...stylex.props(styles.dot)} /> : "—"}
       </span>
     );
   }

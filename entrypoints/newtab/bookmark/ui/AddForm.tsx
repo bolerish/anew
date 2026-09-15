@@ -87,7 +87,7 @@ export function AddForm({ form }: AddFormProps) {
                     <GlobeIcon {...stylex.props(styles.icon)} />
                   ) : (
                     <span>
-                      {bookmarkIconMode === "square" ? (
+                      {bookmarkIconMode === "dot" ? (
                         <CircleIcon aria-hidden="true" weight="fill" {...stylex.props(styles.dot)} />
                       ) : (
                         "—"

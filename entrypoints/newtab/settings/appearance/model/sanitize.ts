@@ -1,5 +1,6 @@
 import { clamp } from "es-toolkit";
 import { z } from "zod";
+import { bookmarkIconDisplayModeSchema } from "~shared/config/appearance";
 
 import { CORNER_RADIUS, DEFAULT_APPEARANCE_SETTINGS, TEXT_SCALE } from "./constants";
 import type { AppearanceSettings } from "./types";
@@ -7,9 +8,7 @@ import type { AppearanceSettings } from "./types";
 const LEGACY_FONT_SIZE = { min: 10, max: 16, base: 12.25 };
 
 export const appearanceSchema = z.object({
-  bookmarkIconDisplayMode: z
-    .enum(["dash", "none", "original", "square"])
-    .catch(DEFAULT_APPEARANCE_SETTINGS.bookmarkIconDisplayMode),
+  bookmarkIconDisplayMode: bookmarkIconDisplayModeSchema.catch(DEFAULT_APPEARANCE_SETTINGS.bookmarkIconDisplayMode),
   cornerRadius: z
     .number()
     .transform((value) => clamp(value, CORNER_RADIUS.min, CORNER_RADIUS.max))
