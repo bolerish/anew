@@ -11,9 +11,9 @@ const styles = stylex.create({
   root: { display: "flex", gap: spacingVars.space2, width: "100%" },
 
   label: {
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
-    color: "var(--settings-label-color, inherit)",
-    fontWeight: typographyVars.fontWeightRegular,
+    fontSize: `calc(${typographyVars.fontSizeMd} * var(--mds-heading-scale, 1))`,
+    color: colorVars.fgPrimary,
+    fontWeight: typographyVars.fontWeightMedium,
     cursor: "default",
   },
   description: {
