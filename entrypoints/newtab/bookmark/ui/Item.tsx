@@ -22,7 +22,13 @@ import {
 import { Button } from "~shared/ui/button";
 import { ButtonGroup } from "~shared/ui/button-group";
 import { ContentRow, ContentRowContent, ContentRowActions } from "~shared/ui/content-row";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "~shared/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "~shared/ui/dropdown-menu";
 import { Field, FieldError } from "~shared/ui/field";
 import { Input } from "~shared/ui/input";
 import { InputGroup } from "~shared/ui/input-group";
@@ -363,6 +369,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                     <PencilSimpleIcon aria-hidden="true" />
                     {UI_LANGUAGE.bookmark.edit}
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={deleteItem}>
                     <TrashSimpleIcon aria-hidden="true" />
                     {UI_LANGUAGE.bookmark.remove}

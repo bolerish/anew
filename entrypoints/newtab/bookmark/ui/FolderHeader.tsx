@@ -30,6 +30,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuGroup,
   DropdownMenuCheckboxItem,
@@ -50,6 +51,7 @@ import { SaveError } from "./SaveError";
 
 const styles = stylex.create({
   icon: { width: sizeVars.iconMd, height: sizeVars.iconMd },
+  dotPreview: { transform: "scale(0.25)" },
   menuIcon: { width: sizeVars.iconLg, height: sizeVars.iconLg },
   actions: {
     alignSelf: "center",
@@ -144,7 +146,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
   const canModify = !isRootBookmarkFolder(folder);
   const isEditing = editor.inlineEditingBookmark?.kind === "folder" && editor.inlineEditingBookmark.id === folder.id;
 
-  function openEditor(event: MouseEvent<HTMLButtonElement>) {
+  function openEditor(event: MouseEvent<HTMLElement>) {
     stopInteraction(event);
     editor.openInlineFolderEditor(folder);
   }
@@ -198,7 +200,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
             {folderToggle}
             <Input
               variant="inline"
-              aria-label={UI_LANGUAGE.bookmark.renameFolder}
+              aria-label={UI_LANGUAGE.bookmark.folderName}
               xstyle={styles.input}
               ref={titleInputRef}
               value={editor.inlineTitle}
@@ -254,28 +256,6 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
             </button>
           </div>
           <div {...stylex.props(styles.actions, styles.actionVisibility)}>
-            {canModify ? (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={UI_LANGUAGE.bookmark.renameFolder}
-                  title={UI_LANGUAGE.bookmark.renameFolder}
-                  onClick={openEditor}
-                >
-                  <PencilSimpleIcon {...stylex.props(styles.icon)} aria-hidden="true" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={UI_LANGUAGE.bookmark.removeFolder}
-                  title={UI_LANGUAGE.bookmark.removeFolder}
-                  onClick={deleteFolder}
-                >
-                  <TrashSimpleIcon {...stylex.props(styles.icon)} aria-hidden="true" />
-                </Button>
-              </>
-            ) : null}
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -285,6 +265,15 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                 }
               />
               <DropdownMenuContent>
+                {canModify ? (
+                  <>
+                    <DropdownMenuItem onClick={openEditor}>
+                      <PencilSimpleIcon aria-hidden="true" />
+                      {UI_LANGUAGE.bookmark.edit}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
                 <DropdownMenuRadioGroup
                   value={view}
                   onValueChange={(value) => {
@@ -319,7 +308,13 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                     ] as const
                   ).map(([value, label, Icon]) => (
                     <DropdownMenuRadioItem key={value} value={value}>
-                      {Icon ? <Icon aria-hidden="true" weight={value === "dot" ? "fill" : "regular"} /> : null}
+                      {Icon ? (
+                        <Icon
+                          aria-hidden="true"
+                          weight={value === "dot" ? "fill" : "regular"}
+                          {...stylex.props(value === "dot" && styles.dotPreview)}
+                        />
+                      ) : null}
                       {label}
                     </DropdownMenuRadioItem>
                   ))}
@@ -350,6 +345,15 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                         {UI_LANGUAGE.settings.showUrl}
                       </DropdownMenuCheckboxItem>
                     </DropdownMenuGroup>
+                  </>
+                ) : null}
+                {canModify ? (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={deleteFolder}>
+                      <TrashSimpleIcon aria-hidden="true" />
+                      {UI_LANGUAGE.bookmark.removeFolder}
+                    </DropdownMenuItem>
                   </>
                 ) : null}
               </DropdownMenuContent>
