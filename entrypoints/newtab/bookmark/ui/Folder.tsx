@@ -61,7 +61,7 @@ const styles = stylex.create({
     gap: 0,
     paddingInline: sizeVars.controlXs,
   },
-  dragging: { opacity: 0.2 },
+  draggingContent: { opacity: 0.2, filter: "blur(0.0625rem)" },
   accordion: { borderWidth: 0, borderRadius: 0, overflow: "visible" },
   item: { position: "relative", width: "100%", borderBottomWidth: 0 },
   divider: {
@@ -146,12 +146,15 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
         onBlur={(e) => {
           delete e.currentTarget.dataset.contentsFocus;
         }}
-        {...stylex.props(styles.root, sort.isDragSource && styles.dragging)}
+        {...stylex.props(styles.root)}
         ref={sort.ref}
       >
-        {sort.isDropTarget && sort.dropEdge ? <DropIndicator edge={sort.dropEdge} placement="outside" /> : null}
+        {sort.isDropTarget && sort.dropEdge ? (
+          <DropIndicator edge={sort.dropEdge} placement="outside" offset={sort.dropOffset} />
+        ) : null}
+        {sort.isSelfDrop ? <DropIndicator edge="before" placement="inside" /> : null}
         <Accordion
-          xstyle={styles.accordion}
+          xstyle={[styles.accordion, sort.isDragSource && styles.draggingContent]}
           value={expanded}
           onValueChange={(value) => void setFolderExpanded(folder.id, value.includes(folder.id))}
         >

@@ -16,6 +16,17 @@ type Drop = {
   target: DropData;
 };
 
+/** Whether the drag pointer is inside the original element, including its edges. */
+export function isPointerInsideElement(
+  element: Element,
+  { clientX, clientY }: { clientX: number; clientY: number },
+): boolean {
+  const bounds = element.getBoundingClientRect();
+  const isWithinHorizontalBounds = clientX >= bounds.left && clientX <= bounds.right;
+  const isWithinVerticalBounds = clientY >= bounds.top && clientY <= bounds.bottom;
+  return isWithinHorizontalBounds && isWithinVerticalBounds;
+}
+
 export function resolveDrop(e: ElementEventBasePayload): Drop | null {
   const dragged = resolveDragData(e.source.data);
   const target = resolveDropData(e.location.current.dropTargets[0]?.data);

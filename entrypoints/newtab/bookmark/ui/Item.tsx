@@ -99,7 +99,7 @@ const styles = stylex.create({
     transitionDuration: motionVars.durationFast,
   },
   root: { position: "relative", marginInlineStart: 0, marginInlineEnd: spacingVars.space4 },
-  dragging: { opacity: 0.2 },
+  draggingContent: { opacity: 0.2, filter: "blur(0.0625rem)" },
   row: {
     position: "relative",
     "--bookmark-actions-pointer-events": { default: "none", ":hover": "auto", ":focus-within": "auto" },
@@ -224,7 +224,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
     await editor.updateCurrentInlineEditor();
   }
 
-  const { handleRef, isDragSource, setItemElement } = useItemDnd({
+  const { handleRef, isDragSource, isSelfDrop, setItemElement } = useItemDnd({
     horizontal: displayMode === "icons",
     isActive,
     isEditing,
@@ -269,12 +269,13 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
   return (
     <div
       id={`bookmark-${item.id}`}
-      {...stylex.props(styles.root, displayMode === "icons" && styles.tile, isDragSource && styles.dragging)}
+      {...stylex.props(styles.root, displayMode === "icons" && styles.tile)}
       ref={setItemElement}
     >
+      {isSelfDrop ? <DropIndicator edge="before" placement="inside" vertical={displayMode === "icons"} /> : null}
       {showDropBefore ? <DropIndicator edge="before" placement="inside" vertical={displayMode === "icons"} /> : null}
       {showDropAfter ? <DropIndicator edge="after" placement="inside" vertical /> : null}
-      <div {...stylex.props(styles.row)}>
+      <div {...stylex.props(styles.row, isDragSource && styles.draggingContent)}>
         {!isEditing ? (
           <DragHandle
             floating={displayMode === "icons"}

@@ -1,8 +1,18 @@
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import {
+  draggable,
+  dropTargetForElements,
+  type ElementEventBasePayload,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useState } from "react";
 
-import { isItemDragData, resolveDropEdge, resolveVerticalEdge, resolveHorizontalEdge } from "../lib/dnd";
+import {
+  isPointerInsideElement,
+  isItemDragData,
+  resolveDropEdge,
+  resolveVerticalEdge,
+  resolveHorizontalEdge,
+} from "../lib/dnd";
 import type { BookmarkItem } from "./types";
 
 type UseItemDndInput = {
@@ -26,13 +36,25 @@ export function useItemDnd({
   const [itemElement, setItemElement] = useState<HTMLElement | null>(null);
   const [isDragSource, setIsDragSource] = useState(false);
 
+  const [isSelfDrop, setIsSelfDrop] = useState(false);
+
   useEffect(() => {
     if (!itemElement) {
       return;
     }
 
-    function updateDropIndex(data: Record<string | symbol, unknown>) {
+    function updateDropIndex(data: Record<string | symbol, unknown>, sourceData: Record<string | symbol, unknown>) {
       const edge = resolveDropEdge(data);
+      if (!isItemDragData(sourceData)) return;
+      const siblings = [...(itemElement?.parentElement?.children ?? [])].filter((element) =>
+        element.id.startsWith("bookmark-"),
+      );
+      const targetIndex = siblings.indexOf(itemElement!);
+      const neighbor = siblings[targetIndex + (edge === "before" ? -1 : 1)];
+      if (sourceData.item.id === item.id || neighbor?.id === `bookmark-${sourceData.item.id}`) {
+        onDropIndexChange(null);
+        return;
+      }
 
       if (edge === "before") {
         onDropIndexChange(itemIndex);
@@ -51,17 +73,23 @@ export function useItemDnd({
       onDropIndexChange(null);
     }
 
+    function updateSelfDrop({ location }: ElementEventBasePayload) {
+      setIsSelfDrop(isPointerInsideElement(itemElement!, location.current.input));
+    }
+
     return combine(
       handleElement
         ? draggable({
             element: itemElement,
             dragHandle: handleElement,
+            onDrag: updateSelfDrop,
             getInitialData: () => ({ kind: "item", item }),
             onDragStart: () => {
               setIsDragSource(true);
             },
             onDrop: () => {
               setIsDragSource(false);
+              setIsSelfDrop(false);
               clearDropIndex();
             },
           })
@@ -78,12 +106,10 @@ export function useItemDnd({
           kind: "item",
         }),
         onDrag: ({ self, source }) => {
-          if (isItemDragData(source.data) && source.data.item.id === item.id) clearDropIndex();
-          else updateDropIndex(self.data);
+          updateDropIndex(self.data, source.data);
         },
         onDragEnter: ({ self, source }) => {
-          if (isItemDragData(source.data) && source.data.item.id === item.id) clearDropIndex();
-          else updateDropIndex(self.data);
+          updateDropIndex(self.data, source.data);
         },
         onDragLeave: clearDropIndex,
         onDrop: clearDropIndex,
@@ -102,6 +128,7 @@ export function useItemDnd({
   return {
     handleRef: setHandleElement,
     isDragSource,
+    isSelfDrop,
     setItemElement,
   };
 }

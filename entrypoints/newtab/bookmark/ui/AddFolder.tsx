@@ -31,6 +31,7 @@ const styles = stylex.create({
     transitionProperty: "height, opacity",
     transitionDuration: motionVars.durationFast,
   },
+  dragging: { visibility: "hidden", pointerEvents: "none" },
   expanded: { height: "auto", overflow: "visible" },
   hidden: {
     height: spacingVars.space2,
@@ -66,7 +67,6 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
       monitorForElements({
         canMonitor: ({ source }) => isFolderDragData(source.data),
         onDragStart: () => {
-          setIsHovered(false);
           setIsFolderDragging(true);
         },
         onDrop: () => setIsFolderDragging(false),
@@ -89,14 +89,19 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
 
   return (
     <div
-      hidden={isFolderDragging}
+      inert={isFolderDragging}
       {...stylex.props(
         styles.root,
         form.isAdding && styles.expanded,
         !(form.isAdding || alwaysVisible || isHovered) && styles.hidden,
+        isFolderDragging && styles.dragging,
       )}
-      onPointerMove={() => setIsHovered(true)}
-      onPointerLeave={() => setIsHovered(false)}
+      onPointerMove={() => {
+        if (!isFolderDragging) setIsHovered(true);
+      }}
+      onPointerLeave={() => {
+        if (!isFolderDragging) setIsHovered(false);
+      }}
     >
       <Collapsible open={!form.isAdding}>
         <CollapsiblePanel>

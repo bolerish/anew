@@ -1,4 +1,4 @@
-import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { act, renderHook } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 
@@ -49,4 +49,32 @@ test("self drops remain the innermost target instead of falling through to the p
   expect(folderHook.result.current.sort.dropEdge).toBeNull();
   act(() => folderTarget.onDrop?.(selfDrag));
   expect(folderHook.result.current.sort.dropEdge).toBeNull();
+});
+
+test("original position highlights only while the pointer is inside it", () => {
+  const item = { id: "item", parentId: "folder", title: "Item", url: "https://example.com" };
+  const folder = { id: "folder", parentId: "root", title: "Folder", displayTitle: "Folder", items: [item] };
+  const { result } = renderHook(() => useFolderDnd(folder));
+  const element = document.createElement("section");
+  element.getBoundingClientRect = () => new DOMRect(10, 20, 100, 60);
+  act(() => {
+    result.current.sort.ref(element);
+    result.current.sort.handleRef(document.createElement("button"));
+  });
+  const source = vi.mocked(draggable).mock.calls.at(-1)![0];
+  function move(clientX: number, clientY: number) {
+    act(() =>
+      source.onDrag?.({ location: { current: { input: { clientX, clientY } } } } as Parameters<
+        NonNullable<typeof source.onDrag>
+      >[0]),
+    );
+  }
+  move(50, 40);
+  expect(result.current.sort.isSelfDrop).toBe(true);
+  move(50, 90);
+  expect(result.current.sort.isSelfDrop).toBe(false);
+  move(50, 40);
+  expect(result.current.sort.isSelfDrop).toBe(true);
+  act(() => source.onDrop?.({} as Parameters<NonNullable<typeof source.onDrop>>[0]));
+  expect(result.current.sort.isSelfDrop).toBe(false);
 });

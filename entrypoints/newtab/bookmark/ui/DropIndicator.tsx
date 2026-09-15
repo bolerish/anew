@@ -4,6 +4,7 @@ import { colorVars, sizeVars } from "~shared/styles/semantic.stylex";
 import type { DropEdge } from "../lib/dnd";
 
 const styles = stylex.create({
+  offset: (value: number) => ({ transform: `translateY(${value}px)` }),
   line: {
     position: "absolute",
     insetInline: 0,
@@ -22,7 +23,7 @@ const styles = stylex.create({
 
 type DropIndicatorProps = { edge: DropEdge; placement: "inside" | "outside" } | { placement: "center" };
 
-export function DropIndicator(props: DropIndicatorProps & { vertical?: boolean }) {
+export function DropIndicator(props: DropIndicatorProps & { vertical?: boolean; offset?: number }) {
   const center = props.placement === "center";
   const before = !center && props.edge === "before";
   let position: stylex.StyleXStyles = before ? styles.before : styles.after;
@@ -33,6 +34,7 @@ export function DropIndicator(props: DropIndicatorProps & { vertical?: boolean }
       {...stylex.props(
         styles.line,
         position,
+        props.offset !== undefined && styles.offset(props.offset),
         props.vertical && styles.vertical,
         props.vertical && !center && (before ? styles.verticalBefore : styles.verticalAfter),
       )}

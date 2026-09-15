@@ -1,8 +1,20 @@
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import {
+  draggable,
+  dropTargetForElements,
+  type ElementEventBasePayload,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 
-import { type DropEdge, isFolderDragData, isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
+import {
+  isPointerInsideElement,
+  type DropEdge,
+  isFolderDragData,
+  isItemDragData,
+  resolveDropEdge,
+  resolveVerticalEdge,
+} from "../lib/dnd";
 import { type BookmarkFolder } from "./types";
 
 export function useFolderDnd(folder: BookmarkFolder) {
@@ -11,6 +23,7 @@ export function useFolderDnd(folder: BookmarkFolder) {
   const [handleElement, setHandleElement] = useState<HTMLButtonElement | null>(null);
   const [isFolderDragSource, setIsFolderDragSource] = useState(false);
   const [isFolderDropTarget, setIsFolderDropTarget] = useState(false);
+  const [dropOffset, setDropOffset] = useState(0);
   const [folderDropEdge, setFolderDropEdge] = useState<DropEdge | null>(null);
 
   function clearFolderDropIndicator() {
@@ -23,6 +36,8 @@ export function useFolderDnd(folder: BookmarkFolder) {
   ) {
     setIsFolderDropTarget(location.current.dropTargets[0]?.element === element);
   }
+
+  const [isSelfDrop, setIsSelfDrop] = useState(false);
 
   useEffect(() => {
     if (!folderElement) {
@@ -42,7 +57,17 @@ export function useFolderDnd(folder: BookmarkFolder) {
       const targetIndex = siblings.indexOf(folderElement!);
       const neighbor = siblings[targetIndex + (edge === "before" ? -1 : 1)];
       const unchanged = sourceId === folder.id || neighbor?.id === `folder-${sourceId}`;
+      const previous = siblings[targetIndex - 1];
+      const offset =
+        edge === "before" && previous
+          ? previous.getBoundingClientRect().bottom - folderElement!.getBoundingClientRect().top
+          : 0;
+      setDropOffset(offset);
       setFolderDropEdge(unchanged ? null : edge);
+    }
+
+    function updateSelfDrop({ location }: ElementEventBasePayload) {
+      setIsSelfDrop(isPointerInsideElement(folderElement!, location.current.input));
     }
 
     return combine(
@@ -68,9 +93,14 @@ export function useFolderDnd(folder: BookmarkFolder) {
         ? draggable({
             element: folderElement,
             dragHandle: handleElement,
+            onDrag: updateSelfDrop,
             getInitialData: () => ({ folder, kind: "folder" }),
+            onGenerateDragPreview: () => flushSync(() => setIsFolderDragSource(true)),
             onDragStart: () => setIsFolderDragSource(true),
-            onDrop: () => setIsFolderDragSource(false),
+            onDrop: () => {
+              setIsFolderDragSource(false);
+              setIsSelfDrop(false);
+            },
           })
         : () => {},
     );
@@ -98,6 +128,8 @@ export function useFolderDnd(folder: BookmarkFolder) {
       ref: setFolderDropElement,
     },
     sort: {
+      isSelfDrop,
+      dropOffset,
       dropEdge: folderDropEdge,
       handleRef: setHandleElement,
       isDragSource: isFolderDragSource,
