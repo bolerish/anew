@@ -1,4 +1,4 @@
-import { fetchCoordinates, MAX_LATITUDE, MAX_LONGITUDE, POSITION_UNAVAILABLE } from "~shared/lib/geolocation";
+import { fetchCoordinates } from "~shared/lib/geolocation";
 
 import { browser } from "#imports";
 
@@ -11,19 +11,6 @@ export async function fetchCurrentCity(language: string): Promise<City> {
     error.name = "GeolocationPermissionError";
     throw error;
   }
-  let coordinates: { latitude: number; longitude: number };
-  if (browser.runtime.getManifest().permissions?.includes("offscreen")) {
-    const result = await browser.runtime.sendMessage({ type: "min:location" });
-    if (!Number.isFinite(result?.latitude) || !Number.isFinite(result?.longitude)) {
-      throw Object.assign(new Error(result?.message ?? "Location unavailable"), {
-        code: result?.code ?? POSITION_UNAVAILABLE,
-      });
-    }
-    if (Math.abs(result.latitude) > MAX_LATITUDE || Math.abs(result.longitude) > MAX_LONGITUDE)
-      throw new Error("Invalid location");
-    coordinates = result;
-  } else {
-    coordinates = await fetchCoordinates();
-  }
+  const coordinates = await fetchCoordinates();
   return fetchCityName(coordinates, language);
 }

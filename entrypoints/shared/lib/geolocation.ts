@@ -1,6 +1,5 @@
 export const MAX_LATITUDE = 90;
 export const MAX_LONGITUDE = 180;
-export const POSITION_UNAVAILABLE = 2;
 
 const LOCATION_TIMEOUT_MS = 10_000;
 const LOCATION_MAX_AGE_MS = 60 * 60 * 1000;

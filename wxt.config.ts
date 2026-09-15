@@ -15,20 +15,12 @@ export default defineConfig({
     sizes: [16, 32, 48, 96, 128],
   },
 
-  manifest: ({ browser }) => ({
+  manifest: () => ({
     name: "__MSG_extensionName__",
     short_name: "Min",
     description: "__MSG_extensionDescription__",
     default_locale: "en",
-    permissions: [
-      "bookmarks",
-      "favicon",
-      "fontSettings",
-      "search",
-      "storage",
-      "geolocation",
-      ...(browser === "chrome" ? ["offscreen" as const] : []),
-    ],
+    permissions: ["bookmarks", "favicon", "fontSettings", "search", "storage", "geolocation"],
     action: {
       default_title: "__MSG_extensionName__",
     },
