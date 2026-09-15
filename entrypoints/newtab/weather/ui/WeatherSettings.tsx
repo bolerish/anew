@@ -2,9 +2,9 @@ import { BuildingsIcon, GpsFixIcon, WarningCircleIcon } from "@phosphor-icons/re
 import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
+import { weatherMessages } from "~shared/i18n/weather";
 import { notifyError } from "~shared/lib/notify-error";
 import { usePreferences } from "~shared/lib/preferences";
-import { weatherMessages } from "~shared/locales/weather";
 import { colorVars, typographyVars, spacingVars } from "~shared/styles/semantic.stylex";
 import { Combobox, ComboboxInput, ComboboxPopup, ComboboxList, ComboboxItem, ComboboxEmpty } from "~shared/ui/combobox";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldSet } from "~shared/ui/field";

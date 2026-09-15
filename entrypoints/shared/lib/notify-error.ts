@@ -2,7 +2,7 @@ import { toast } from "~shared/ui/toast";
 
 import { storage } from "#imports";
 
-import { feedbackMessages } from "../locales/feedback";
+import { feedbackMessages } from "../i18n/feedback";
 
 /** Report a failed user action without exposing internal error details. */
 export async function notifyError(error: unknown) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { weatherMessages } from "~shared/i18n/weather";
 import type { Language } from "~shared/lib/preferences";
-import { weatherMessages } from "~shared/locales/weather";
 
 import { fetchCurrentCity } from "../api/location";
 import { weatherSettings, loadWeather, type Weather, type WeatherSettings } from "./weather";

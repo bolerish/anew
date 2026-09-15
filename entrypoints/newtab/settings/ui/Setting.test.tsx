@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import { getMessages } from "~shared/locales";
+import { getMessages } from "~shared/i18n";
 
 import { Setting } from "./Setting";
 vi.mock("~shared/lib/preferences", async (importOriginal) => {

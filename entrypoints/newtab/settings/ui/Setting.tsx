@@ -8,8 +8,8 @@ import {
 } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { lazy, Suspense, useEffect, type Dispatch, type SetStateAction, type ReactNode } from "react";
+import { weatherMessages } from "~shared/i18n/weather";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { weatherMessages } from "~shared/locales/weather";
 import { colorVars, sizeVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
 import { Badge } from "~shared/ui/badge";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage, BreadcrumbSeparator } from "~shared/ui/breadcrumb";

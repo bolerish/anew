@@ -4,7 +4,7 @@ import { notifyError } from "~shared/lib/notify-error";
 
 import { storage } from "#imports";
 
-import { getMessages } from "../locales";
+import { getMessages } from "../i18n";
 
 export const languages = { ko: "한국어", en: "English", zh: "中文", ja: "日本語", es: "Español" };
 const MOTION_MODES = ["system", "on", "off"] as const;

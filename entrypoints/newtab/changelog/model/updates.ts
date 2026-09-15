@@ -1,4 +1,4 @@
-import { updatesMessages } from "~shared/locales/updates";
+import { updatesMessages } from "~shared/i18n/updates";
 
 /** Release metadata stays attached to its translated notes, newest first. */
 export function getUpdateEntries(language: keyof typeof updatesMessages) {

@@ -1,6 +1,6 @@
 import { render, fireEvent } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import { getMessages } from "~shared/locales";
+import { getMessages } from "~shared/i18n";
 
 import { LocationPicker } from "./LocationPicker";
 vi.mock("~shared/lib/preferences", () => ({ useLanguage: () => getMessages("ko") }));

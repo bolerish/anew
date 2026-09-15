@@ -8,8 +8,8 @@ import {
 } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
+import { weatherMessages } from "~shared/i18n/weather";
 import { usePreferences } from "~shared/lib/preferences";
-import { weatherMessages } from "~shared/locales/weather";
 import { colorVars, sizeVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
 import { Link } from "~shared/ui/link";
 import { Separator } from "~shared/ui/separator";

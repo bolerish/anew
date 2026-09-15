@@ -1,7 +1,7 @@
 import { CaretLeftIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
+import { updatesMessages } from "~shared/i18n/updates";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { updatesMessages } from "~shared/locales/updates";
 import { colorVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
 import { Badge } from "~shared/ui/badge";
 import { Button } from "~shared/ui/button";
