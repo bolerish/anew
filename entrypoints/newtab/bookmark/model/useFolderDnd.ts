@@ -1,7 +1,6 @@
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 
 import { type DropEdge, isFolderDragData, isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
 import { type BookmarkFolder } from "./types";
@@ -13,10 +12,6 @@ export function useFolderDnd(folder: BookmarkFolder) {
   const [isFolderDragSource, setIsFolderDragSource] = useState(false);
   const [isFolderDropTarget, setIsFolderDropTarget] = useState(false);
   const [folderDropEdge, setFolderDropEdge] = useState<DropEdge | null>(null);
-
-  function updateFolderDropIndicator(data: Record<string | symbol, unknown>) {
-    setFolderDropEdge(resolveDropEdge(data));
-  }
 
   function clearFolderDropIndicator() {
     setFolderDropEdge(null);
@@ -34,22 +29,37 @@ export function useFolderDnd(folder: BookmarkFolder) {
       return;
     }
 
+    function updateFolderDropIndicator(
+      data: Record<string | symbol, unknown>,
+      sourceData: Record<string | symbol, unknown>,
+    ) {
+      const edge = resolveDropEdge(data);
+      if (!isFolderDragData(sourceData)) return;
+      const sourceId = sourceData.folder.id;
+      const siblings = [...(folderElement?.parentElement?.children ?? [])].filter((element) =>
+        element.id.startsWith("folder-"),
+      );
+      const targetIndex = siblings.indexOf(folderElement!);
+      const neighbor = siblings[targetIndex + (edge === "before" ? -1 : 1)];
+      const unchanged = sourceId === folder.id || neighbor?.id === `folder-${sourceId}`;
+      setFolderDropEdge(unchanged ? null : edge);
+    }
+
     return combine(
       dropTargetForElements({
         element: folderElement,
         canDrop: ({ source }) => isFolderDragData(source.data),
+        getIsSticky: () => true,
         getData: ({ input, element }) => ({
           edge: resolveVerticalEdge(input.clientY, element),
           folder,
           kind: "folder",
         }),
         onDrag: ({ self, source }) => {
-          if (isFolderDragData(source.data) && source.data.folder.id === folder.id) clearFolderDropIndicator();
-          else updateFolderDropIndicator(self.data);
+          updateFolderDropIndicator(self.data, source.data);
         },
         onDragEnter: ({ self, source }) => {
-          if (isFolderDragData(source.data) && source.data.folder.id === folder.id) clearFolderDropIndicator();
-          else updateFolderDropIndicator(self.data);
+          updateFolderDropIndicator(self.data, source.data);
         },
         onDragLeave: clearFolderDropIndicator,
         onDrop: clearFolderDropIndicator,
@@ -59,9 +69,6 @@ export function useFolderDnd(folder: BookmarkFolder) {
             element: folderElement,
             dragHandle: handleElement,
             getInitialData: () => ({ folder, kind: "folder" }),
-            onGenerateDragPreview: () => {
-              flushSync(() => setIsFolderDragSource(true));
-            },
             onDragStart: () => setIsFolderDragSource(true),
             onDrop: () => setIsFolderDragSource(false),
           })

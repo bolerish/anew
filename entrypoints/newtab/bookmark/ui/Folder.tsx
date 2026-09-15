@@ -135,94 +135,96 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
   const activeDropIndex = drop.isDropTarget ? folder.items.length : dropIndex;
 
   return (
-    <section
-      id={`folder-${folder.id}`}
-      tabIndex={-1}
-      onPointerDown={(e) => {
-        delete e.currentTarget.dataset.contentsFocus;
-      }}
-      onBlur={(e) => {
-        delete e.currentTarget.dataset.contentsFocus;
-      }}
-      {...stylex.props(styles.root, sort.isDragSource && styles.dragging)}
-      ref={sort.ref}
-    >
-      {sort.isDropTarget && sort.dropEdge ? <DropIndicator edge={sort.dropEdge} placement="outside" /> : null}
-      <Accordion
-        xstyle={styles.accordion}
-        value={expanded}
-        onValueChange={(value) => void setFolderExpanded(folder.id, value.includes(folder.id))}
+    <>
+      <section
+        id={`folder-${folder.id}`}
+        tabIndex={-1}
+        onPointerDown={(e) => {
+          delete e.currentTarget.dataset.contentsFocus;
+        }}
+        onBlur={(e) => {
+          delete e.currentTarget.dataset.contentsFocus;
+        }}
+        {...stylex.props(styles.root, sort.isDragSource && styles.dragging)}
+        ref={sort.ref}
       >
-        <AccordionItem xstyle={[styles.item, folderDividers && styles.divider]} value={folder.id}>
-          <FolderHeader folder={folder} handleRef={sort.handleRef} isDragging={sort.isDragSource} onMove={onMove} />
-          <AccordionContent xstyle={styles.content}>
-            <div
-              {...stylex.props(
-                styles.items,
-                !heightResize.isResizing && styles.heightTransition,
-                styles.height(heightResize.height ?? display.minHeight ?? 0),
-              )}
-              ref={drop.ref}
-            >
-              <div {...stylex.props(styles.items, view === "icons" ? styles.iconGrid : styles.list)}>
-                {view === "list" ? <ItemStartDropZone folderId={folder.id} onDropIndexChange={setDropIndex} /> : null}
-                {folder.items.map((item, itemIndex) => (
-                  <Fragment key={item.id}>
-                    {view === "list" ? <ItemDropPlaceholder isActive={activeDropIndex === itemIndex} /> : null}
-                    <Item
-                      itemEntry={{ item, itemIndex }}
-                      onDropIndexChange={setDropIndex}
-                      showDropBefore={view === "icons" && activeDropIndex === itemIndex}
-                      showDropAfter={
-                        view === "icons" &&
-                        itemIndex === folder.items.length - 1 &&
-                        activeDropIndex === folder.items.length
-                      }
-                    />
-                  </Fragment>
-                ))}
-                {view === "list" ? <ItemDropPlaceholder isActive={activeDropIndex === folder.items.length} /> : null}
-              </div>
-              {!isSearchActive ? (
-                <div {...stylex.props(styles.add, view === "icons" && styles.gridAdd)}>
-                  {!addForm.isAddingBookmark ? (
-                    <Button
-                      xstyle={styles.fullWidth}
-                      align="start"
-                      size="sm"
-                      type="button"
-                      variant="ghost"
-                      data-add-bookmark={folder.id}
-                      onClick={addForm.toggleForm}
-                    >
-                      <span {...stylex.props(styles.addLabel)}>
-                        <PlusIcon aria-hidden="true" />
-                        {UI_LANGUAGE.bookmark.addBookmark}
-                      </span>
-                    </Button>
-                  ) : null}
-                  <AddForm form={addForm} />
+        {sort.isDropTarget && sort.dropEdge ? <DropIndicator edge={sort.dropEdge} placement="outside" /> : null}
+        <Accordion
+          xstyle={styles.accordion}
+          value={expanded}
+          onValueChange={(value) => void setFolderExpanded(folder.id, value.includes(folder.id))}
+        >
+          <AccordionItem xstyle={[styles.item, folderDividers && styles.divider]} value={folder.id}>
+            <FolderHeader folder={folder} handleRef={sort.handleRef} isDragging={sort.isDragSource} onMove={onMove} />
+            <AccordionContent xstyle={styles.content}>
+              <div
+                {...stylex.props(
+                  styles.items,
+                  !heightResize.isResizing && styles.heightTransition,
+                  styles.height(heightResize.height ?? display.minHeight ?? 0),
+                )}
+                ref={drop.ref}
+              >
+                <div {...stylex.props(styles.items, view === "icons" ? styles.iconGrid : styles.list)}>
+                  {view === "list" ? <ItemStartDropZone folderId={folder.id} onDropIndexChange={setDropIndex} /> : null}
+                  {folder.items.map((item, itemIndex) => (
+                    <Fragment key={item.id}>
+                      {view === "list" ? <ItemDropPlaceholder isActive={activeDropIndex === itemIndex} /> : null}
+                      <Item
+                        itemEntry={{ item, itemIndex }}
+                        onDropIndexChange={setDropIndex}
+                        showDropBefore={view === "icons" && activeDropIndex === itemIndex}
+                        showDropAfter={
+                          view === "icons" &&
+                          itemIndex === folder.items.length - 1 &&
+                          activeDropIndex === folder.items.length
+                        }
+                      />
+                    </Fragment>
+                  ))}
+                  {view === "list" ? <ItemDropPlaceholder isActive={activeDropIndex === folder.items.length} /> : null}
                 </div>
-              ) : null}
-            </div>
-          </AccordionContent>
-          {!isSearchActive && expanded.includes(folder.id) ? (
-            <button
-              type="button"
-              aria-label={UI_LANGUAGE.settings.resizeFolderHeight}
-              {...stylex.props(resizeStyles.handle, resizeStyles.horizontal, styles.resizeHeight)}
-              onPointerDown={heightResize.handleStart}
-              onPointerMove={heightResize.handleMove}
-              onPointerUp={heightResize.handleEnd}
-              onPointerCancel={heightResize.cancel}
-              onDoubleClick={heightResize.reset}
-              onKeyDown={heightResize.handleKeyDown}
-            />
-          ) : null}
-        </AccordionItem>
-      </Accordion>
+                {!isSearchActive ? (
+                  <div {...stylex.props(styles.add, view === "icons" && styles.gridAdd)}>
+                    {!addForm.isAddingBookmark ? (
+                      <Button
+                        xstyle={styles.fullWidth}
+                        align="start"
+                        size="sm"
+                        type="button"
+                        variant="ghost"
+                        data-add-bookmark={folder.id}
+                        onClick={addForm.toggleForm}
+                      >
+                        <span {...stylex.props(styles.addLabel)}>
+                          <PlusIcon aria-hidden="true" />
+                          {UI_LANGUAGE.bookmark.addBookmark}
+                        </span>
+                      </Button>
+                    ) : null}
+                    <AddForm form={addForm} />
+                  </div>
+                ) : null}
+              </div>
+            </AccordionContent>
+            {!isSearchActive && expanded.includes(folder.id) ? (
+              <button
+                type="button"
+                aria-label={UI_LANGUAGE.settings.resizeFolderHeight}
+                {...stylex.props(resizeStyles.handle, resizeStyles.horizontal, styles.resizeHeight)}
+                onPointerDown={heightResize.handleStart}
+                onPointerMove={heightResize.handleMove}
+                onPointerUp={heightResize.handleEnd}
+                onPointerCancel={heightResize.cancel}
+                onDoubleClick={heightResize.reset}
+                onKeyDown={heightResize.handleKeyDown}
+              />
+            ) : null}
+          </AccordionItem>
+        </Accordion>
+      </section>
       <AddFolder index={(folder.bookmarkIndex ?? 0) + 1} parentId={parentId} />
-    </section>
+    </>
   );
 }
 

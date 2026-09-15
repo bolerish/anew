@@ -1,6 +1,7 @@
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
-import { useState, type KeyboardEvent } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 import { useLanguage } from "~shared/lib/preferences";
 import { spacingVars, sizeVars, typographyVars, motionVars } from "~shared/styles/semantic.stylex";
@@ -9,6 +10,7 @@ import { ButtonGroup } from "~shared/ui/button-group";
 import { Collapsible, CollapsibleContent, CollapsiblePanel } from "~shared/ui/collapsible";
 import { Input } from "~shared/ui/input";
 
+import { isFolderDragData } from "../lib/dnd";
 import { useBookmarkContext } from "../model/Provider";
 import { useAddFolder } from "../model/useAddFolder";
 import { useFormFocus } from "../model/useFormFocus";
@@ -21,6 +23,7 @@ const styles = stylex.create({
   input: { minWidth: 0, width: "100%", flexGrow: 1 },
   collapseContent: { padding: 0 },
   root: {
+    overflow: "clip",
     marginInlineStart: sizeVars.controlSm,
     marginInlineEnd: spacingVars.space4,
     marginBlock: spacingVars.space1,
@@ -28,7 +31,7 @@ const styles = stylex.create({
     transitionProperty: "height, opacity",
     transitionDuration: motionVars.durationFast,
   },
-  expanded: { height: "auto" },
+  expanded: { height: "auto", overflow: "visible" },
   hidden: {
     height: spacingVars.space2,
     opacity: 0,
@@ -57,6 +60,19 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
   const { onBookmarksChange } = useBookmarkContext();
   const form = useAddFolder({ index, parentId, onCreated: onBookmarksChange });
   const [isHovered, setIsHovered] = useState(false);
+  const [isFolderDragging, setIsFolderDragging] = useState(false);
+  useEffect(
+    () =>
+      monitorForElements({
+        canMonitor: ({ source }) => isFolderDragData(source.data),
+        onDragStart: () => {
+          setIsHovered(false);
+          setIsFolderDragging(true);
+        },
+        onDrop: () => setIsFolderDragging(false),
+      }),
+    [],
+  );
   const focus = useFormFocus({
     onClose: form.closeForm,
     isOpen: form.isAdding,
@@ -73,6 +89,7 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
 
   return (
     <div
+      hidden={isFolderDragging}
       {...stylex.props(
         styles.root,
         form.isAdding && styles.expanded,

@@ -32,9 +32,21 @@ test("self drops remain the innermost target instead of falling through to the p
   const folderHook = renderHook(() => useFolderDnd(folder));
   act(() => folderHook.result.current.sort.ref(document.createElement("section")));
   const folderTarget = vi.mocked(dropTargetForElements).mock.calls.at(-1)![0];
+  expect(folderTarget.getIsSticky?.({} as Parameters<NonNullable<typeof folderTarget.getIsSticky>>[0])).toBe(true);
+  expect(itemTarget.getIsSticky?.({} as Parameters<NonNullable<typeof itemTarget.getIsSticky>>[0])).toBe(true);
   expect(
     folderTarget.canDrop!({ source: { data: { kind: "folder", folder } } } as unknown as Parameters<
       NonNullable<typeof folderTarget.canDrop>
     >[0]),
   ).toBe(true);
+  const selfDrag = {
+    source: { data: { kind: "folder", folder } },
+    self: { data: { edge: "after" } },
+  } as unknown as Parameters<NonNullable<typeof folderTarget.onDrag>>[0];
+  act(() => folderTarget.onDragEnter?.(selfDrag));
+  expect(folderHook.result.current.sort.dropEdge).toBeNull();
+  act(() => folderTarget.onDrag?.(selfDrag));
+  expect(folderHook.result.current.sort.dropEdge).toBeNull();
+  act(() => folderTarget.onDrop?.(selfDrag));
+  expect(folderHook.result.current.sort.dropEdge).toBeNull();
 });
