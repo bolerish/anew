@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
 import { type DropEdge, isFolderDragData, isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
-import { isRootBookmarkFolder, type BookmarkFolder } from "./types";
+import { type BookmarkFolder } from "./types";
 
 export function useFolderDnd(folder: BookmarkFolder) {
   const [folderElement, setFolderElement] = useState<HTMLElement | null>(null);
@@ -13,7 +13,6 @@ export function useFolderDnd(folder: BookmarkFolder) {
   const [isFolderDragSource, setIsFolderDragSource] = useState(false);
   const [isFolderDropTarget, setIsFolderDropTarget] = useState(false);
   const [folderDropEdge, setFolderDropEdge] = useState<DropEdge | null>(null);
-  const canDragFolder = !isRootBookmarkFolder(folder);
 
   function updateFolderDropIndicator(data: Record<string | symbol, unknown>) {
     setFolderDropEdge(resolveDropEdge(data));
@@ -38,18 +37,24 @@ export function useFolderDnd(folder: BookmarkFolder) {
     return combine(
       dropTargetForElements({
         element: folderElement,
-        canDrop: ({ source }) => isFolderDragData(source.data) && source.data.folder.id !== folder.id,
+        canDrop: ({ source }) => isFolderDragData(source.data),
         getData: ({ input, element }) => ({
           edge: resolveVerticalEdge(input.clientY, element),
           folder,
           kind: "folder",
         }),
-        onDrag: ({ self }) => updateFolderDropIndicator(self.data),
-        onDragEnter: ({ self }) => updateFolderDropIndicator(self.data),
+        onDrag: ({ self, source }) => {
+          if (isFolderDragData(source.data) && source.data.folder.id === folder.id) clearFolderDropIndicator();
+          else updateFolderDropIndicator(self.data);
+        },
+        onDragEnter: ({ self, source }) => {
+          if (isFolderDragData(source.data) && source.data.folder.id === folder.id) clearFolderDropIndicator();
+          else updateFolderDropIndicator(self.data);
+        },
         onDragLeave: clearFolderDropIndicator,
         onDrop: clearFolderDropIndicator,
       }),
-      canDragFolder && handleElement
+      handleElement
         ? draggable({
             element: folderElement,
             dragHandle: handleElement,
@@ -62,7 +67,7 @@ export function useFolderDnd(folder: BookmarkFolder) {
           })
         : () => {},
     );
-  }, [canDragFolder, folder, folderElement, handleElement]);
+  }, [folder, folderElement, handleElement]);
 
   useEffect(() => {
     if (!folderDropElement) {

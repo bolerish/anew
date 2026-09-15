@@ -1,5 +1,4 @@
-import { browser } from "wxt/browser";
-
+import { performBookmarkCommand } from "../model/edit-session";
 import { isRootBookmarkFolder, type BookmarkFolder, type BookmarkItem } from "../model/types";
 
 type MoveTarget = {
@@ -8,7 +7,7 @@ type MoveTarget = {
 };
 
 export async function moveItem(item: BookmarkItem, target: MoveTarget): Promise<void> {
-  await browser.bookmarks.move(item.id, target);
+  await performBookmarkCommand({ type: "move", id: item.id, input: target });
 }
 
 export async function moveFolder(folder: BookmarkFolder, target: MoveTarget): Promise<void> {
@@ -16,5 +15,5 @@ export async function moveFolder(folder: BookmarkFolder, target: MoveTarget): Pr
     return;
   }
 
-  await browser.bookmarks.move(folder.id, target);
+  await performBookmarkCommand({ type: "move", id: folder.id, input: target });
 }

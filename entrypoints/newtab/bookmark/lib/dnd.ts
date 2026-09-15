@@ -16,9 +16,9 @@ type Drop = {
   target: DropData;
 };
 
-export function resolveDrop(event: ElementEventBasePayload): Drop | null {
-  const dragged = resolveDragData(event.source.data);
-  const target = resolveDropData(event.location.current.dropTargets[0]?.data);
+export function resolveDrop(e: ElementEventBasePayload): Drop | null {
+  const dragged = resolveDragData(e.source.data);
+  const target = resolveDropData(e.location.current.dropTargets[0]?.data);
 
   if (!dragged || !target) {
     return null;
@@ -60,6 +60,11 @@ export function resolveVerticalEdge(clientY: number, element: Element): DropEdge
   const midpoint = bounds.top + bounds.height / 2;
 
   return clientY >= midpoint ? "after" : "before";
+}
+
+export function resolveHorizontalEdge(clientX: number, element: Element): DropEdge {
+  const bounds = element.getBoundingClientRect();
+  return clientX >= bounds.left + bounds.width / 2 ? "after" : "before";
 }
 
 export function resolveDropEdge(value: unknown): DropEdge | null {

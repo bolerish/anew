@@ -1,4 +1,4 @@
-import { useCallback, useState, type SubmitEvent } from "react";
+import { useCallback, useRef, useState, type SubmitEvent } from "react";
 
 import { createFolder } from "../api/create";
 
@@ -11,28 +11,44 @@ type UseAddFolderInput = {
 export function useAddFolder({ index, parentId, onCreated }: UseAddFolderInput) {
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
-  const canSave = Boolean(title.trim());
+  const [hasSaveError, setHasSaveError] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const saving = useRef(false);
+  const canSave = Boolean(title.trim()) && !isSaving;
 
   const closeForm = useCallback(() => {
     setIsAdding(false);
     setTitle("");
+    setHasSaveError(false);
   }, []);
 
-  async function handleSubmit(event: SubmitEvent) {
-    event.preventDefault();
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    if (saving.current) return;
 
     if (!title.trim()) {
       return;
     }
 
-    await createFolder({ index, parentId, title: title.trim() });
-    closeForm();
-    await onCreated();
+    saving.current = true;
+    setIsSaving(true);
+    setHasSaveError(false);
+    try {
+      await createFolder({ index, parentId, title: title.trim() });
+      closeForm();
+      await onCreated();
+    } catch (error) {
+      console.error("[min] Could not save bookmark", error);
+      setHasSaveError(true);
+    } finally {
+      saving.current = false;
+      setIsSaving(false);
+    }
   }
 
   function openForm() {
     setIsAdding(true);
   }
 
-  return { canSave, closeForm, handleSubmit, isAdding, openForm, setTitle, title };
+  return { hasSaveError, isSaving, canSave, closeForm, handleSubmit, isAdding, openForm, setTitle, title };
 }

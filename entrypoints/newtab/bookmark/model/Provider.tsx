@@ -9,16 +9,24 @@ export type BookmarkContextValue = {
   editor: ReturnType<typeof useEditor>;
   onBookmarksChange: () => Promise<void>;
   isSearchActive: boolean;
+  isEditMode: boolean;
   setActiveBookmark: (bookmark: InlineEditingBookmark | null) => void;
   bookmarkIconMode: BookmarkIconDisplayMode;
+  folderDisplays?: import("../../settings/bookmark/model/settings").BookmarkSettings["folderDisplays"];
+  folderViews: Record<string, "list" | "icons">;
+  defaultView: "list" | "icons";
   visibleFolders: BookmarkFolder[];
 };
 
 type BookmarkProviderProps = {
   bookmarkIconMode: BookmarkIconDisplayMode;
+  folderDisplays?: import("../../settings/bookmark/model/settings").BookmarkSettings["folderDisplays"];
+  folderViews: Record<string, "list" | "icons">;
+  defaultView: "list" | "icons";
   children: ReactNode;
   folders: BookmarkFolder[];
   isSearchActive: boolean;
+  isEditMode: boolean;
   onBookmarksChange: () => Promise<void>;
   visibleFolders: BookmarkFolder[];
 };
@@ -27,9 +35,13 @@ const BookmarkContext = createContext<BookmarkContextValue | null>(null);
 
 export function BookmarkProvider({
   bookmarkIconMode,
+  folderDisplays,
+  folderViews,
+  defaultView,
   children,
   folders,
   isSearchActive,
+  isEditMode,
   onBookmarksChange,
   visibleFolders,
 }: BookmarkProviderProps) {
@@ -40,14 +52,30 @@ export function BookmarkProvider({
     () => ({
       activeBookmark,
       bookmarkIconMode,
+      folderDisplays,
+      folderViews,
+      defaultView,
       folders,
       editor,
       onBookmarksChange,
       isSearchActive,
+      isEditMode,
       setActiveBookmark,
       visibleFolders,
     }),
-    [activeBookmark, bookmarkIconMode, folders, editor, onBookmarksChange, isSearchActive, visibleFolders],
+    [
+      folderDisplays,
+      folderViews,
+      defaultView,
+      activeBookmark,
+      bookmarkIconMode,
+      folders,
+      editor,
+      onBookmarksChange,
+      isSearchActive,
+      isEditMode,
+      visibleFolders,
+    ],
   );
 
   return <BookmarkContext.Provider value={value}>{children}</BookmarkContext.Provider>;

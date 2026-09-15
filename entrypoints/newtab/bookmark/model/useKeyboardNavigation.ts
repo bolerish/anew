@@ -4,10 +4,11 @@ import type { BookmarkContextValue } from "./Provider";
 
 type UseBookmarkKeyboardNavigationInput = Pick<
   BookmarkContextValue,
-  "activeBookmark" | "editor" | "setActiveBookmark" | "visibleFolders"
+  "isEditMode" | "activeBookmark" | "editor" | "setActiveBookmark" | "visibleFolders"
 >;
 
 export function useKeyboardNavigation({
+  isEditMode,
   activeBookmark,
   editor,
   setActiveBookmark,
@@ -26,66 +27,109 @@ export function useKeyboardNavigation({
   }, [activeBookmark, keyboardItems, setActiveBookmark]);
 
   useEffect(() => {
-    function handleListKeyDown(event: globalThis.KeyboardEvent) {
-      if (event.key === "Escape") {
+    function handleListKeyDown(e: globalThis.KeyboardEvent) {
+      if (e.defaultPrevented || e.isComposing) return;
+      if (e.key === "Escape" && isKeyboardShortcutTarget(e.target, true)) return;
+      if (e.key === "Escape") {
         if (!editor.inlineEditingBookmark && activeBookmark) {
-          event.preventDefault();
+          if (!isEditMode) e.preventDefault();
           setActiveBookmark(null);
         }
         return;
       }
 
-      if (isKeyboardShortcutTarget(event.target)) {
+      if (
+        e.defaultPrevented ||
+        e.isComposing ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.altKey ||
+        isKeyboardShortcutTarget(e.target, e.key.startsWith("Arrow"))
+      ) {
         return;
       }
 
-      if (editor.inlineEditingBookmark || keyboardItems.length === 0) {
+      const navigationItems = keyboardItems.filter(
+        (item) => document.getElementById(`bookmark-${item.id}`)?.getClientRects().length,
+      );
+      if (editor.inlineEditingBookmark || navigationItems.length === 0) {
         return;
       }
 
       const activeItemIndex =
-        activeBookmark?.kind === "item" ? keyboardItems.findIndex((item) => item.id === activeBookmark.id) : -1;
+        activeBookmark?.kind === "item" ? navigationItems.findIndex((item) => item.id === activeBookmark.id) : -1;
 
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
-        const nextIndex = activeItemIndex < 0 ? 0 : Math.min(keyboardItems.length - 1, activeItemIndex + 1);
-        setActiveBookmark({ kind: "item", id: keyboardItems[nextIndex].id });
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        const current =
+          activeItemIndex >= 0 ? document.getElementById(`bookmark-${navigationItems[activeItemIndex].id}`) : null;
+        const column = current?.closest("[data-bookmark-column]");
+        if (!current || !column?.parentElement) return;
+        const columns = [...column.parentElement.querySelectorAll(":scope > [data-bookmark-column]")];
+        const destination = columns[columns.indexOf(column) + (e.key === "ArrowRight" ? 1 : -1)];
+        if (!destination) return;
+        const top = current.getBoundingClientRect().top;
+        let nearest = null;
+        let distance = Infinity;
+        for (const item of navigationItems) {
+          const element = document.getElementById(`bookmark-${item.id}`);
+          if (!element || !destination.contains(element)) continue;
+          const delta = Math.abs(element.getBoundingClientRect().top - top);
+          if (delta < distance) {
+            distance = delta;
+            nearest = item;
+          }
+        }
+        if (nearest) {
+          e.preventDefault();
+          setActiveBookmark({ kind: "item", id: nearest.id });
+          document.getElementById(`bookmark-${nearest.id}`)?.querySelector<HTMLAnchorElement>("a[href]")?.focus();
+        }
         return;
       }
 
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        const nextIndex = activeItemIndex < 0 ? keyboardItems.length - 1 : Math.max(0, activeItemIndex - 1);
-        setActiveBookmark({ kind: "item", id: keyboardItems[nextIndex].id });
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const nextIndex = activeItemIndex < 0 ? 0 : Math.min(navigationItems.length - 1, activeItemIndex + 1);
+        const item = navigationItems[nextIndex];
+        setActiveBookmark({ kind: "item", id: item.id });
+        document.getElementById(`bookmark-${item.id}`)?.querySelector<HTMLAnchorElement>("a[href]")?.focus();
         return;
       }
 
-      const activeItem = activeItemIndex >= 0 ? keyboardItems[activeItemIndex] : null;
-
-      if (event.key === "Enter" && activeItem) {
-        event.preventDefault();
-        globalThis.location.assign(activeItem.url);
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const nextIndex = activeItemIndex < 0 ? navigationItems.length - 1 : Math.max(0, activeItemIndex - 1);
+        const item = navigationItems[nextIndex];
+        setActiveBookmark({ kind: "item", id: item.id });
+        document.getElementById(`bookmark-${item.id}`)?.querySelector<HTMLAnchorElement>("a[href]")?.focus();
         return;
       }
 
-      if (event.code === "KeyE" && activeItem) {
-        event.preventDefault();
-        editor.openInlineItemEditor(activeItem);
+      const activeItem = activeItemIndex >= 0 ? navigationItems[activeItemIndex] : null;
+
+      if (e.key === "Enter" && activeItem) {
+        e.preventDefault();
+        if (isEditMode) editor.openInlineItemEditor(activeItem);
+        else globalThis.location.assign(activeItem.url);
+        return;
       }
     }
 
-    window.addEventListener("keydown", handleListKeyDown);
+    window.addEventListener("keydown", handleListKeyDown, true);
 
     return () => {
-      window.removeEventListener("keydown", handleListKeyDown);
+      window.removeEventListener("keydown", handleListKeyDown, true);
     };
-  }, [activeBookmark, editor, keyboardItems, setActiveBookmark]);
+  }, [isEditMode, activeBookmark, editor, keyboardItems, setActiveBookmark]);
 }
 
-function isKeyboardShortcutTarget(target: EventTarget | null): boolean {
+export function isKeyboardShortcutTarget(target: EventTarget | null, allowButtons = false): boolean {
   if (!(target instanceof HTMLElement)) {
     return false;
   }
 
-  return Boolean(target.closest("a, button, input, textarea, select, [contenteditable='true'], [role='button']"));
+  const protectedControl = target.closest(
+    "input, textarea, select, [contenteditable]:not([contenteditable='false']), [role='slider'], [role='separator'], [role='combobox'], [role='tablist'], [role='toolbar'], [role='dialog'], [role='listbox'], [role='menu'], [role='menubar'], [role='switch']",
+  );
+  return Boolean(protectedControl || (!allowButtons && target.closest("a, button, [role='button']")));
 }

@@ -14,8 +14,12 @@ type SelectedLocationState = {
   setSelectedLocation: (locationId: string) => void;
 };
 
-export function useLocation(locations: BookmarkLocation[]): SelectedLocationState {
-  const [storedLocationId, setStoredLocationId] = useState<string | null>(bookmarkLocationStorage.fallback);
+let initialLocationId: string | null = null;
+export async function loadInitialBookmarkLocation() {
+  initialLocationId = await bookmarkLocationStorage.getValue();
+}
+export function useLocation(locations: readonly BookmarkLocation[]): SelectedLocationState {
+  const [storedLocationId, setStoredLocationId] = useState<string | null>(initialLocationId);
   const selectedLocationId = resolveLocationId(locations, storedLocationId);
 
   useEffect(() => {

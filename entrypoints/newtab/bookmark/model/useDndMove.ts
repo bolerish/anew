@@ -1,4 +1,7 @@
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import type { ElementEventBasePayload } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { useEffect, useEffectEvent } from "react";
+import { notifyError } from "~shared/lib/notify-error";
 
 import { moveFolder, moveItem } from "../api/move";
 import { type DropData, computeFolderInsertIndex, computeItemInsertIndex, resolveDrop } from "../lib/dnd";
@@ -11,10 +14,15 @@ type UseDndMoveInput = {
 };
 
 export function useDndMove({ folders, isSearchActive, onBookmarksChange }: UseDndMoveInput) {
-  async function handleDrop(event: ElementEventBasePayload) {
+  const handleDrop = useEffectEvent(async (e: ElementEventBasePayload) => {
     if (isSearchActive) return;
+    if (
+      e.source.data.kind === "folder" &&
+      e.location.current.dropTargets.some((target) => target.data.kind === "layout-column")
+    )
+      return;
 
-    const drop = resolveDrop(event);
+    const drop = resolveDrop(e);
     if (!drop) return;
 
     try {
@@ -28,9 +36,9 @@ export function useDndMove({ folders, isSearchActive, onBookmarksChange }: UseDn
 
       if (moved) await onBookmarksChange();
     } catch (error) {
-      console.error("[newtab:bookmark] failed to move bookmark", error);
+      await notifyError(error);
     }
-  }
+  });
 
   async function moveFolderTo(folder: BookmarkFolder, target: DropData): Promise<boolean> {
     if (target.kind !== "folder" || folder.id === target.folder.id || !target.folder.parentId) {
@@ -71,5 +79,5 @@ export function useDndMove({ folders, isSearchActive, onBookmarksChange }: UseDn
     return folder?.items.findIndex((candidate) => candidate.id === item.id) ?? -1;
   }
 
-  return { handleDrop };
+  useEffect(() => monitorForElements({ onDrop: handleDrop }), []);
 }

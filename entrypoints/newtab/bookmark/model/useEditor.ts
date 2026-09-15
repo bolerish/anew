@@ -6,6 +6,8 @@ import { isRootBookmarkFolder, type BookmarkFolder, type BookmarkItem, type Inli
 
 export function useEditor() {
   const [inlineEditingBookmark, setInlineEditingBookmark] = useState<InlineEditingBookmark | null>(null);
+  const [hasSaveError, setHasSaveError] = useState(false);
+  const saving = useRef(false);
   const [inlineTitle, setInlineTitle] = useState("");
   const [inlineUrl, setInlineUrl] = useState("");
   const currentInlineEditorRef = useRef<InlineEditingBookmark | null>(null);
@@ -17,64 +19,56 @@ export function useEditor() {
   const updateCurrentInlineEditor = useStableCallback(async () => {
     const currentInlineEditor = currentInlineEditorRef.current;
 
-    if (!currentInlineEditor) {
+    if (!currentInlineEditor || saving.current) {
       return;
     }
 
-    if (currentInlineEditor.kind === "folder") {
-      await updateCurrentFolderTitle(currentInlineEditor);
-      return;
-    }
+    saving.current = true;
+    setHasSaveError(false);
+    try {
+      if (currentInlineEditor.kind === "folder") {
+        await updateCurrentFolderTitle(currentInlineEditor);
+        return;
+      }
 
-    await updateCurrentItem(currentInlineEditor);
+      await updateCurrentItem(currentInlineEditor);
+    } catch (error) {
+      console.error("[min] Could not save bookmark", error);
+      if (isSameInlineEditingBookmark(currentInlineEditorRef.current, currentInlineEditor)) setHasSaveError(true);
+    } finally {
+      saving.current = false;
+    }
   });
 
   useEffect(() => {
-    function handleDocumentPointerDown(event: PointerEvent) {
+    function handleDocumentKeyDown(e: globalThis.KeyboardEvent) {
       if (!currentInlineEditorRef.current) {
         return;
       }
 
-      if (isInsideInlineEditor(event.target)) {
-        return;
-      }
-
-      cancelInlineEditor();
-    }
-
-    function handleDocumentKeyDown(event: globalThis.KeyboardEvent) {
-      if (!currentInlineEditorRef.current) {
-        return;
-      }
-
-      if (event.key === "Enter") {
-        event.preventDefault();
+      if (e.isComposing) return;
+      if (e.key === "Enter") {
+        if (
+          !(e.target instanceof Element) ||
+          !e.target.closest("[data-inline-bookmark-editor]") ||
+          e.target.closest("button")
+        )
+          return;
+        e.preventDefault();
         void updateCurrentInlineEditor();
         return;
       }
 
-      if (event.key === "Escape") {
-        event.preventDefault();
+      if (e.key === "Escape") {
+        e.preventDefault();
         cancelInlineEditor();
       }
     }
 
-    function handleDocumentFocusIn(event: globalThis.FocusEvent) {
-      if (!currentInlineEditorRef.current || isInsideInlineEditor(event.target)) {
-        return;
-      }
-
-      cancelInlineEditor();
-    }
-
-    document.addEventListener("pointerdown", handleDocumentPointerDown);
     document.addEventListener("keydown", handleDocumentKeyDown);
-    document.addEventListener("focusin", handleDocumentFocusIn);
 
     return () => {
-      document.removeEventListener("pointerdown", handleDocumentPointerDown);
       document.removeEventListener("keydown", handleDocumentKeyDown);
-      document.removeEventListener("focusin", handleDocumentFocusIn);
     };
   }, [cancelInlineEditor, updateCurrentInlineEditor]);
 
@@ -138,15 +132,25 @@ export function useEditor() {
   }
 
   function closeInlineEditor() {
+    const current = currentInlineEditorRef.current;
+    const prefix = current?.kind === "item" ? "bookmark" : "folder";
+    const targetId = current ? `${prefix}-${current.id}` : null;
     setInlineEditingBookmarkState(null);
     inlineEditingFolderRef.current = null;
     inlineEditingItemRef.current = null;
     setInlineTitle("");
     setInlineUrl("");
-    resetActiveElementFocus();
+    if (targetId)
+      requestAnimationFrame(() => {
+        document
+          .getElementById(targetId)
+          ?.querySelector<HTMLElement>("a[href], button")
+          ?.focus({ preventScroll: true });
+      });
   }
 
   function setInlineEditingBookmarkState(bookmark: InlineEditingBookmark | null) {
+    setHasSaveError(false);
     currentInlineEditorRef.current = bookmark;
     setInlineEditingBookmark(bookmark);
   }
@@ -160,6 +164,7 @@ export function useEditor() {
   }
 
   return {
+    hasSaveError,
     cancelInlineEditor,
     openInlineFolderEditor,
     openInlineItemEditor,
@@ -174,16 +179,6 @@ export function useEditor() {
 
 function isSameInlineEditingBookmark(left: InlineEditingBookmark | null, right: InlineEditingBookmark): boolean {
   return left?.kind === right.kind && left.id === right.id;
-}
-
-function isInsideInlineEditor(target: EventTarget | null): boolean {
-  return target instanceof Element && Boolean(target.closest("[data-inline-bookmark-editor]"));
-}
-
-function resetActiveElementFocus() {
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur();
-  }
 }
 
 function useStableCallback<Args extends unknown[], Result>(callback: (...args: Args) => Result) {

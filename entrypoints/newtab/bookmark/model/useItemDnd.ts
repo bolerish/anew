@@ -2,10 +2,11 @@ import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { useEffect, useState } from "react";
 
-import { isItemDragData, resolveDropEdge, resolveVerticalEdge } from "../lib/dnd";
+import { isItemDragData, resolveDropEdge, resolveVerticalEdge, resolveHorizontalEdge } from "../lib/dnd";
 import type { BookmarkItem } from "./types";
 
 type UseItemDndInput = {
+  horizontal?: boolean;
   isActive: boolean;
   isEditing: boolean;
   item: BookmarkItem;
@@ -13,7 +14,14 @@ type UseItemDndInput = {
   onDropIndexChange: (index: number | null) => void;
 };
 
-export function useItemDnd({ isActive, isEditing, item, itemIndex, onDropIndexChange }: UseItemDndInput) {
+export function useItemDnd({
+  horizontal = false,
+  isActive,
+  isEditing,
+  item,
+  itemIndex,
+  onDropIndexChange,
+}: UseItemDndInput) {
   const [handleElement, setHandleElement] = useState<HTMLButtonElement | null>(null);
   const [itemElement, setItemElement] = useState<HTMLElement | null>(null);
   const [isDragSource, setIsDragSource] = useState(false);
@@ -60,20 +68,28 @@ export function useItemDnd({ isActive, isEditing, item, itemIndex, onDropIndexCh
         : () => {},
       dropTargetForElements({
         element: itemElement,
-        canDrop: ({ source }) => isItemDragData(source.data) && source.data.item.id !== item.id,
+        canDrop: ({ source }) => isItemDragData(source.data),
         getIsSticky: () => true,
         getData: ({ input, element }) => ({
-          edge: resolveVerticalEdge(input.clientY, element),
+          edge: horizontal
+            ? resolveHorizontalEdge(input.clientX, element)
+            : resolveVerticalEdge(input.clientY, element),
           item,
           kind: "item",
         }),
-        onDrag: ({ self }) => updateDropIndex(self.data),
-        onDragEnter: ({ self }) => updateDropIndex(self.data),
+        onDrag: ({ self, source }) => {
+          if (isItemDragData(source.data) && source.data.item.id === item.id) clearDropIndex();
+          else updateDropIndex(self.data);
+        },
+        onDragEnter: ({ self, source }) => {
+          if (isItemDragData(source.data) && source.data.item.id === item.id) clearDropIndex();
+          else updateDropIndex(self.data);
+        },
         onDragLeave: clearDropIndex,
         onDrop: clearDropIndex,
       }),
     );
-  }, [handleElement, item, itemElement, itemIndex, onDropIndexChange]);
+  }, [horizontal, handleElement, item, itemElement, itemIndex, onDropIndexChange]);
 
   useEffect(() => {
     if (!isActive || isEditing) {

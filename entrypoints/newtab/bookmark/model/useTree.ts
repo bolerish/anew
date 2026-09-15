@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { browser } from "wxt/browser";
 
+import { useEditSession } from "./edit-session";
 import type { BookmarkTreeNode } from "./types";
 
+let initialTree: BookmarkTreeNode[] | undefined;
+export async function loadInitialBookmarkTree() {
+  initialTree = await browser.bookmarks.getTree();
+}
 export function useTree() {
-  const [bookmarkTree, setBookmarkTree] = useState<BookmarkTreeNode[]>([]);
+  const session = useEditSession();
+  const [bookmarkTree, setBookmarkTree] = useState<BookmarkTreeNode[]>(() => initialTree ?? []);
 
   const loadBookmarks = useCallback(async () => {
     const bookmarkTree = await browser.bookmarks.getTree();
@@ -12,7 +18,7 @@ export function useTree() {
   }, []);
 
   useEffect(() => {
-    void loadBookmarks();
+    if (!initialTree) void loadBookmarks();
 
     const handleBookmarksChanged = () => {
       void loadBookmarks();
@@ -34,7 +40,7 @@ export function useTree() {
   }, [loadBookmarks]);
 
   return {
-    bookmarkTree,
+    bookmarkTree: session.draft?.tree ?? bookmarkTree,
     loadBookmarks,
   };
 }

@@ -1,49 +1,90 @@
 import { DotsSixVerticalIcon } from "@phosphor-icons/react";
-import type { Ref } from "react";
-import { cn } from "~shared/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import type { Ref, KeyboardEvent } from "react";
+import { colorVars, sizeVars, radiusVars } from "~shared/styles/semantic.stylex";
+
+const styles = stylex.create({
+  wrapper: {
+    position: "absolute",
+    top: 0,
+    insetInlineStart: `calc(${sizeVars.controlSm} * -1)`,
+    zIndex: 1,
+    opacity: { default: "var(--bookmark-actions-opacity, 0)", ":focus-within": 1 },
+    pointerEvents: { default: "var(--bookmark-actions-pointer-events, none)" as "auto", ":focus-within": "auto" },
+  },
+  floating: { top: 0, margin: 0, transform: "none", insetInlineStart: `calc(${sizeVars.controlXs} * -1)` },
+  compactHandle: { margin: 0, width: sizeVars.controlXs, height: sizeVars.controlXs },
+  dragging: { opacity: 1 },
+  suppressed: { opacity: 0, ":focus-within": { opacity: 1 } },
+  icon: { width: sizeVars.iconMd, height: sizeVars.iconMd },
+  folderWrapper: { top: "50%", transform: "translateY(-50%)", insetInlineStart: `calc(${sizeVars.controlSm} * -1)` },
+  folderHandle: { width: sizeVars.controlSm },
+  handle: {
+    appearance: "none",
+    borderWidth: 0,
+    backgroundColor: "transparent",
+    padding: 0,
+    display: "grid",
+    placeItems: "center",
+    width: sizeVars.controlSm,
+    height: sizeVars.controlMd,
+    color: colorVars.fgSecondary,
+    cursor: "grab",
+    borderRadius: radiusVars.sm,
+    ":active": { cursor: "grabbing" },
+    ":focus-visible": { outlineStyle: "solid", outlineColor: colorVars.strokeFocus, outlineWidth: sizeVars.focusRing },
+  },
+});
 
 type DragHandleProps = {
+  floating?: boolean;
   isDragging?: boolean;
+  suppressActions?: boolean;
   kind: "folder" | "item";
   label: string;
   onMove?: (direction: "down" | "up") => void;
   ref?: Ref<HTMLButtonElement>;
 };
 
-export function DragHandle({ isDragging = false, kind, label, onMove, ref }: DragHandleProps) {
-  const hoverClass =
-    kind === "folder" ? "group-hover/bookmark-folder-header:opacity-100" : "group-hover/bookmark-row:opacity-100";
+export function DragHandle({
+  floating = false,
+  isDragging = false,
+  kind,
+  label,
+  onMove,
+  ref,
+  suppressActions = false,
+}: DragHandleProps) {
+  function handleKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
+    if (!onMove || !e.altKey || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) {
+      return;
+    }
 
+    e.preventDefault();
+    e.stopPropagation();
+    onMove(e.key === "ArrowUp" ? "up" : "down");
+  }
   return (
     <div
-      className={cn(
-        "absolute top-0 -left-6 z-10 flex h-6 justify-end opacity-0 transition-opacity group-data-suppress-bookmark-actions/bookmark-item:opacity-0! focus-within:opacity-100",
-        hoverClass,
-        isDragging && "opacity-100",
+      {...stylex.props(
+        styles.wrapper,
+        kind === "folder" && styles.folderWrapper,
+        floating && styles.floating,
+        isDragging && styles.dragging,
+        suppressActions && styles.suppressed,
       )}
     >
       <button
         aria-label={label}
         aria-keyshortcuts={onMove ? "Alt+ArrowUp Alt+ArrowDown" : undefined}
-        className={cn(
-          "text-muted-foreground hover:text-muted-foreground rounded-mds grid h-6 w-6 cursor-grab place-items-center active:cursor-grabbing",
-          isDragging && "bg-accent text-foreground",
-        )}
+        {...stylex.props(styles.handle, kind === "folder" && styles.folderHandle, floating && styles.compactHandle)}
         tabIndex={onMove ? 0 : -1}
         title={onMove ? `${label} (Option+Up/Down)` : label}
         type="button"
         ref={ref}
-        onKeyDown={(event) => {
-          if (!onMove || !event.altKey || (event.key !== "ArrowUp" && event.key !== "ArrowDown")) {
-            return;
-          }
-
-          event.preventDefault();
-          event.stopPropagation();
-          onMove(event.key === "ArrowUp" ? "up" : "down");
-        }}
+        onKeyDown={handleKeyDown}
       >
-        <DotsSixVerticalIcon className="h-4 w-4" />
+        <DotsSixVerticalIcon aria-hidden="true" {...stylex.props(styles.icon)} />
       </button>
     </div>
   );

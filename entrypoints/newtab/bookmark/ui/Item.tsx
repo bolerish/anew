@@ -1,35 +1,231 @@
-import { CheckIcon, TrashSimpleIcon } from "@phosphor-icons/react";
-import { useEffect, useId, useRef } from "react";
+import {
+  DotsThreeVerticalIcon,
+  DotsThreeIcon,
+  CheckIcon,
+  PencilSimpleIcon,
+  TrashSimpleIcon,
+  XIcon,
+} from "@phosphor-icons/react";
+import * as stylex from "@stylexjs/stylex";
+import { useEffect, useId, useRef, type SubmitEvent, type MouseEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
-import { UI_LANGUAGE } from "~shared/lib/language";
-import { cn } from "~shared/lib/utils";
+import { notifyError } from "~shared/lib/notify-error";
+import { useLanguage } from "~shared/lib/preferences";
+import {
+  colorVars,
+  spacingVars,
+  sizeVars,
+  radiusVars,
+  motionVars,
+  typographyVars,
+} from "~shared/styles/semantic.stylex";
 import { Button } from "~shared/ui/button";
+import { ButtonGroup } from "~shared/ui/button-group";
+import { ContentRow, ContentRowContent, ContentRowActions } from "~shared/ui/content-row";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "~shared/ui/dropdown-menu";
+import { Field, FieldError } from "~shared/ui/field";
 import { Input } from "~shared/ui/input";
+import { InputGroup } from "~shared/ui/input-group";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "~shared/ui/tooltip";
 
 import { moveItem as moveBookmarkItem } from "../api/move";
 import { deleteItem as deleteBookmarkItem } from "../api/update";
 import { deriveBookmarkItemView, deriveItemLabel, type BookmarkItemEntry } from "../lib/item-view";
+import { canNormalizeUrl } from "../lib/url";
 import { useBookmarkContext } from "../model/Provider";
 import { useItemDnd } from "../model/useItemDnd";
-import { useItemEdit } from "../model/useItemEdit";
 import { DragHandle } from "./DragHandle";
+import { DropIndicator } from "./DropIndicator";
+import { editorStyles } from "./editor-styles";
 import { ItemIcon } from "./ItemIcon";
+import { SaveError } from "./SaveError";
+
+const styles = stylex.create({
+  menuIcon: { width: sizeVars.iconLg, height: sizeVars.iconLg },
+  icon: { width: sizeVars.iconMd, height: sizeVars.iconMd },
+  tile: { marginBlock: 0, marginInlineStart: 0, marginInlineEnd: 0, minWidth: 0 },
+  floatingActions: {
+    flexDirection: "column",
+    gap: 0,
+    position: "absolute",
+    top: 0,
+    margin: 0,
+    transform: "none",
+    insetInlineEnd: 0,
+    zIndex: 1,
+  },
+  tileView: {
+    paddingInline: 0,
+    paddingBlock: 0,
+    display: "flex",
+    flexDirection: "column",
+    height: "4.5rem",
+    minHeight: "4.5rem",
+    justifyContent: "center",
+  },
+  tileContent: { display: "flex", flexDirection: "column", alignItems: "center", gap: spacingVars.space1 },
+  tileMarkerContent: { flexDirection: "row", justifyContent: "center" },
+  tileLabel: {
+    width: "fit-content",
+    maxWidth: "100%",
+    height: "2lh",
+    flexShrink: 0,
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 2,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
+  },
+  tileTitleArea: { width: "100%" },
+  labelWithUrl: { display: "flex", alignItems: "baseline", gap: spacingVars.space1 },
+  titleText: { overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 },
+  domain: { color: colorVars.fgSecondary, overflow: "hidden", textOverflow: "ellipsis", minWidth: 0, flexShrink: 3 },
+  tileLink: { paddingInline: 0, paddingBlock: 0, textAlign: "center" },
+  actions: {
+    alignSelf: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: spacingVars.space1,
+  },
+  input: { minWidth: 0, width: "100%", flexGrow: 1 },
+
+  actionVisibility: {
+    opacity: { default: "var(--bookmark-actions-opacity, 0)", ":focus-within": 1 },
+    pointerEvents: { default: "var(--bookmark-actions-pointer-events, none)" as "auto", ":focus-within": "auto" },
+    transitionProperty: "opacity",
+    transitionDuration: motionVars.durationFast,
+  },
+  root: { position: "relative", marginInlineStart: 0, marginInlineEnd: spacingVars.space4 },
+  dragging: { opacity: 0.2 },
+  row: {
+    position: "relative",
+    "--bookmark-actions-pointer-events": { default: "none", ":hover": "auto", ":focus-within": "auto" },
+    "--bookmark-actions-opacity": { default: 0, ":hover": 1, ":focus-within": 1 },
+  },
+  view: {
+    borderWidth: 0,
+    paddingBlock: 0,
+    alignItems: "center",
+    gap: spacingVars.space2,
+    paddingInline: spacingVars.space2,
+    minHeight: sizeVars.controlMd,
+    borderRadius: radiusVars.sm,
+    ":hover": { backgroundColor: colorVars.interactionHover },
+  },
+  active: { backgroundColor: colorVars.interactionSelected },
+  titleArea: { alignSelf: "center", position: "relative", display: "grid", minWidth: 0, alignItems: "center" },
+  linkArea: {
+    ":focus-visible": {
+      outlineStyle: "solid",
+      outlineColor: colorVars.strokeFocus,
+      outlineWidth: sizeVars.focusRing,
+      outlineOffset: sizeVars.stroke,
+    },
+    color: colorVars.fgPrimary,
+    textDecoration: "none",
+    width: "100%",
+    position: "relative",
+    display: "grid",
+    gridTemplateColumns: "minmax(0,1fr)",
+    alignItems: "center",
+    minWidth: 0,
+  },
+  withoutIcon: { paddingInlineStart: sizeVars.controlSm },
+  withIcon: {
+    gridTemplateColumns: `calc(${sizeVars.controlSm} - ${spacingVars.space2}) minmax(0,1fr)`,
+    gap: spacingVars.space2,
+  },
+  link: {
+    paddingInline: spacingVars.space1,
+    pointerEvents: "auto",
+    width: "100%",
+    maxWidth: "100%",
+    minWidth: 0,
+    color: colorVars.fgPrimary,
+    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontWeight: typographyVars.fontWeightRegular,
+    lineHeight: typographyVars.lineHeightNormal,
+    textDecoration: "none",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    ":focus-visible": { outlineStyle: "solid", outlineColor: colorVars.strokeFocus, outlineWidth: sizeVars.focusRing },
+  },
+  form: {
+    width: "100%",
+    display: "grid",
+    gridTemplateColumns: "minmax(0,1fr) auto",
+    gap: spacingVars.space2,
+    alignItems: "start",
+    paddingInline: spacingVars.space2,
+  },
+  tileForm: { padding: 0, gridTemplateColumns: "minmax(0,1fr)", textAlign: "center" },
+  tileMarkerForm: { gridTemplateColumns: "auto minmax(0,1fr)", textAlign: "start" },
+  tileEditIcon: { justifyContent: "center" },
+  tileEditActions: { gridColumn: "1 / -1", justifySelf: "center" },
+  formWithIcon: { gridTemplateColumns: "auto minmax(0,1fr) auto" },
+  editIcon: { display: "flex", alignItems: "center", minHeight: sizeVars.controlMd },
+});
 
 type ItemProps = {
   itemEntry: BookmarkItemEntry;
+  showDropBefore?: boolean;
+  showDropAfter?: boolean;
   onDropIndexChange: (index: number | null) => void;
 };
 
-export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
+export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAfter }: ItemProps) {
+  const UI_LANGUAGE = useLanguage();
   const { item, itemIndex } = itemEntry;
-  const { activeBookmark, bookmarkIconMode, folders, isSearchActive, onBookmarksChange } = useBookmarkContext();
-  const view = deriveBookmarkItemView(item, bookmarkIconMode);
+  const label = deriveItemLabel(item);
+  const {
+    editor,
+    activeBookmark,
+    isEditMode,
+    folderDisplays,
+    folderViews,
+    defaultView,
+    bookmarkIconMode,
+    folders,
+    isSearchActive,
+    onBookmarksChange,
+  } = useBookmarkContext();
+
+  const display = folderDisplays?.[item.parentId];
+  const iconMode = display?.icon ?? bookmarkIconMode;
+  const displayMode = iconMode === "original" ? (folderViews[item.parentId] ?? defaultView) : "list";
+  let domain = "";
+  if (displayMode === "list" && display?.showUrl) {
+    try {
+      domain = new URL(item.url).hostname;
+    } catch {
+      /* Invalid legacy URLs have no domain. */
+    }
+  }
+  const hideTitle = displayMode === "icons" && iconMode === "original" && display?.showTitle === false;
+  const view = deriveBookmarkItemView(item, iconMode);
   const { icon, iconMarker, showBookmarkIcon } = view;
   const titleInputRef = useRef<HTMLInputElement | null>(null);
   const urlErrorId = useId();
   const isActive = activeBookmark?.kind === "item" && activeBookmark.id === item.id;
-  const { editor, handleSubmit, isEditing, isUrlValid, openEditor, showActions, suppressActions } = useItemEdit(item);
+  const isEditing = editor.inlineEditingBookmark?.kind === "item" && editor.inlineEditingBookmark.id === item.id;
+  const isUrlValid = !isEditing || canNormalizeUrl(editor.inlineUrl);
+
+  function openEditor(event: MouseEvent<HTMLElement>) {
+    stopInteraction(event);
+    editor.openInlineItemEditor(item);
+  }
+
+  async function handleSubmit(event: SubmitEvent) {
+    event.preventDefault();
+    await editor.updateCurrentInlineEditor();
+  }
+
   const { handleRef, isDragSource, setItemElement } = useItemDnd({
+    horizontal: displayMode === "icons",
     isActive,
     isEditing,
     item,
@@ -38,7 +234,7 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
   });
 
   function deleteItem() {
-    void deleteBookmarkItem(item);
+    void deleteBookmarkItem(item).catch(notifyError);
   }
 
   async function moveItem(direction: "down" | "up") {
@@ -72,141 +268,195 @@ export function Item({ itemEntry, onDropIndexChange }: ItemProps) {
 
   return (
     <div
-      className={cn("group/bookmark-item relative mr-4 ml-9", isDragSource && "opacity-20")}
-      data-suppress-bookmark-actions={suppressActions ? "" : undefined}
+      id={`bookmark-${item.id}`}
+      {...stylex.props(styles.root, displayMode === "icons" && styles.tile, isDragSource && styles.dragging)}
       ref={setItemElement}
-      onMouseMove={suppressActions ? showActions : undefined}
     >
-      <div className="group/bookmark-row relative min-h-8">
-        <DragHandle
-          kind="item"
-          isDragging={isDragSource}
-          label={UI_LANGUAGE.bookmark.action.move}
-          onMove={moveItem}
-          ref={handleRef}
-        />
+      {showDropBefore ? <DropIndicator edge="before" placement="inside" vertical={displayMode === "icons"} /> : null}
+      {showDropAfter ? <DropIndicator edge="after" placement="inside" vertical /> : null}
+      <div {...stylex.props(styles.row)}>
         {!isEditing ? (
-          <div
-            className={cn(
-              "hover:bg-accent grid-cols-mds-bookmark-item grid min-h-6 min-w-0 items-center gap-2 border-b border-transparent px-1 transition-colors",
-              isActive && "bg-accent",
-            )}
+          <DragHandle
+            floating={displayMode === "icons"}
+            kind="item"
+            isDragging={isDragSource}
+            label={UI_LANGUAGE.bookmark.move}
+            onMove={moveItem}
+            ref={handleRef}
+          />
+        ) : null}
+        {!isEditing ? (
+          <ContentRow
+            size="xs"
+            xstyle={[styles.view, displayMode === "icons" && styles.tileView, isActive && styles.active]}
           >
-            <div className="relative grid min-w-0 items-center">
-              <button
-                aria-label={UI_LANGUAGE.bookmark.action.edit}
-                className="focus-visible:ring-ring absolute inset-0 cursor-text rounded-sm outline-none focus-visible:ring-2"
-                type="button"
-                onClick={openEditor}
-                onPointerDown={openEditor}
-              />
-              <div
-                className={cn(
-                  "pointer-events-none relative z-10 grid min-w-0 items-center pr-2",
-                  showBookmarkIcon ? "grid-cols-mds-bookmark-item-icon-title gap-2" : "grid-cols-[minmax(0,auto)]",
-                )}
-              >
-                {showBookmarkIcon ? <ItemIcon icon={icon} label={deriveItemLabel(item)} marker={iconMarker} /> : null}
-                <a
-                  className="text-mds-bookmark-item text-foreground pointer-events-auto w-fit max-w-lg min-w-0 truncate text-left font-normal"
-                  href={item.url}
-                >
-                  {deriveItemLabel(item)}
-                </a>
-              </div>
-            </div>
-            <div
-              className={cn(
-                "flex w-21 items-center justify-end gap-0 opacity-0 transition-opacity group-hover/bookmark-row:opacity-100 focus-within:opacity-100",
-                suppressActions && "opacity-0!",
-              )}
+            <ContentRowContent xstyle={[styles.titleArea, displayMode === "icons" && styles.tileTitleArea]}>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <a
+                        aria-label={label}
+                        title={label}
+                        href={item.url}
+                        onClick={isEditMode ? openEditor : undefined}
+                        {...stylex.props(
+                          styles.linkArea,
+                          displayMode !== "icons" && (showBookmarkIcon ? styles.withIcon : styles.withoutIcon),
+                          displayMode === "icons" && styles.tileContent,
+                          displayMode === "icons" && iconMarker && styles.tileMarkerContent,
+                        )}
+                      >
+                        {showBookmarkIcon ? (
+                          <ItemIcon
+                            icon={icon}
+                            label={label}
+                            marker={iconMarker}
+                            size={displayMode === "icons" ? "grid" : "default"}
+                          />
+                        ) : null}
+                        {!hideTitle ? (
+                          <span
+                            title={label}
+                            {...stylex.props(
+                              styles.link,
+                              Boolean(domain) && styles.labelWithUrl,
+                              displayMode === "icons" && iconMode === "original" && styles.tileLabel,
+                              displayMode === "icons" && !iconMarker && styles.tileLink,
+                            )}
+                          >
+                            {domain ? (
+                              <>
+                                <span {...stylex.props(styles.titleText)}>{label}</span>
+                                <span {...stylex.props(styles.domain)}>· {domain}</span>
+                              </>
+                            ) : (
+                              label
+                            )}
+                          </span>
+                        ) : null}
+                      </a>
+                    }
+                  />
+                  {hideTitle ? <TooltipContent>{label}</TooltipContent> : null}
+                </Tooltip>
+              </TooltipProvider>
+            </ContentRowContent>
+            <ContentRowActions
+              xstyle={[styles.actions, styles.actionVisibility, displayMode === "icons" && styles.floatingActions]}
             >
-              <Button
-                aria-label={UI_LANGUAGE.bookmark.action.remove}
-                className="text-muted-foreground hover:text-muted-foreground hover:bg-transparent"
-                size="icon-sm"
-                title={UI_LANGUAGE.bookmark.action.remove}
-                variant="ghost"
-                onMouseDown={stopInteraction}
-                onClick={(event) => {
-                  stopInteraction(event);
-                  deleteItem();
-                }}
-              >
-                <TrashSimpleIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button variant="ghost" size="icon-xs" aria-label={`${label} ${UI_LANGUAGE.settings.actions}`}>
+                      {displayMode === "icons" ? (
+                        <DotsThreeVerticalIcon weight="bold" aria-hidden="true" {...stylex.props(styles.menuIcon)} />
+                      ) : (
+                        <DotsThreeIcon weight="bold" aria-hidden="true" {...stylex.props(styles.menuIcon)} />
+                      )}
+                    </Button>
+                  }
+                />
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={openEditor}>
+                    <PencilSimpleIcon aria-hidden="true" />
+                    {UI_LANGUAGE.bookmark.edit}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={deleteItem}>
+                    <TrashSimpleIcon aria-hidden="true" />
+                    {UI_LANGUAGE.bookmark.remove}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </ContentRowActions>
+          </ContentRow>
         ) : null}
         {isEditing ? (
-          <form
-            className={cn(
-              "border-border grid min-w-0 items-start gap-x-2 gap-y-1 border-b px-1",
-              showBookmarkIcon ? "grid-cols-mds-bookmark-item-icon" : "grid-cols-[minmax(0,1fr)_auto]",
-            )}
-            data-inline-bookmark-editor=""
-            onSubmit={handleSubmit}
+          <InputGroup
+            invalid={!isUrlValid}
+            xstyle={[editorStyles.group, editorStyles.inputGroup, !isUrlValid && editorStyles.invalid]}
           >
-            {showBookmarkIcon ? (
-              <div className="row-span-2 flex h-6 items-center" data-bookmark-edit-icon="">
-                <ItemIcon icon={icon} label={deriveItemLabel(item)} marker={iconMarker} />
-              </div>
-            ) : null}
-            <div className="grid min-w-0 gap-1">
-              <Input
-                aria-label={UI_LANGUAGE.bookmark.label.title}
-                className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-6 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
-                ref={titleInputRef}
-                value={editor.inlineTitle}
-                onChange={(event) => editor.setInlineTitle(event.target.value)}
-              />
-              <Input
-                aria-label={UI_LANGUAGE.bookmark.label.url}
-                aria-describedby={isUrlValid ? undefined : urlErrorId}
-                aria-invalid={!isUrlValid}
-                className="text-mds-bookmark-item placeholder:text-mds-shortcut-label md:text-mds-bookmark-item h-6 rounded-none border-0 bg-transparent px-0 font-normal caret-current focus-visible:ring-0"
-                title={isUrlValid ? undefined : UI_LANGUAGE.bookmark.error.invalidUrl}
-                value={editor.inlineUrl}
-                onChange={(event) => editor.setInlineUrl(event.target.value)}
-              />
-              {!isUrlValid ? (
-                <p className="text-destructive text-mds-caption" id={urlErrorId} role="alert">
-                  {UI_LANGUAGE.bookmark.error.invalidUrl}
-                </p>
+            <form
+              {...stylex.props(
+                styles.form,
+                showBookmarkIcon && styles.formWithIcon,
+                displayMode === "icons" && styles.tileForm,
+                displayMode === "icons" && iconMarker && styles.tileMarkerForm,
+              )}
+              data-inline-bookmark-editor=""
+              data-bookmark-draft=""
+              onSubmit={handleSubmit}
+            >
+              {showBookmarkIcon ? (
+                <div
+                  {...stylex.props(styles.editIcon, displayMode === "icons" && styles.tileEditIcon)}
+                  data-bookmark-edit-icon=""
+                >
+                  <ItemIcon
+                    icon={icon}
+                    label={label}
+                    marker={iconMarker}
+                    size={displayMode === "icons" ? "grid" : "default"}
+                  />
+                </div>
               ) : null}
-            </div>
-            <div className="flex h-6 items-center justify-end gap-0">
-              <Button
-                aria-label={UI_LANGUAGE.bookmark.action.save}
-                className="text-muted-foreground hover:text-muted-foreground hover:bg-transparent"
-                disabled={!isUrlValid}
-                size="icon-sm"
-                title={UI_LANGUAGE.bookmark.action.save}
-                variant="ghost"
-                onMouseDown={stopInteraction}
-                onClick={(event) => {
-                  stopInteraction(event);
-                  void editor.updateCurrentInlineEditor();
-                }}
-              >
-                <CheckIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                aria-label={UI_LANGUAGE.bookmark.action.remove}
-                className="text-muted-foreground hover:text-muted-foreground hover:bg-transparent"
-                size="icon-sm"
-                title={UI_LANGUAGE.bookmark.action.remove}
-                variant="ghost"
-                onMouseDown={stopInteraction}
-                onClick={(event) => {
-                  stopInteraction(event);
-                  deleteItem();
-                }}
-              >
-                <TrashSimpleIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </form>
+              <div {...stylex.props(editorStyles.fields)}>
+                <Input
+                  variant="inline"
+                  aria-label={UI_LANGUAGE.bookmark.title}
+                  xstyle={styles.input}
+                  ref={titleInputRef}
+                  value={editor.inlineTitle}
+                  onChange={(e) => editor.setInlineTitle(e.target.value)}
+                />
+                <Field invalid={!isUrlValid}>
+                  <Input
+                    variant="inline"
+                    aria-label={UI_LANGUAGE.bookmark.url}
+                    aria-describedby={isUrlValid ? undefined : urlErrorId}
+                    aria-invalid={!isUrlValid}
+                    xstyle={styles.input}
+                    title={isUrlValid ? undefined : UI_LANGUAGE.bookmark.invalidUrl}
+                    value={editor.inlineUrl}
+                    onChange={(e) => editor.setInlineUrl(e.target.value)}
+                  />
+                  {!isUrlValid ? (
+                    <FieldError match={true} id={urlErrorId} role="alert">
+                      {UI_LANGUAGE.bookmark.invalidUrl}
+                    </FieldError>
+                  ) : null}
+                </Field>
+              </div>
+              <ButtonGroup xstyle={[editorStyles.actions, displayMode === "icons" && styles.tileEditActions]}>
+                <Button
+                  aria-label={UI_LANGUAGE.bookmark.save}
+                  disabled={!isUrlValid}
+                  size="icon-sm"
+                  title={UI_LANGUAGE.bookmark.save}
+                  variant="ghost"
+                  onMouseDown={stopInteraction}
+                  onClick={(e) => {
+                    stopInteraction(e);
+                    void editor.updateCurrentInlineEditor();
+                  }}
+                >
+                  <CheckIcon {...stylex.props(styles.icon)} />
+                </Button>
+                <Button
+                  aria-label={UI_LANGUAGE.bookmark.cancel}
+                  size="icon-sm"
+                  title={UI_LANGUAGE.bookmark.cancel}
+                  variant="ghost"
+                  type="button"
+                  onMouseDown={stopInteraction}
+                  onClick={editor.cancelInlineEditor}
+                >
+                  <XIcon {...stylex.props(styles.icon)} />
+                </Button>
+              </ButtonGroup>
+              {editor.hasSaveError ? <SaveError /> : null}
+            </form>
+          </InputGroup>
         ) : null}
       </div>
     </div>

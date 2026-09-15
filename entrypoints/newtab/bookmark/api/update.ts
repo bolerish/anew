@@ -1,18 +1,21 @@
-import { browser } from "wxt/browser";
-
 import { normalizeUrl } from "../lib/url";
+import { performBookmarkCommand } from "../model/edit-session";
 import { isRootBookmarkFolder, type BookmarkFolder, type BookmarkItem } from "../model/types";
 
 export async function updateTitle(bookmarkId: string, title: string): Promise<void> {
-  await browser.bookmarks.update(bookmarkId, { title });
+  await performBookmarkCommand({ type: "update", id: bookmarkId, input: { title } });
 }
 
 export async function updateItem(item: BookmarkItem, input: { title: string; url: string }): Promise<void> {
   const normalizedUrl = normalizeUrl(input.url);
 
-  await browser.bookmarks.update(item.id, {
-    title: input.title,
-    url: normalizedUrl,
+  await performBookmarkCommand({
+    type: "update",
+    id: item.id,
+    input: {
+      title: input.title,
+      url: normalizedUrl,
+    },
   });
 }
 
@@ -21,9 +24,9 @@ export async function deleteFolder(folder: BookmarkFolder): Promise<void> {
     return;
   }
 
-  await browser.bookmarks.removeTree(folder.id);
+  await performBookmarkCommand({ type: "remove", id: folder.id, folder: true });
 }
 
 export async function deleteItem(item: BookmarkItem): Promise<void> {
-  await browser.bookmarks.remove(item.id);
+  await performBookmarkCommand({ type: "remove", id: item.id, folder: false });
 }

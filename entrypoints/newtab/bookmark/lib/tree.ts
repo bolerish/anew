@@ -64,7 +64,7 @@ function deriveFolderLocations(node: BookmarkTreeNode, rootTitle: string, depth:
   ];
 }
 
-function resolveBookmarkNode(
+export function resolveBookmarkNode(
   bookmarkTree: readonly BookmarkTreeNode[],
   nodeId: string | null,
 ): BookmarkTreeNode | null {
