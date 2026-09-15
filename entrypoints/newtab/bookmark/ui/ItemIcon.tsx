@@ -7,19 +7,33 @@ import { colorVars, spacingVars, sizeVars, radiusVars, typographyVars } from "~s
 import { getIconAppearance } from "../lib/icon-appearance";
 
 const styles = stylex.create({
-  dot: { width: spacingVars.space1, height: spacingVars.space1 },
+  dot: {
+    width: `calc(${spacingVars.space1} * var(--mds-content-scale, 1))`,
+    height: `calc(${spacingVars.space1} * var(--mds-content-scale, 1))`,
+  },
   marker: {
-    width: sizeVars.iconLg,
-    height: sizeVars.iconLg,
+    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
     display: "grid",
     placeItems: "center",
     flexShrink: 0,
     color: colorVars.fgSecondary,
-    fontSize: typographyVars.fontSizeSm,
+    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-content-scale, 1))`,
   },
-  fallback: { backgroundColor: colorVars.bgSubtle, borderRadius: radiusVars.sm, fontSize: typographyVars.fontSizeXs },
-  image: { width: sizeVars.iconMd, height: sizeVars.iconMd, objectFit: "contain" },
-  gridIcon: { width: sizeVars.iconLg, height: sizeVars.iconLg },
+  fallback: {
+    backgroundColor: colorVars.bgSubtle,
+    borderRadius: radiusVars.sm,
+    fontSize: `calc(${typographyVars.fontSizeXs} * var(--mds-content-scale, 1))`,
+  },
+  image: {
+    width: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
+    height: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
+    objectFit: "contain",
+  },
+  gridIcon: {
+    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+  },
   invert: { filter: "invert(1)" },
   dim: { filter: "brightness(0.9)" },
 });
