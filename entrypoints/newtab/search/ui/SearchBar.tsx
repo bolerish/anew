@@ -50,7 +50,8 @@ export function SearchBar({ onSearch, onValueChange, value, results }: SearchBar
     };
 
     function handleSearchFocusShortcut(e: KeyboardEvent) {
-      if (e.isComposing || e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) {
+      const hasModifier = e.metaKey || e.ctrlKey || e.altKey;
+      if (e.isComposing || e.key !== "/" || hasModifier) {
         return;
       }
 

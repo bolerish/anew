@@ -15,17 +15,15 @@ export async function createItem(input: {
     session.active && session.draft
       ? (resolveBookmarkNode(session.draft.tree, input.parentId)?.children ?? [])
       : await browser.bookmarks.getChildren(input.parentId);
-  if (
-    children.some((bookmark) => {
-      if (!bookmark.url) return false;
-      try {
-        return new URL(bookmark.url).toString() === normalizedUrl;
-      } catch {
-        return false;
-      }
-    })
-  )
-    return "duplicate";
+  const isDuplicate = children.some((bookmark) => {
+    if (!bookmark.url) return false;
+    try {
+      return new URL(bookmark.url).toString() === normalizedUrl;
+    } catch {
+      return false;
+    }
+  });
+  if (isDuplicate) return "duplicate";
 
   await performBookmarkCommand({
     type: "create",

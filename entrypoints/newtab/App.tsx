@@ -231,6 +231,9 @@ export default function App() {
     loadBookmarks,
   });
   const isEditMode = session.active;
+  const canEditBookmarks = isEditMode && !session.busy && !session.failed;
+  const isToolbarBlocked = session.busy || hasDraft;
+  const hasChangesToSave = session.canUndo || session.failed;
   const bookmarkSettings = session.draft?.settings ?? storedBookmarkSettings;
 
   return (
@@ -277,7 +280,7 @@ export default function App() {
         <Bookmark
           disabled={session.busy || session.failed}
           key={String(isEditMode)}
-          isEditMode={isEditMode && !session.busy && !session.failed}
+          isEditMode={canEditBookmarks}
           settings={bookmarkSettings}
           bookmarkIconMode={appearanceSettings.bookmarkIconDisplayMode}
           folders={folders}
@@ -308,7 +311,7 @@ export default function App() {
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.undo}
-                          disabled={!session.canUndo || hasDraft || session.busy}
+                          disabled={!session.canUndo || isToolbarBlocked}
                           onClick={undoEditing}
                         >
                           <ArrowLeftIcon aria-hidden="true" />
@@ -325,7 +328,7 @@ export default function App() {
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.redo}
-                          disabled={!session.canRedo || hasDraft || session.busy}
+                          disabled={!session.canRedo || isToolbarBlocked}
                           onClick={redoEditing}
                         >
                           <ArrowRightIcon aria-hidden="true" />
@@ -345,7 +348,7 @@ export default function App() {
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.save}
-                          disabled={session.busy || hasDraft || (!session.canUndo && !session.failed)}
+                          disabled={isToolbarBlocked || !hasChangesToSave}
                           onClick={() => void finishEditing()}
                         >
                           <CheckIcon aria-hidden="true" />

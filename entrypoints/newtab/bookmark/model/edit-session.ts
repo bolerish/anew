@@ -28,11 +28,12 @@ export function useEditSession() {
   return useSyncExternalStore(subscribeEditSession, getEditSession);
 }
 function publish() {
+  const canNavigateHistory = !state.busy && !state.failed;
   state = {
     ...state,
     draft: history[cursor] ?? null,
-    canUndo: cursor > 0 && !state.busy && !state.failed,
-    canRedo: cursor < history.length - 1 && !state.busy && !state.failed,
+    canUndo: cursor > 0 && canNavigateHistory,
+    canRedo: cursor < history.length - 1 && canNavigateHistory,
   };
   for (const listener of listeners) listener();
 }

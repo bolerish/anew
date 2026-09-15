@@ -48,15 +48,19 @@ export function useEditMode({
   });
   useEffect(() => {
     function handleEditShortcut(e: KeyboardEvent) {
-      if (e.key === "Escape" && !open && !e.defaultPrevented && !e.isComposing) {
+      const isEventHandled = open || e.defaultPrevented || e.isComposing;
+      const isSettingsTrigger = e.target instanceof HTMLElement && Boolean(e.target.closest("[data-settings-trigger]"));
+      const isFolderEditShortcut =
+        e.code === "KeyE" && e.target instanceof HTMLElement && Boolean(e.target.closest("[data-folder-trigger]"));
+      const isInteractiveTarget = isKeyboardShortcutTarget(e.target);
+      if (e.key === "Escape" && !isEventHandled) {
         if (!document.querySelector("[data-bookmark-draft]")) {
           if (isEditMode) {
             cancelEditing();
             setEditMessage("");
             e.preventDefault();
           } else if (
-            (!isKeyboardShortcutTarget(e.target) ||
-              (e.target instanceof HTMLElement && e.target.closest("[data-settings-trigger]"))) &&
+            (!isInteractiveTarget || isSettingsTrigger) &&
             !document.querySelector('[role="menu"], [role="listbox"]')
           ) {
             e.preventDefault();
@@ -65,19 +69,9 @@ export function useEditMode({
         }
         return;
       }
-      if (
-        open ||
-        e.defaultPrevented ||
-        e.isComposing ||
-        e.repeat ||
-        e.metaKey ||
-        e.ctrlKey ||
-        e.altKey ||
-        e.shiftKey ||
-        (isKeyboardShortcutTarget(e.target) &&
-          !(e.code === "KeyE" && e.target instanceof HTMLElement && e.target.closest("[data-folder-trigger]")))
-      )
-        return;
+      const hasModifier = e.metaKey || e.ctrlKey || e.altKey || e.shiftKey;
+      const isTargetBlocked = isInteractiveTarget && !isFolderEditShortcut;
+      if (isEventHandled || e.repeat || hasModifier || isTargetBlocked) return;
       if (e.key === "Enter" && isEditMode) {
         e.preventDefault();
         saveFromShortcut();
