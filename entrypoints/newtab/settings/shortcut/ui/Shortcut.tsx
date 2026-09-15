@@ -1,28 +1,30 @@
-import { UI_LANGUAGE } from "~shared/lib/language";
+import * as stylex from "@stylexjs/stylex";
+import { useStorageValue } from "~shared/hooks/useStorageValue";
+import { useLanguage } from "~shared/lib/preferences";
+import { spacingVars } from "~shared/styles/semantic.stylex";
+import { Field, FieldDescription, FieldLabel } from "~shared/ui/field";
 import { Switch } from "~shared/ui/switch";
-
-import { Section, SectionContent, SectionHeader } from "~/entrypoints/newtab/settings/ui/Section";
-import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
 
 import { getInitialShortcutSettings, shortcutStorage, updateShortcutSetting } from "../model/shortcut";
 
+const styles = stylex.create({
+  row: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space3 },
+});
 export function Shortcut() {
+  const UI_LANGUAGE = useLanguage();
   const { showShortcutHints } = useStorageValue(shortcutStorage, getInitialShortcutSettings);
-
   return (
-    <Section className="gap-0">
-      <SectionHeader title="Shortcuts">
+    <Field>
+      <div {...stylex.props(styles.row)}>
+        <FieldLabel htmlFor="shortcut-hints">{UI_LANGUAGE.settings.shortcuts}</FieldLabel>
+
         <Switch
+          id="shortcut-hints"
           checked={showShortcutHints}
-          aria-label="Footer hints"
           onCheckedChange={(checked) => void updateShortcutSetting("showShortcutHints", checked)}
         />
-      </SectionHeader>
-      <SectionContent>
-        <p className="text-muted-foreground/75 text-mds-setting-group">
-          {UI_LANGUAGE.settings.shortcut.hints.description}
-        </p>
-      </SectionContent>
-    </Section>
+      </div>
+      <FieldDescription>{UI_LANGUAGE.settings.shortcutsDescription}</FieldDescription>
+    </Field>
   );
 }

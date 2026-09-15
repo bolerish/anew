@@ -3,7 +3,7 @@ type StoppableInteractionEvent = {
   stopPropagation: () => void;
 };
 
-export function stopInteraction(event: StoppableInteractionEvent): void {
-  event.preventDefault();
-  event.stopPropagation();
+export function stopInteraction(e: StoppableInteractionEvent): void {
+  e.preventDefault();
+  e.stopPropagation();
 }

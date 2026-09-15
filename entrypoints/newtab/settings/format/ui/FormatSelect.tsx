@@ -1,18 +1,17 @@
-import { UI_LANGUAGE } from "~shared/lib/language";
-import { cn } from "~shared/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { formatDate } from "~newtab/date/lib/format";
+import { useLanguage, usePreferences } from "~shared/lib/preferences";
+import { spacingVars } from "~shared/styles/semantic.stylex";
+import { Field, FieldDescription, FieldError } from "~shared/ui/field";
 import { Input } from "~shared/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~shared/ui/select";
+import { Select, SelectPopup, SelectList, SelectItem, SelectTrigger, SelectValue } from "~shared/ui/select";
 
 import type { DateFormat } from "../model/date";
 
-const DATE_FORMAT_OPTIONS = [
-  { label: "May 21, 2026", value: "localized-medium" },
-  { label: "Thu, May 21", value: "localized-short-weekday" },
-  { label: "Thursday, May 21", value: "localized-long-weekday" },
-  { label: "2026.05.21", value: "numeric-dot" },
-  { label: "2026-05-21", value: "numeric-dash" },
-  { label: "Custom", value: "custom" },
-] satisfies readonly { label: string; value: DateFormat }[];
+const styles = stylex.create({
+  root: { display: "grid", gap: spacingVars.space2 },
+  fullWidth: { width: "100%" },
+});
 
 type FormatSelectProps = {
   customDateFormat: string;
@@ -22,6 +21,12 @@ type FormatSelectProps = {
   onDateFormatChange: (value: DateFormat) => void;
 };
 
+type CustomFormatInputProps = {
+  disabled?: boolean;
+  onValueChange: (value: string) => void;
+  value: string;
+};
+
 export function FormatSelect({
   customDateFormat,
   dateFormat,
@@ -29,34 +34,44 @@ export function FormatSelect({
   onCustomDateFormatChange,
   onDateFormatChange,
 }: FormatSelectProps) {
+  const UI_LANGUAGE = useLanguage();
+  const { language } = usePreferences();
+  const DATE_FORMAT_OPTIONS = [
+    { label: formatDate(new Date(2026, 4, 21), "localized-medium", "", language), value: "localized-medium" },
+    {
+      label: formatDate(new Date(2026, 4, 21), "localized-short-weekday", "", language),
+      value: "localized-short-weekday",
+    },
+    {
+      label: formatDate(new Date(2026, 4, 21), "localized-long-weekday", "", language),
+      value: "localized-long-weekday",
+    },
+    { label: "2026.05.21", value: "numeric-dot" },
+    { label: "2026-05-21", value: "numeric-dash" },
+    { label: UI_LANGUAGE.settings.custom, value: "custom" },
+  ] satisfies readonly { label: string; value: DateFormat }[];
   const formatLabels = new Map(DATE_FORMAT_OPTIONS.map((option) => [option.value, option.label]));
 
   return (
-    <div className="-mx-2 grid gap-1.5 px-2 py-1">
-      <Select<DateFormat> value={dateFormat} onValueChange={onDateFormatChange}>
-        <SelectTrigger
-          aria-label="Date format"
-          className={cn(
-            "border-input text-foreground/80 text-mds-setting-item h-7 w-full bg-transparent",
-            disabled && "border-border bg-muted/40 text-muted-foreground opacity-100",
-          )}
-          disabled={disabled}
-          size="sm"
-        >
+    <div {...stylex.props(styles.root)}>
+      <Select<DateFormat>
+        value={dateFormat}
+        onValueChange={(value) => {
+          if (value) onDateFormatChange(value);
+        }}
+      >
+        <SelectTrigger aria-label={UI_LANGUAGE.settings.dateFormat} xstyle={styles.fullWidth} disabled={disabled}>
           <SelectValue>{(value) => formatLabels.get(value) ?? value}</SelectValue>
         </SelectTrigger>
-        <SelectContent
-          align="start"
-          alignItemWithTrigger={false}
-          className="w-anchor min-w-anchor font-mono"
-          side="bottom"
-        >
-          {DATE_FORMAT_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
+        <SelectPopup align="start" alignItemWithTrigger={false} side="bottom">
+          <SelectList>
+            {DATE_FORMAT_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectList>
+        </SelectPopup>
       </Select>
       {dateFormat === "custom" ? (
         <CustomFormatInput disabled={disabled} value={customDateFormat} onValueChange={onCustomDateFormatChange} />
@@ -65,34 +80,31 @@ export function FormatSelect({
   );
 }
 
-type CustomFormatInputProps = {
-  disabled?: boolean;
-  onValueChange: (value: string) => void;
-  value: string;
-};
-
 function CustomFormatInput({ disabled, onValueChange, value }: CustomFormatInputProps) {
+  const UI_LANGUAGE = useLanguage();
   const isValid = validateCustomDateFormat(value);
 
   return (
-    <div className="grid gap-1">
+    <Field invalid={!isValid}>
       <Input
-        aria-describedby="custom-date-format-hint"
+        aria-describedby={isValid ? "custom-date-format-hint" : "custom-date-format-error"}
         aria-invalid={!isValid}
-        aria-label="Custom date format"
-        className="border-input text-foreground/80 text-mds-setting-item placeholder:text-muted-foreground/55 aria-invalid:border-destructive h-7 bg-transparent px-2.5 py-1 font-mono focus-visible:ring-0"
+        aria-label={UI_LANGUAGE.settings.customDateFormat}
         disabled={disabled}
         placeholder="MMM D, YYYY"
         value={value}
-        onChange={(event) => onValueChange(event.target.value)}
+        onChange={(e) => onValueChange(e.target.value)}
       />
-      <p
-        className={cn("text-mds-setting-group p-1", isValid ? "text-muted-foreground/75" : "text-destructive")}
-        id="custom-date-format-hint"
-      >
-        {UI_LANGUAGE.settings.date.customFormat.description}
-      </p>
-    </div>
+      {isValid ? (
+        <FieldDescription id="custom-date-format-hint">
+          {UI_LANGUAGE.settings.customDateFormatDescription}
+        </FieldDescription>
+      ) : (
+        <FieldError match={true} id="custom-date-format-error" role="alert">
+          {UI_LANGUAGE.settings.customDateFormatError}
+        </FieldError>
+      )}
+    </Field>
   );
 }
 

@@ -1,3 +1,7 @@
+import * as stylex from "@stylexjs/stylex";
+import { usePreferences } from "~shared/lib/preferences";
+import { colorVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
+
 import {
   dateStorage,
   getInitialDateSettings,
@@ -9,21 +13,36 @@ import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
 import { formatCurrentDate, formatCurrentTime } from "../lib/format";
 import { useCurrentDateTime } from "../model/useCurrentDateTime";
 
+const styles = stylex.create({
+  root: { minWidth: 0 },
+  content: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: spacingVars.space2,
+    color: colorVars.fgSecondary,
+    fontFamily: typographyVars.fontFamilyHeading,
+    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    lineHeight: typographyVars.lineHeightNormal,
+  },
+});
+
 export function DateTime() {
+  const { language } = usePreferences();
   const dateSettings = useStorageValue(dateStorage, getInitialDateSettings);
   const timeSettings = useStorageValue(timeStorage, getInitialTimeSettings);
   const currentDateTime = useCurrentDateTime();
-  const formattedDate = dateSettings.showDate ? formatCurrentDate(currentDateTime, dateSettings) : null;
-  const formattedTime = formatCurrentTime(currentDateTime, timeSettings);
+  const formattedDate = dateSettings.showDate ? formatCurrentDate(currentDateTime, dateSettings, language) : null;
+  const formattedTime = formatCurrentTime(currentDateTime, timeSettings, language);
 
   if (!formattedDate && !formattedTime) {
     return null;
   }
 
   return (
-    <div className="col-start-1 row-start-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 overflow-hidden">
-      <div className="text-mds-content flex min-w-0 items-center gap-1 whitespace-nowrap">
-        {formattedDate ? <p className="min-w-0">{formattedDate}</p> : null}
+    <div {...stylex.props(styles.root)}>
+      <div {...stylex.props(styles.content)}>
+        {formattedDate ? <p>{formattedDate}</p> : null}
         {formattedDate && formattedTime ? <span aria-hidden="true">·</span> : null}
         {formattedTime ? <time dateTime={currentDateTime.toISOString()}>{formattedTime}</time> : null}
       </div>

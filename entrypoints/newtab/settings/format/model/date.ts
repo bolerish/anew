@@ -1,3 +1,5 @@
+import { notifyError } from "~shared/lib/notify-error";
+
 import { storage } from "#imports";
 
 export type DateFormat =
@@ -49,17 +51,22 @@ export async function updateDateSetting<SettingName extends keyof DateSettings>(
   settingName: SettingName,
   value: DateSettings[SettingName],
 ): Promise<void> {
-  const settings = await dateStorage.getValue();
+  try {
+    const settings = await dateStorage.getValue();
 
-  await dateStorage.setValue(
-    sanitizeDateSettings({
-      ...settings,
-      [settingName]: value,
-    }),
-  );
+    await dateStorage.setValue(
+      sanitizeDateSettings({
+        ...settings,
+        [settingName]: value,
+      }),
+    );
+  } catch (error) {
+    await notifyError(error);
+  }
 }
 
-function sanitizeDateSettings(settings: Partial<DateSettings>): DateSettings {
+function sanitizeDateSettings(value: unknown): DateSettings {
+  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   return {
     customDateFormat:
       typeof settings.customDateFormat === "string"

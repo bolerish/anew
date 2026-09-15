@@ -1,3 +1,5 @@
+import { notifyError } from "~shared/lib/notify-error";
+
 import { storage } from "#imports";
 
 export type TimeFormat = "24h" | "12h";
@@ -33,17 +35,26 @@ export async function updateTimeSetting<SettingName extends keyof TimeSettings>(
   settingName: SettingName,
   value: TimeSettings[SettingName],
 ): Promise<void> {
-  const settings = await timeStorage.getValue();
-
-  await timeStorage.setValue(
-    sanitizeTimeSettings({
-      ...settings,
-      [settingName]: value,
-    }),
-  );
+  await updateTimeSettings({ [settingName]: value });
 }
 
-function sanitizeTimeSettings(settings: Partial<TimeSettings>): TimeSettings {
+export async function updateTimeSettings(patch: Partial<TimeSettings>): Promise<void> {
+  try {
+    const settings = await timeStorage.getValue();
+
+    await timeStorage.setValue(
+      sanitizeTimeSettings({
+        ...settings,
+        ...patch,
+      }),
+    );
+  } catch (error) {
+    await notifyError(error);
+  }
+}
+
+function sanitizeTimeSettings(value: unknown): TimeSettings {
+  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   return {
     showTime: typeof settings.showTime === "boolean" ? settings.showTime : DEFAULT_TIME_SETTINGS.showTime,
     showTimeSeconds:

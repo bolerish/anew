@@ -6,5 +6,7 @@ export type AppearanceSettings = {
   bookmarkIconDisplayMode: BookmarkIconDisplayMode;
   cornerRadius: number;
   fontFamily: string;
-  fontSize: number | null;
+  headingFontFamily: string;
+  fontScale: number;
+  headingScale: number;
 };

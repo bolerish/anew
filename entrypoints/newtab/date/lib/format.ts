@@ -26,18 +26,22 @@ const FIXED_DATE_FORMAT_PATTERNS = {
   "numeric-dot": "YYYY.MM.DD",
 } satisfies Record<Extract<DateFormat, "numeric-dot" | "numeric-dash">, string>;
 
-export function formatCurrentDate(date: Date, settings: DateSettings): string {
-  return formatDate(date, settings.dateFormat, settings.customDateFormat);
+export function formatCurrentDate(date: Date, settings: DateSettings, locale = "en-US"): string {
+  return formatDate(date, settings.dateFormat, settings.customDateFormat, locale);
 }
 
-export function formatCurrentTime(date: Date, settings: TimeSettings): string | null {
+export function formatCurrentTime(
+  date: Date,
+  settings: TimeSettings,
+  locale = typeof navigator === "undefined" ? "en-US" : navigator.language,
+): string | null {
   if (!settings.showTime) {
     return null;
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     hour: settings.timeFormat === "12h" ? "numeric" : "2-digit",
-    hour12: settings.timeFormat === "12h",
+    hourCycle: settings.timeFormat === "12h" ? "h12" : "h23",
     minute: "2-digit",
     second: settings.showTimeSeconds ? "2-digit" : undefined,
   }).format(date);
@@ -69,13 +73,7 @@ function formatDatePattern(date: Date, pattern: string, locale: string): string 
     D: parts.day,
   };
 
-  let formattedDate = pattern;
-
-  for (const [token, value] of Object.entries(tokenValues)) {
-    formattedDate = formattedDate.replaceAll(token, value);
-  }
-
-  return formattedDate;
+  return pattern.replace(/YYYY|dddd|ddd|MMM|MM|DD|D/g, (token) => tokenValues[token]);
 }
 
 function deriveDateParts(date: Date, locale: string) {

@@ -1,8 +1,8 @@
 {
   "extensionName": {
-    "message": "Min - 书签新标签页"
+    "message": "Min - 从书签开始的新标签页"
   },
   "extensionDescription": {
-    "message": "在极简新标签页中搜索、打开和整理你的书签。"
+    "message": "在新标签页中查找并打开书签。拖动书签调整顺序，将文件夹放在你想要的位置。"
   }
 }

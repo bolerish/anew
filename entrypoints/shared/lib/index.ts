@@ -1,3 +1,2 @@
 export { stopInteraction } from "./event";
-export { UI_LANGUAGE } from "./language";
-export { cn } from "./utils";
+export { UI_LANGUAGE } from "../locales";

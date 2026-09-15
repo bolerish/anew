@@ -1,8 +1,8 @@
 {
   "extensionName": {
-    "message": "Min - Nueva pestaña para marcadores"
+    "message": "Min - Tus marcadores en una nueva pestaña"
   },
   "extensionDescription": {
-    "message": "Busca, abre y organiza tus marcadores en una nueva pestaña minimalista."
+    "message": "Busca y abre marcadores en una nueva pestaña. Arrástralos para cambiar su orden y coloca las carpetas donde quieras."
   }
 }

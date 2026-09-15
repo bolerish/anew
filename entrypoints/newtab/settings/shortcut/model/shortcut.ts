@@ -1,3 +1,5 @@
+import { notifyError } from "~shared/lib/notify-error";
+
 import { storage } from "#imports";
 
 export type ShortcutSettings = {
@@ -28,17 +30,22 @@ export async function updateShortcutSetting<SettingName extends keyof ShortcutSe
   settingName: SettingName,
   value: ShortcutSettings[SettingName],
 ): Promise<void> {
-  const settings = await shortcutStorage.getValue();
+  try {
+    const settings = await shortcutStorage.getValue();
 
-  await shortcutStorage.setValue(
-    sanitizeShortcutSettings({
-      ...settings,
-      [settingName]: value,
-    }),
-  );
+    await shortcutStorage.setValue(
+      sanitizeShortcutSettings({
+        ...settings,
+        [settingName]: value,
+      }),
+    );
+  } catch (error) {
+    await notifyError(error);
+  }
 }
 
-function sanitizeShortcutSettings(settings: Partial<ShortcutSettings>): ShortcutSettings {
+function sanitizeShortcutSettings(value: unknown): ShortcutSettings {
+  const settings = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
   return {
     showShortcutHints:
       typeof settings.showShortcutHints === "boolean"

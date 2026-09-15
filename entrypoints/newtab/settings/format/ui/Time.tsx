@@ -1,61 +1,74 @@
-import { UI_LANGUAGE } from "~shared/lib/language";
-import { Button } from "~shared/ui/button";
+import * as stylex from "@stylexjs/stylex";
+import { useState } from "react";
+import { formatCurrentTime } from "~newtab/date/lib/format";
+import { useStorageValue } from "~shared/hooks/useStorageValue";
+import { useLanguage, usePreferences } from "~shared/lib/preferences";
+import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "~shared/ui/select";
 import { Switch } from "~shared/ui/switch";
-import { ToggleGroup, ToggleGroupItem } from "~shared/ui/toggle-group";
 
-import { Section, SectionContent, SectionHeader, SectionItem } from "~/entrypoints/newtab/settings/ui/Section";
-import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
+import { Section, SectionContent, SectionHeader } from "../../ui/Section";
+import { getInitialTimeSettings, timeStorage, updateTimeSetting, updateTimeSettings } from "../model/time";
 
-import { getInitialTimeSettings, timeStorage, type TimeFormat, updateTimeSetting } from "../model/time";
+const styles = stylex.create({
+  fullWidth: { width: "100%" },
+});
 
 export function Time() {
+  const UI_LANGUAGE = useLanguage();
+  const { language } = usePreferences();
+  const formats = [
+    { value: "12h", timeFormat: "12h", showTimeSeconds: false },
+    { value: "12h-seconds", timeFormat: "12h", showTimeSeconds: true },
+    { value: "24h", timeFormat: "24h", showTimeSeconds: false },
+    { value: "24h-seconds", timeFormat: "24h", showTimeSeconds: true },
+  ] as const;
+  const [previewTime, setPreviewTime] = useState(() => new Date());
   const { showTime, showTimeSeconds, timeFormat } = useStorageValue(timeStorage, getInitialTimeSettings);
-
   return (
     <Section>
-      <SectionHeader title="Time">
+      <SectionHeader title={UI_LANGUAGE.settings.time}>
         <Switch
           checked={showTime}
-          aria-label="Time"
+          aria-label={UI_LANGUAGE.settings.time}
           onCheckedChange={(checked) => void updateTimeSetting("showTime", checked)}
         />
       </SectionHeader>
-      <SectionContent>
-        <SectionItem description={UI_LANGUAGE.settings.time.seconds.description} disabled={!showTime} label="Seconds">
-          <Button
-            aria-pressed={showTimeSeconds}
-            disabled={!showTime}
-            size="sm"
-            type="button"
-            variant="outline"
-            onClick={() => void updateTimeSetting("showTimeSeconds", !showTimeSeconds)}
-            className="text-mds-setting-item disabled:border-border disabled:bg-muted/40 disabled:text-muted-foreground disabled:aria-pressed:border-primary/30 disabled:aria-pressed:bg-primary/30 disabled:aria-pressed:text-primary dark:disabled:aria-pressed:bg-primary/25 dark:disabled:aria-pressed:text-primary-foreground h-7 w-full disabled:opacity-100"
-          >
-            Seconds
-          </Button>
-        </SectionItem>
-        <SectionItem disabled={!showTime} label="Time format">
-          <ToggleGroup
-            aria-label="Time format"
-            size="sm"
-            spacing={0}
-            type="single"
-            variant="outline"
-            disabled={!showTime}
-            value={timeFormat}
-            style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}
-            onValueChange={(value) => {
-              if (value) {
-                void updateTimeSetting("timeFormat", value as TimeFormat);
-              }
+      {showTime ? (
+        <SectionContent>
+          <Select
+            onOpenChange={(open) => {
+              if (open) setPreviewTime(new Date());
             }}
-            className="grid h-7 w-full"
+            value={`${timeFormat}${showTimeSeconds ? "-seconds" : ""}`}
+            onValueChange={(value) => {
+              const format = formats.find((format) => format.value === value);
+              if (format)
+                void updateTimeSettings({ timeFormat: format.timeFormat, showTimeSeconds: format.showTimeSeconds });
+            }}
           >
-            <ToggleGroupItem value="12h">12h</ToggleGroupItem>
-            <ToggleGroupItem value="24h">24h</ToggleGroupItem>
-          </ToggleGroup>
-        </SectionItem>
-      </SectionContent>
+            <SelectTrigger aria-label={UI_LANGUAGE.settings.timeFormat} xstyle={styles.fullWidth}>
+              <SelectValue>
+                {(value) =>
+                  formatCurrentTime(
+                    previewTime,
+                    { ...(formats.find((format) => format.value === value) ?? formats[0]), showTime: true },
+                    language,
+                  )
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectPopup align="start" alignItemWithTrigger={false} side="bottom">
+              <SelectList>
+                {formats.map((format) => (
+                  <SelectItem key={format.value} value={format.value}>
+                    {formatCurrentTime(previewTime, { ...format, showTime: true }, language)}
+                  </SelectItem>
+                ))}
+              </SelectList>
+            </SelectPopup>
+          </Select>
+        </SectionContent>
+      ) : null}
     </Section>
   );
 }
