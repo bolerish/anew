@@ -1,35 +1,117 @@
+"use client";
+
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "~shared/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import {
+  colorVars,
+  motionVars,
+  radiusVars,
+  sizeVars,
+  spacingVars,
+  typographyVars,
+} from "~shared/styles/semantic.stylex";
 
-const toggleVariants = cva(
-  "group/toggle inline-flex items-center justify-center gap-1 rounded-md text-xs font-medium whitespace-nowrap transition-all outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-pressed:bg-accent data-pressed:text-accent-foreground dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      variant: {
-        default: "bg-transparent",
-        outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
-      },
-      size: {
-        default: "h-7 min-w-7 px-2 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5",
-        sm: "h-6 min-w-6 rounded-md-capped px-2 text-[0.625rem] has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        lg: "h-8 min-w-8 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-      },
+import type { ControlLayoutStyles } from "./control-layout";
+
+const styles = stylex.create({
+  root: {
+    width: "var(--settings-control-width, auto)",
+    alignItems: "center",
+    borderColor: "transparent",
+    borderRadius: radiusVars.sm,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    color: colorVars.fgPrimary,
+    cursor: "pointer",
+    display: "inline-flex",
+    fontSize: typographyVars.fontSizeSm,
+    fontWeight: typographyVars.fontWeightMedium,
+    gap: spacingVars.space1,
+    justifyContent: "center",
+    outline: "none",
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "background-color, border-color, color, opacity",
+    transitionTimingFunction: motionVars.easingStandard,
+    ":hover": { backgroundColor: colorVars.interactionHover },
+    ":focus-visible": {
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.focusRing,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+    ":disabled": { cursor: "not-allowed" },
   },
-);
 
-function Toggle({
-  className,
-  variant = "default",
-  size = "default",
-  ...props
-}: TogglePrimitive.Props & VariantProps<typeof toggleVariants>) {
-  return <TogglePrimitive data-slot="toggle" className={cn(toggleVariants({ variant, size, className }))} {...props} />;
+  softPressed: {
+    backgroundColor: colorVars.bgSubtle,
+    boxShadow: "none",
+    ":hover": { backgroundColor: colorVars.bgSubtle },
+  },
+  pressed: {
+    backgroundColor: colorVars.interactionSelected,
+    color: colorVars.fgPrimary,
+    boxShadow: `inset 0 0 0 ${sizeVars.stroke} ${colorVars.strokeStrong}`,
+  },
+  disabled: {
+    backgroundColor: colorVars.interactionDisabled,
+    borderColor: colorVars.strokeDefault,
+    color: colorVars.fgDisabled,
+    cursor: "not-allowed",
+    ":hover": { backgroundColor: colorVars.interactionDisabled },
+  },
+});
+
+const sizeStyles = stylex.create({
+  sm: {
+    height: sizeVars.controlSm,
+    minWidth: sizeVars.controlSm,
+    paddingInline: spacingVars.space2,
+  },
+  md: {
+    height: sizeVars.controlMd,
+    minWidth: sizeVars.controlMd,
+    paddingInline: spacingVars.space3,
+  },
+  lg: {
+    height: sizeVars.controlLg,
+    minWidth: sizeVars.controlLg,
+    paddingInline: spacingVars.space4,
+  },
+});
+
+const variantStyles = stylex.create({
+  default: { backgroundColor: "transparent" },
+  soft: { backgroundColor: "transparent" },
+  outline: { backgroundColor: colorVars.bgSurface, borderColor: colorVars.strokeDefault },
+});
+
+export type ToggleSize = "lg" | "md" | "sm";
+export type ToggleVariant = "default" | "outline" | "soft";
+
+export type ToggleProps = Omit<ComponentProps<typeof TogglePrimitive>, "className" | "style"> & {
+  size?: ToggleSize;
+  variant?: ToggleVariant;
+  xstyle?: ControlLayoutStyles;
+};
+
+export function Toggle({ size = "md", variant = "default", xstyle, ...props }: ToggleProps) {
+  function getToggleStyles(state: TogglePrimitive.State) {
+    return stylex.props(
+      styles.root,
+      sizeStyles[size],
+      variantStyles[variant],
+      state.pressed && styles.pressed,
+      state.pressed && variant === "soft" && styles.softPressed,
+      state.disabled && styles.disabled,
+      xstyle,
+    );
+  }
+  return (
+    <TogglePrimitive
+      {...props}
+      className={(state) => getToggleStyles(state).className}
+      style={(state) => getToggleStyles(state).style}
+    />
+  );
 }
-
-export { Toggle, toggleVariants };

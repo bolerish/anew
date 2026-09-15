@@ -1,0 +1,44 @@
+{
+  "components": {
+    "accordion": "0.7.0",
+    "button": "0.7.0",
+    "button-group": "0.7.0",
+    "separator": "0.7.0",
+    "field": "0.7.0",
+    "checkbox": "0.7.0",
+    "input": "0.7.0",
+    "drawer": "0.7.0",
+    "content-row": "0.7.0",
+    "input-group": "0.7.0",
+    "textarea": "0.7.0",
+    "select": "0.7.0",
+    "slider": "0.7.0",
+    "switch": "0.7.0",
+    "toggle": "0.7.0",
+    "toggle-group": "0.7.0",
+    "kbd": "0.7.0",
+    "collapsible": "0.7.0",
+    "heading": "0.7.0",
+    "empty": "0.7.0",
+    "breadcrumb": "0.7.0",
+    "dropdown-menu": "0.7.0",
+    "tooltip": "0.7.0",
+    "combobox": "0.7.0",
+    "avatar": "0.7.0",
+    "bubble": "0.7.0",
+    "banner": "0.7.0",
+    "badge": "0.7.0",
+    "link": "0.7.0",
+    "scroll-area": "0.7.0",
+    "timeline": "0.7.0",
+    "spinner": "0.7.0",
+    "toast": "0.7.0"
+  },
+  "accessibility": {
+    "respectReducedMotion": true
+  },
+  "aliases": {
+    "ui": "~shared/ui",
+    "styles": "~shared/styles"
+  }
+}

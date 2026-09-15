@@ -2,132 +2,177 @@
 
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group";
-import { type VariantProps } from "class-variance-authority";
-import * as React from "react";
-import { cn } from "~shared/lib/utils";
-import { toggleVariants } from "~shared/ui/toggle";
+import * as stylex from "@stylexjs/stylex";
+import { createContext, useMemo, useContext, type ComponentProps, type ReactNode } from "react";
+import {
+  colorVars,
+  motionVars,
+  radiusVars,
+  shadowVars,
+  sizeVars,
+  spacingVars,
+  typographyVars,
+} from "~shared/styles/semantic.stylex";
 
-const ToggleGroupContext = React.createContext<
-  VariantProps<typeof toggleVariants> & {
-    spacing?: number;
-    orientation?: "horizontal" | "vertical";
-  }
->({
-  size: "default",
-  variant: "default",
-  spacing: 2,
-  orientation: "horizontal",
+import type { ControlLayoutStyles, ControlPlacementStyles } from "./control-layout";
+import type { ToggleSize, ToggleVariant } from "./toggle";
+
+const styles = stylex.create({
+  root: {
+    alignItems: "center",
+    display: "inline-flex",
+    width: "var(--settings-control-width, fit-content)",
+    ":is([data-orientation=vertical])": { flexDirection: "column" },
+  },
+
+  outlineItem: {
+    borderColor: "transparent",
+    borderRadius: 0,
+    marginInlineStart: -1,
+  },
+  item: {
+    flex: "var(--settings-toggle-flex, 0 1 auto)",
+    alignItems: "center",
+    borderColor: "transparent",
+    borderRadius: radiusVars.sm,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    color: colorVars.fgPrimary,
+    cursor: "pointer",
+    display: "inline-flex",
+    fontSize: typographyVars.fontSizeSm,
+    fontWeight: typographyVars.fontWeightMedium,
+    gap: spacingVars.space1,
+    justifyContent: "center",
+    outline: "none",
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "background-color, border-color, color, opacity",
+    transitionTimingFunction: motionVars.easingStandard,
+    ":hover": { backgroundColor: colorVars.interactionHover },
+    ":focus-visible": {
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.focusRing,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
+    },
+    ":disabled": { cursor: "not-allowed" },
+  },
+
+  softPressed: {
+    backgroundColor: colorVars.interactionSelected,
+    boxShadow: shadowVars.subtle,
+    ":hover": { backgroundColor: colorVars.interactionSelected },
+  },
+  itemPressed: {
+    backgroundColor: colorVars.interactionSelected,
+    color: colorVars.fgPrimary,
+    boxShadow: `inset 0 0 0 ${sizeVars.stroke} ${colorVars.strokeStrong}`,
+  },
+  itemDisabled: {
+    backgroundColor: colorVars.interactionDisabled,
+    borderColor: colorVars.strokeDefault,
+    color: colorVars.fgDisabled,
+    cursor: "not-allowed",
+    ":hover": { backgroundColor: colorVars.interactionDisabled },
+  },
 });
 
-type ToggleGroupBaseProps = Omit<ToggleGroupPrimitive.Props, "defaultValue" | "multiple" | "onValueChange" | "value"> &
-  VariantProps<typeof toggleVariants> & {
-    spacing?: number;
-    orientation?: "horizontal" | "vertical";
-  };
+const variantStyles = stylex.create({
+  default: { gap: spacingVars.space1 },
+  soft: {
+    gap: spacingVars.space0_5,
+    padding: spacingVars.space0_5,
+    backgroundColor: colorVars.bgSubtle,
+    borderColor: colorVars.strokeDefault,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    borderRadius: radiusVars.sm,
+  },
+  outline: {
+    backgroundColor: colorVars.bgSurface,
+    borderColor: colorVars.strokeDefault,
+    borderRadius: radiusVars.sm,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    gap: 0,
+    overflow: "hidden",
+  },
+});
 
-type SingleToggleGroupProps = ToggleGroupBaseProps & {
-  defaultValue?: string;
-  type?: "single";
-  value?: string;
-  onValueChange?: (value: string) => void;
+const itemSizeStyles = stylex.create({
+  xs: { height: sizeVars.iconLg, minWidth: sizeVars.iconLg, paddingInline: spacingVars.space1 },
+  sm: {
+    height: sizeVars.controlSm,
+    minWidth: sizeVars.controlSm,
+    paddingInline: spacingVars.space2,
+  },
+  md: {
+    height: sizeVars.controlMd,
+    minWidth: sizeVars.controlMd,
+    paddingInline: spacingVars.space3,
+  },
+  lg: {
+    height: sizeVars.controlLg,
+    minWidth: sizeVars.controlLg,
+    paddingInline: spacingVars.space4,
+  },
+});
+
+const itemVariantStyles = stylex.create({
+  default: { backgroundColor: "transparent" },
+  soft: { backgroundColor: "transparent" },
+  outline: { backgroundColor: colorVars.bgSurface, borderColor: colorVars.strokeDefault },
+});
+
+type ToggleGroupContextValue = { size: ToggleSize | "xs"; variant: ToggleVariant };
+
+export type ToggleGroupProps = Omit<ComponentProps<typeof ToggleGroupPrimitive>, "className" | "style"> & {
+  children: ReactNode;
+  size?: ToggleSize | "xs";
+  variant?: ToggleVariant;
+  xstyle?: ControlLayoutStyles;
 };
 
-type MultipleToggleGroupProps = ToggleGroupBaseProps & {
-  defaultValue?: readonly string[];
-  type: "multiple";
-  value?: readonly string[];
-  onValueChange?: (value: string[]) => void;
+export type ToggleGroupItemProps = Omit<ComponentProps<typeof TogglePrimitive>, "className" | "style"> & {
+  size?: ToggleSize | "xs";
+  variant?: ToggleVariant;
+  xstyle?: ControlPlacementStyles;
 };
+const ToggleGroupContext = createContext<ToggleGroupContextValue>({
+  size: "md",
+  variant: "default",
+});
 
-type ToggleGroupProps = SingleToggleGroupProps | MultipleToggleGroupProps;
-
-function ToggleGroup({
-  className,
-  variant,
-  size,
-  spacing = 2,
-  orientation = "horizontal",
-  type = "single",
-  value,
-  defaultValue,
-  onValueChange,
-  children,
-  ...props
-}: ToggleGroupProps) {
-  const multiple = type === "multiple";
-  const groupValue = normalizeToggleGroupValue(value);
-  const groupDefaultValue = normalizeToggleGroupValue(defaultValue);
-  const contextValue = React.useMemo(
-    () => ({ variant, size, spacing, orientation }),
-    [orientation, size, spacing, variant],
-  );
-
+export function ToggleGroup({ children, size = "md", variant = "default", xstyle, ...props }: ToggleGroupProps) {
+  const context = useMemo(() => ({ size, variant }), [size, variant]);
   return (
-    <ToggleGroupPrimitive
-      data-slot="toggle-group"
-      data-variant={variant}
-      data-size={size}
-      data-spacing={spacing}
-      data-orientation={orientation}
-      multiple={multiple}
-      value={groupValue}
-      defaultValue={groupDefaultValue}
-      onValueChange={(nextValue) => {
-        if (multiple) {
-          (onValueChange as MultipleToggleGroupProps["onValueChange"])?.(nextValue);
-          return;
-        }
-
-        (onValueChange as SingleToggleGroupProps["onValueChange"])?.(nextValue[0] ?? "");
-      }}
-      style={{ "--gap": spacing } as React.CSSProperties}
-      className={cn(
-        "group/toggle-group gap-toggle-group data-[variant=outline]:border-border data-[variant=outline]:bg-muted data-[size=sm]:rounded-md-capped flex w-fit flex-row items-center rounded-md data-vertical:flex-col data-vertical:items-stretch data-[spacing=0]:overflow-hidden data-[spacing=0]:border",
-        className,
-      )}
-      {...props}
-    >
-      <ToggleGroupContext.Provider value={contextValue}>{children}</ToggleGroupContext.Provider>
+    <ToggleGroupPrimitive {...props} {...stylex.props(styles.root, variantStyles[variant], xstyle)}>
+      <ToggleGroupContext value={context}>{children}</ToggleGroupContext>
     </ToggleGroupPrimitive>
   );
 }
 
-function normalizeToggleGroupValue(value: string | readonly string[] | undefined): readonly string[] | undefined {
-  if (value === undefined) {
-    return undefined;
+export function ToggleGroupItem({ size, variant, xstyle, ...props }: ToggleGroupItemProps) {
+  const context = useContext(ToggleGroupContext);
+  const finalSize = size ?? context.size;
+  const finalVariant = variant ?? context.variant;
+  function getToggleStyles(state: TogglePrimitive.State) {
+    return stylex.props(
+      styles.item,
+      itemSizeStyles[finalSize],
+      itemVariantStyles[finalVariant],
+      state.pressed && styles.itemPressed,
+      state.pressed && finalVariant === "soft" && styles.softPressed,
+      state.disabled && styles.itemDisabled,
+      finalVariant === "outline" && styles.outlineItem,
+      xstyle,
+    );
   }
-
-  return typeof value === "string" ? [value] : value;
-}
-
-function ToggleGroupItem({
-  className,
-  children,
-  variant = "default",
-  size = "default",
-  ...props
-}: TogglePrimitive.Props & VariantProps<typeof toggleVariants>) {
-  const context = React.useContext(ToggleGroupContext);
-
   return (
     <TogglePrimitive
-      data-slot="toggle-group-item"
-      data-variant={context.variant || variant}
-      data-size={context.size || size}
-      data-spacing={context.spacing}
-      className={cn(
-        "group-data-[spacing=0]/toggle-group:text-mds-setting-item group-data-[spacing=0]/toggle-group:data-pressed:bg-primary! group-data-[spacing=0]/toggle-group:data-pressed:text-primary-foreground! group-data-[spacing=0]/toggle-group:data-pressed:hover:bg-primary/90! group-data-[spacing=0]/toggle-group:disabled:bg-muted/40! group-data-[spacing=0]/toggle-group:disabled:text-muted-foreground! group-data-[spacing=0]/toggle-group:disabled:data-pressed:bg-primary/30! group-data-[spacing=0]/toggle-group:disabled:data-pressed:text-primary! dark:group-data-[spacing=0]/toggle-group:disabled:data-pressed:bg-primary/25! dark:group-data-[spacing=0]/toggle-group:disabled:data-pressed:text-primary-foreground! shrink-0 group-data-[spacing=0]/toggle-group:h-full group-data-[spacing=0]/toggle-group:w-full group-data-[spacing=0]/toggle-group:rounded-none group-data-[spacing=0]/toggle-group:border-0 group-data-[spacing=0]/toggle-group:bg-transparent group-data-[spacing=0]/toggle-group:px-2 focus:z-10 focus-visible:z-10 group-data-[spacing=0]/toggle-group:disabled:pointer-events-none group-data-[spacing=0]/toggle-group:disabled:opacity-100 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-end]:pr-1.5 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-start]:pl-1.5 group-data-horizontal/toggle-group:data-[spacing=0]:border-l group-data-vertical/toggle-group:data-[spacing=0]:border-t group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-md group-data-horizontal/toggle-group:data-[spacing=0]:first:border-l-0 group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-md group-data-vertical/toggle-group:data-[spacing=0]:first:border-t-0 group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-md group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-md",
-        toggleVariants({
-          variant: context.variant || variant,
-          size: context.size || size,
-        }),
-        className,
-      )}
       {...props}
-    >
-      {children}
-    </TogglePrimitive>
+      className={(state) => getToggleStyles(state).className}
+      style={(state) => getToggleStyles(state).style}
+    />
   );
 }
-
-export { ToggleGroup, ToggleGroupItem };

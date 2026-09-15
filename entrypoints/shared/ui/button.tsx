@@ -1,49 +1,245 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "~shared/lib";
+"use client";
 
-const buttonVariants = cva(
-  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-xs/relaxed font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        outline:
-          "border-border hover:bg-input/50 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:bg-input/30",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
-        destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default:
-          "h-7 gap-1 px-2 text-xs/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        xs: "h-5 gap-1 rounded-sm px-2 text-[0.625rem] has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-2.5",
-        sm: "h-6 gap-1 px-2 text-xs/relaxed has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        lg: "h-8 gap-1 px-2.5 text-xs/relaxed has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
-        icon: "size-7 [&_svg:not([class*='size-'])]:size-3.5",
-        "icon-xs": "size-5 rounded-sm [&_svg:not([class*='size-'])]:size-2.5",
-        "icon-sm": "size-6 [&_svg:not([class*='size-'])]:size-3",
-        "icon-lg": "size-8 [&_svg:not([class*='size-'])]:size-4",
-      },
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps, ReactNode } from "react";
+import {
+  colorVars,
+  motionVars,
+  radiusVars,
+  sizeVars,
+  spacingVars,
+  typographyVars,
+} from "~shared/styles/semantic.stylex";
+
+import type { ControlLayoutStyles } from "./control-layout";
+
+const styles = stylex.create({
+  root: {
+    alignItems: "center",
+    appearance: "none",
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    cursor: "pointer",
+    display: "inline-flex",
+    fontSize: typographyVars.fontSizeSm,
+    fontWeight: typographyVars.fontWeightMedium,
+    gap: spacingVars.space2,
+    isolation: "isolate",
+    lineHeight: typographyVars.lineHeightTight,
+    outline: "none",
+    overflow: "hidden",
+    position: "relative",
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "background-color, border-color, color, opacity",
+    transitionTimingFunction: motionVars.easingStandard,
+    userSelect: "none",
+    whiteSpace: "nowrap",
+    ":focus-visible": {
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.focusRing,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
+    ":disabled": {
+      cursor: "not-allowed",
+    },
+    "::after": {
+      backgroundColor: colorVars.interactionDefault,
+      content: '""',
+      inset: 0,
+      pointerEvents: "none",
+      position: "absolute",
+      transitionDuration: motionVars.durationFast,
+      transitionProperty: "background-color",
+      transitionTimingFunction: motionVars.easingStandard,
+      zIndex: -1,
     },
   },
-);
+  solidInteraction: {
+    "::after": {
+      backgroundColor: {
+        default: colorVars.interactionDefault,
+        ":hover": colorVars.interactionSolidHover,
+        ":active": colorVars.interactionSolidPressed,
+      },
+    },
+  },
+  surfaceInteraction: {
+    "::after": {
+      backgroundColor: {
+        default: colorVars.interactionDefault,
+        ":hover": colorVars.interactionHover,
+        ":active": colorVars.interactionPressed,
+      },
+    },
+  },
+  iconContent: {
+    gap: 0,
+    // Give icon-only buttons a text baseline without adding visible content.
+    "::before": { content: '"\\200b"' },
+  },
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
+  disabled: {
+    backgroundColor: colorVars.interactionDisabled,
+    borderColor: colorVars.strokeDefault,
+    color: colorVars.fgDisabled,
+    "::after": { backgroundColor: colorVars.interactionDefault },
+  },
+  disabledGhost: {
+    backgroundColor: colorVars.interactionDefault,
+    borderColor: colorVars.interactionDefault,
+  },
+});
+
+const alignStyles = stylex.create({
+  start: { justifyContent: "flex-start" },
+  center: { justifyContent: "center" },
+  end: { justifyContent: "flex-end" },
+  "space-between": { justifyContent: "space-between" },
+});
+
+const sizeStyles = stylex.create({
+  xs: {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlXs,
+    paddingInline: spacingVars.space3,
+    fontSize: typographyVars.fontSizeXs,
+  },
+  sm: {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlSm,
+    paddingInline: spacingVars.space3,
+  },
+  md: {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlMd,
+    paddingInline: spacingVars.space4,
+  },
+  lg: {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlLg,
+    paddingInline: spacingVars.space5,
+  },
+  "icon-xs": {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlXs,
+    paddingInline: 0,
+    width: sizeVars.controlXs,
+  },
+  "icon-sm": {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlSm,
+    paddingInline: 0,
+    width: sizeVars.controlSm,
+  },
+  "icon-md": {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlMd,
+    paddingInline: 0,
+    width: sizeVars.controlMd,
+  },
+  "icon-lg": {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlLg,
+    paddingInline: 0,
+    width: sizeVars.controlLg,
+  },
+  "icon-xl": {
+    borderRadius: radiusVars.sm,
+    height: sizeVars.controlXl,
+    paddingInline: 0,
+    width: sizeVars.controlXl,
+  },
+});
+
+const variantStyles = stylex.create({
+  primary: {
+    backgroundColor: colorVars.bgActionPrimary,
+    borderColor: colorVars.bgActionPrimary,
+    color: colorVars.fgOnActionPrimary,
+  },
+  secondary: {
+    backgroundColor: colorVars.bgSubtle,
+    borderColor: colorVars.interactionDefault,
+    color: colorVars.fgPrimary,
+  },
+  outline: {
+    backgroundColor: colorVars.interactionDefault,
+    borderColor: colorVars.strokeDefault,
+    color: colorVars.fgPrimary,
+  },
+  ghost: {
+    backgroundColor: colorVars.interactionDefault,
+    borderColor: colorVars.interactionDefault,
+    color: colorVars.fgPrimary,
+  },
+  destructive: {
+    backgroundColor: colorVars.bgActionDestructive,
+    borderColor: colorVars.bgActionDestructive,
+    color: colorVars.fgOnActionDestructive,
+  },
+});
+
+const shapeStyles = stylex.create({
+  default: {},
+  square: { paddingInline: 0 },
+  circle: { borderRadius: radiusVars.full, paddingInline: 0 },
+});
+
+const squareStyles = stylex.create({
+  xs: { width: sizeVars.controlXs },
+  sm: { width: sizeVars.controlSm },
+  md: { width: sizeVars.controlMd },
+  lg: { width: sizeVars.controlLg },
+});
+
+type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
+type ButtonSize = "xs" | "sm" | "md" | "lg" | "icon-xs" | "icon-sm" | "icon-md" | "icon-lg" | "icon-xl";
+
+export type ButtonProps = Omit<ComponentProps<typeof ButtonPrimitive>, "className" | "style"> & {
+  align?: "start" | "center" | "end" | "space-between";
+  children: ReactNode;
+  size?: ButtonSize;
+  /** Use an icon size for icon-only buttons, and add an accessible name. */
+  shape?: "default" | "square" | "circle";
+  variant?: ButtonVariant;
+  xstyle?: ControlLayoutStyles;
+};
+
+export function Button({
+  align = "center",
+  children,
+  disabled,
+  size = "md",
+  shape = "default",
+  variant = "primary",
+  xstyle,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
-  return <ButtonPrimitive data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />;
-}
+}: ButtonProps) {
+  const isStandardSize = size === "xs" || size === "sm" || size === "md" || size === "lg";
+  const shapeWidth = isStandardSize && shape !== "default" && squareStyles[size];
+  const hasSolidBackground = variant === "primary" || variant === "destructive";
 
-export { Button, buttonVariants };
+  return (
+    <ButtonPrimitive
+      {...props}
+      disabled={disabled}
+      {...stylex.props(
+        styles.root,
+        alignStyles[align],
+        variantStyles[variant],
+        sizeStyles[size],
+        !isStandardSize && styles.iconContent,
+        shapeStyles[shape],
+        shapeWidth,
+        hasSolidBackground ? styles.solidInteraction : styles.surfaceInteraction,
+        disabled && styles.disabled,
+        disabled && variant === "ghost" && styles.disabledGhost,
+        xstyle,
+      )}
+    >
+      {children}
+    </ButtonPrimitive>
+  );
+}

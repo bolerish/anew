@@ -1,190 +1,291 @@
 "use client";
 
 import { Select as SelectPrimitive } from "@base-ui/react/select";
-import { CaretDownIcon, CheckIcon, CaretUpIcon } from "@phosphor-icons/react";
-import * as React from "react";
-import { cn } from "~shared/lib/utils";
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps, ReactNode } from "react";
+import {
+  colorVars,
+  layerVars,
+  motionVars,
+  radiusVars,
+  shadowVars,
+  sizeVars,
+  spacingVars,
+  typographyVars,
+} from "~shared/styles/semantic.stylex";
 
-type SelectProps<Value extends string> = Omit<SelectPrimitive.Root.Props<Value>, "onValueChange"> & {
-  onValueChange?: (value: Value) => void;
-};
+import type { ControlLayoutStyles, ControlPlacementStyles } from "./control-layout";
 
-function Select<Value extends string>({ modal = false, onValueChange, ...props }: SelectProps<Value>) {
-  return (
-    <SelectPrimitive.Root
-      modal={modal}
-      onValueChange={(value) => {
-        if (value !== null) {
-          onValueChange?.(value);
-        }
-      }}
-      {...props}
-    />
-  );
+const styles = stylex.create({
+  value: {
+    flexGrow: 1,
+    minWidth: 0,
+    textAlign: "start",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  trigger: {
+    alignItems: "center",
+    appearance: "none",
+    backgroundColor: colorVars.bgSurface,
+    borderColor: colorVars.strokeDefault,
+    borderRadius: radiusVars.sm,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    color: colorVars.fgPrimary,
+    cursor: "pointer",
+    display: "inline-flex",
+    fontFamily: typographyVars.fontFamilyBody,
+    fontSize: typographyVars.fontSizeSm,
+    gap: spacingVars.space2,
+    height: sizeVars.controlMd,
+    justifyContent: "space-between",
+    width: "var(--settings-control-width, 11rem)",
+    outline: "none",
+    paddingInline: spacingVars.space3,
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "background-color, border-color, color",
+    transitionTimingFunction: motionVars.easingStandard,
+    ":hover": { backgroundColor: colorVars.bgSurfacePressed },
+    ":focus-visible": {
+      borderColor: colorVars.strokeFocus,
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.stroke,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
+    },
+    ":disabled": { cursor: "not-allowed" },
+  },
+  triggerDisabled: {
+    backgroundColor: colorVars.bgSubtle,
+    borderColor: colorVars.strokeDefault,
+    color: colorVars.fgDisabled,
+    cursor: "not-allowed",
+    ":hover": { backgroundColor: colorVars.bgSubtle },
+  },
+  triggerIcon: {
+    alignItems: "center",
+    color: colorVars.fgSecondary,
+    display: "inline-flex",
+    flexShrink: 0,
+  },
+  positioner: { zIndex: layerVars.popup },
+  popup: {
+    backgroundColor: colorVars.bgRaised,
+    borderColor: colorVars.strokeDefault,
+    borderRadius: radiusVars.sm,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    boxShadow: shadowVars.floating,
+    color: colorVars.fgPrimary,
+    maxHeight: "min(20rem, var(--available-height))",
+    minWidth: "var(--anchor-width)",
+    outline: "none",
+    overflow: "hidden",
+    padding: spacingVars.space1,
+    transform: "scale(1)",
+    transformOrigin: "var(--transform-origin)",
+    transitionDuration: motionVars.durationNormal,
+    transitionProperty: "opacity, transform",
+    transitionTimingFunction: motionVars.easingEnter,
+    ':is([data-motion-reduced="true"] *)': {
+      transform: "none",
+      transitionDuration: motionVars.durationInstant,
+    },
+  },
+  popupTransitioning: { opacity: 0, transform: "scale(0.98)" },
+  popupEnding: {
+    transitionDuration: motionVars.durationFast,
+    transitionTimingFunction: motionVars.easingExit,
+    ':is([data-motion-reduced="true"] *)': {
+      transitionDuration: motionVars.durationInstant,
+    },
+  },
+  list: { overflowY: "auto", overscrollBehavior: "contain", padding: 0 },
+  item: {
+    alignItems: "center",
+    borderRadius: radiusVars.sm,
+    color: colorVars.fgPrimary,
+    cursor: "default",
+    display: "flex",
+    fontSize: typographyVars.fontSizeSm,
+    gap: spacingVars.space2,
+    minHeight: sizeVars.controlSm,
+    outline: "none",
+    paddingInlineEnd: spacingVars.space8,
+    paddingInlineStart: spacingVars.space3,
+    position: "relative",
+    userSelect: "none",
+  },
+  itemHighlighted: { backgroundColor: colorVars.interactionHover },
+  itemDisabled: {
+    backgroundColor: "transparent",
+    color: colorVars.fgDisabled,
+    cursor: "not-allowed",
+  },
+  indicator: {
+    alignItems: "center",
+    display: "inline-flex",
+    insetInlineEnd: spacingVars.space2,
+    justifyContent: "center",
+    position: "absolute",
+  },
+  label: {
+    color: colorVars.fgSecondary,
+    fontSize: typographyVars.fontSizeXs,
+    fontWeight: typographyVars.fontWeightMedium,
+    paddingBlock: spacingVars.space2,
+    paddingInline: spacingVars.space2,
+  },
+  separator: {
+    backgroundColor: colorVars.strokeDefault,
+    height: sizeVars.stroke,
+    marginBlock: spacingVars.space1,
+    marginInline: `calc(${spacingVars.space1} * -1)`,
+  },
+});
+
+type SelectPopupProps = Omit<ComponentProps<typeof SelectPrimitive.Popup>, "className" | "style"> &
+  Pick<ComponentProps<typeof SelectPrimitive.Positioner>, "align" | "alignItemWithTrigger" | "side" | "sideOffset"> & {
+    children: ReactNode;
+  } & {
+    xstyle?: stylex.StyleXStyles;
+  };
+
+export const Select = SelectPrimitive.Root;
+export function SelectValue({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof SelectPrimitive.Value>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  return <SelectPrimitive.Value {...props} {...stylex.props(styles.value, xstyle)} />;
+}
+export function SelectGroup({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof SelectPrimitive.Group>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  return <SelectPrimitive.Group {...props} {...stylex.props(xstyle)} />;
 }
 
-function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
-  return <SelectPrimitive.Group data-slot="select-group" className={cn("scroll-my-1 p-1", className)} {...props} />;
-}
-
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
-  return (
-    <SelectPrimitive.Value
-      data-slot="select-value"
-      className={cn("block min-w-0 flex-1 truncate text-left", className)}
-      {...props}
-    />
-  );
-}
-
-function SelectTrigger({
-  className,
-  size = "default",
+export function SelectTrigger({
+  xstyle,
   children,
   ...props
-}: SelectPrimitive.Trigger.Props & {
-  size?: "sm" | "default";
+}: Omit<ComponentProps<typeof SelectPrimitive.Trigger>, "className" | "style"> & {
+  xstyle?: ControlLayoutStyles;
 }) {
+  function getTriggerStyles(state: SelectPrimitive.Trigger.State) {
+    return stylex.props(styles.trigger, state.disabled && styles.triggerDisabled, xstyle);
+  }
   return (
     <SelectPrimitive.Trigger
-      data-slot="select-trigger"
-      data-size={size}
-      className={cn(
-        "border-input text-foreground/80 hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex w-fit min-w-0 items-center justify-between gap-1.5 overflow-hidden rounded-md border bg-transparent px-2 py-1.5 text-xs/relaxed whitespace-nowrap transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-2 data-[size=default]:h-7 data-[size=sm]:h-6 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
-        className,
-      )}
       {...props}
+      className={(state) => getTriggerStyles(state).className}
+      style={(state) => getTriggerStyles(state).style}
     >
       {children}
-      <SelectPrimitive.Icon render={<CaretDownIcon className="text-muted-foreground pointer-events-none size-3.5" />} />
+      <SelectPrimitive.Icon {...stylex.props(styles.triggerIcon)}>
+        <CaretDownIcon aria-hidden="true" />
+      </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
 }
 
-function SelectContent({
-  className,
+export function SelectPopup({
+  xstyle,
+  align = "start",
+  alignItemWithTrigger = false,
   children,
   side = "bottom",
   sideOffset = 4,
-  align = "center",
-  alignOffset = 0,
-  alignItemWithTrigger = true,
-  position: _position,
   ...props
-}: SelectPrimitive.Popup.Props &
-  Pick<SelectPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"> & {
-    position?: "popper";
-  }) {
+}: SelectPopupProps) {
+  function getPopupStyles(state: SelectPrimitive.Popup.State) {
+    return stylex.props(
+      styles.popup,
+      (state.transitionStatus === "starting" || state.transitionStatus === "ending") && styles.popupTransitioning,
+      state.transitionStatus === "ending" && styles.popupEnding,
+      xstyle,
+    );
+  }
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
+        align={align}
+        alignItemWithTrigger={alignItemWithTrigger}
         side={side}
         sideOffset={sideOffset}
-        align={align}
-        alignOffset={alignOffset}
-        alignItemWithTrigger={alignItemWithTrigger}
-        collisionAvoidance={{ side: "shift", align: "shift", fallbackAxisSide: "none" }}
-        className="isolate z-50"
+        {...stylex.props(styles.positioner)}
       >
         <SelectPrimitive.Popup
-          data-slot="select-content"
-          data-align-trigger={alignItemWithTrigger}
-          className={cn(
-            "bg-popover/70 text-popover-foreground ring-border data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 **:data-[slot$=-item]:focus:bg-accent **:data-[slot$=-item]:data-highlighted:bg-accent **:data-[slot$=-separator]:bg-border/50 **:data-[slot$=-trigger]:focus:bg-accent **:data-[slot$=-trigger]:aria-expanded:bg-accent! **:data-[variant=destructive]:focus:bg-destructive/10! **:data-[variant=destructive]:text-destructive! **:data-[variant=destructive]:**:text-destructive! max-h-available-height w-anchor origin-floating relative isolate z-50 min-w-32 animate-none! overflow-x-hidden overflow-y-auto rounded-lg shadow-md ring-1 duration-100 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 data-[align-trigger=true]:animate-none",
-            className,
-          )}
           {...props}
+          className={(state) => getPopupStyles(state).className}
+          style={(state) => getPopupStyles(state).style}
         >
-          <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
-          <SelectScrollDownButton />
+          {children}
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
     </SelectPrimitive.Portal>
   );
 }
 
-function SelectLabel({ className, ...props }: SelectPrimitive.GroupLabel.Props) {
-  return (
-    <SelectPrimitive.GroupLabel
-      data-slot="select-label"
-      className={cn("text-muted-foreground px-2 py-1.5 text-xs", className)}
-      {...props}
-    />
-  );
-}
-
-function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Props) {
+export function SelectItem({
+  xstyle,
+  children,
+  ...props
+}: Omit<ComponentProps<typeof SelectPrimitive.Item>, "className" | "style"> & {
+  xstyle?: ControlLayoutStyles;
+}) {
+  function getItemStyles(state: SelectPrimitive.Item.State) {
+    return stylex.props(
+      styles.item,
+      state.highlighted && styles.itemHighlighted,
+      state.disabled && styles.itemDisabled,
+      xstyle,
+    );
+  }
   return (
     <SelectPrimitive.Item
-      data-slot="select-item"
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground relative flex min-h-7 w-full cursor-default items-center gap-2 rounded-md px-2 py-1 text-xs/relaxed outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
-        className,
-      )}
       {...props}
+      className={(state) => getItemStyles(state).className}
+      style={(state) => getItemStyles(state).style}
     >
-      <SelectPrimitive.ItemText className="flex min-w-0 flex-1 gap-2 truncate whitespace-nowrap">
-        {children}
-      </SelectPrimitive.ItemText>
-      <SelectPrimitive.ItemIndicator
-        render={<span className="pointer-events-none absolute right-2 flex items-center justify-center" />}
-      >
-        <CheckIcon className="pointer-events-none" />
+      <SelectPrimitive.ItemIndicator {...stylex.props(styles.indicator)}>
+        <CheckIcon aria-hidden="true" />
       </SelectPrimitive.ItemIndicator>
+      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
     </SelectPrimitive.Item>
   );
 }
 
-function SelectSeparator({ className, ...props }: SelectPrimitive.Separator.Props) {
-  return (
-    <SelectPrimitive.Separator
-      data-slot="select-separator"
-      className={cn("bg-border/50 pointer-events-none -mx-1 my-1 h-px", className)}
-      {...props}
-    />
-  );
+export function SelectLabel({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof SelectPrimitive.GroupLabel>, "className" | "style"> & {
+  xstyle?: ControlPlacementStyles;
+}) {
+  return <SelectPrimitive.GroupLabel {...props} {...stylex.props(styles.label, xstyle)} />;
 }
 
-function SelectScrollUpButton({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.ScrollUpArrow>) {
-  return (
-    <SelectPrimitive.ScrollUpArrow
-      data-slot="select-scroll-up-button"
-      className={cn(
-        "bg-popover top-0 z-10 flex w-full cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-3.5",
-        className,
-      )}
-      {...props}
-    >
-      <CaretUpIcon />
-    </SelectPrimitive.ScrollUpArrow>
-  );
+export function SelectSeparator({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof SelectPrimitive.Separator>, "className" | "style"> & {
+  xstyle?: ControlPlacementStyles;
+}) {
+  return <SelectPrimitive.Separator {...props} {...stylex.props(styles.separator, xstyle)} />;
 }
 
-function SelectScrollDownButton({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.ScrollDownArrow>) {
-  return (
-    <SelectPrimitive.ScrollDownArrow
-      data-slot="select-scroll-down-button"
-      className={cn(
-        "bg-popover bottom-0 z-10 flex w-full cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-3.5",
-        className,
-      )}
-      {...props}
-    >
-      <CaretDownIcon />
-    </SelectPrimitive.ScrollDownArrow>
-  );
+export function SelectList({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof SelectPrimitive.List>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  return <SelectPrimitive.List {...props} {...stylex.props(styles.list, xstyle)} />;
 }
-
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-};

@@ -1,18 +1,32 @@
-import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
-import { cn } from "~shared/lib";
+"use client";
 
-function Separator({ className, orientation = "horizontal", ...props }: SeparatorPrimitive.Props) {
+import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import { colorVars, sizeVars } from "~shared/styles/semantic.stylex";
+
+const styles = stylex.create({
+  root: { backgroundColor: colorVars.strokeDefault, flexShrink: 0 },
+});
+
+const orientationStyles = stylex.create({
+  horizontal: { height: sizeVars.stroke, width: "100%" },
+  vertical: { alignSelf: "stretch", minHeight: sizeVars.touchTarget, width: sizeVars.stroke },
+});
+
+export type SeparatorProps = Omit<ComponentProps<typeof SeparatorPrimitive>, "className" | "style"> & {
+  decorative?: boolean;
+  xstyle?: stylex.StyleXStyles;
+};
+
+export function Separator({ decorative = true, orientation = "horizontal", xstyle, ...props }: SeparatorProps) {
   return (
     <SeparatorPrimitive
-      data-slot="separator"
-      orientation={orientation}
-      className={cn(
-        "bg-border shrink-0 data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
-        className,
-      )}
       {...props}
+      aria-hidden={decorative || undefined}
+      orientation={orientation}
+      role={decorative ? "presentation" : undefined}
+      {...stylex.props(styles.root, orientationStyles[orientation], xstyle)}
     />
   );
 }
-
-export { Separator };

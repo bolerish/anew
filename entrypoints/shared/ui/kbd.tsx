@@ -1,20 +1,41 @@
-import { cn } from "~shared/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import { colorVars, radiusVars, sizeVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
 
-function Kbd({ className, ...props }: React.ComponentProps<"kbd">) {
-  return (
-    <kbd
-      data-slot="kbd"
-      className={cn(
-        "bg-accent text-accent-foreground in-data-[slot=tooltip-content]:bg-muted in-data-[slot=tooltip-content]:text-muted-foreground pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-xs px-1 font-sans text-[0.625rem] font-medium select-none [&_svg:not([class*='size-'])]:size-3",
-        className,
-      )}
-      {...props}
-    />
-  );
+import type { ControlPlacementStyles } from "./control-layout";
+
+const styles = stylex.create({
+  root: {
+    alignItems: "center",
+    backgroundColor: colorVars.bgSubtle,
+    borderColor: colorVars.strokeDefault,
+    borderRadius: radiusVars.sm,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    color: colorVars.fgSecondary,
+    display: "inline-flex",
+    fontFamily: typographyVars.fontFamilyBody,
+    fontSize: typographyVars.fontSizeSm,
+    fontWeight: typographyVars.fontWeightMedium,
+    justifyContent: "center",
+    minHeight: sizeVars.iconLg,
+    minWidth: sizeVars.iconLg,
+    paddingInline: spacingVars.space1,
+    userSelect: "none",
+  },
+  group: { alignItems: "center", display: "inline-flex", gap: spacingVars.space1 },
+});
+
+export function Kbd({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<"kbd">, "className" | "style"> & { xstyle?: ControlPlacementStyles }) {
+  return <kbd {...props} {...stylex.props(styles.root, xstyle)} />;
 }
 
-function KbdGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return <kbd data-slot="kbd-group" className={cn("inline-flex items-center gap-1", className)} {...props} />;
+export function KbdGroup({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<"span">, "className" | "style"> & { xstyle?: stylex.StyleXStyles }) {
+  return <span {...props} {...stylex.props(styles.group, xstyle)} />;
 }
-
-export { Kbd, KbdGroup };

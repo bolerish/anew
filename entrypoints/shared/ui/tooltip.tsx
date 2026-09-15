@@ -1,53 +1,100 @@
 "use client";
 
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
-import { cn } from "~shared/lib";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import {
+  colorVars,
+  layerVars,
+  motionVars,
+  radiusVars,
+  shadowVars,
+  sizeVars,
+  spacingVars,
+  typographyVars,
+} from "~shared/styles/semantic.stylex";
 
-function TooltipProvider({ delay = 0, ...props }: TooltipPrimitive.Provider.Props) {
-  return <TooltipPrimitive.Provider data-slot="tooltip-provider" delay={delay} {...props} />;
-}
+const styles = stylex.create({
+  positioner: { zIndex: layerVars.notification },
+  popup: {
+    backgroundColor: colorVars.bgInverse,
+    borderRadius: radiusVars.sm,
+    boxShadow: shadowVars.floating,
+    color: colorVars.fgInverse,
+    fontSize: typographyVars.fontSizeXs,
+    lineHeight: typographyVars.lineHeightNormal,
+    maxWidth: sizeVars.contentXs,
+    paddingBlock: spacingVars.space1,
+    paddingInline: spacingVars.space3,
+    transform: "scale(1)",
+    transformOrigin: "var(--transform-origin)",
+    transitionDuration: motionVars.durationNormal,
+    transitionProperty: "opacity, transform",
+    transitionTimingFunction: motionVars.easingEnter,
+    ':is([data-motion-reduced="true"] *)': {
+      transform: "none",
+      transitionDuration: motionVars.durationInstant,
+    },
+  },
+  popupTransitioning: { opacity: 0, transform: "scale(0.98)" },
+  popupEnding: {
+    transitionDuration: motionVars.durationFast,
+    transitionTimingFunction: motionVars.easingExit,
+    ':is([data-motion-reduced="true"] *)': {
+      transitionDuration: motionVars.durationInstant,
+    },
+  },
+  arrow: { fill: colorVars.bgInverse, height: spacingVars.space2, width: spacingVars.space3 },
+});
 
-function Tooltip({ ...props }: TooltipPrimitive.Root.Props) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
-}
+type TooltipContentProps = Omit<ComponentProps<typeof TooltipPrimitive.Popup>, "className" | "style"> &
+  Pick<ComponentProps<typeof TooltipPrimitive.Positioner>, "align" | "side" | "sideOffset"> & {
+    xstyle?: stylex.StyleXStyles;
+  };
 
-function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
-}
-
-function TooltipContent({
-  className,
-  side = "top",
-  sideOffset = 4,
-  align = "center",
-  alignOffset = 0,
-  children,
+export const Tooltip = TooltipPrimitive.Root;
+export const TooltipProvider = TooltipPrimitive.Provider;
+export function TooltipTrigger({
+  xstyle,
   ...props
-}: TooltipPrimitive.Popup.Props &
-  Pick<TooltipPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">) {
+}: Omit<ComponentProps<typeof TooltipPrimitive.Trigger>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  return <TooltipPrimitive.Trigger {...props} {...stylex.props(xstyle)} />;
+}
+
+export function TooltipContent({
+  align = "center",
+  side = "top",
+  sideOffset = 6,
+  xstyle,
+  ...props
+}: TooltipContentProps) {
+  function getPopupStyles(state: TooltipPrimitive.Popup.State) {
+    return stylex.props(
+      styles.popup,
+      (state.transitionStatus === "starting" || state.transitionStatus === "ending") && styles.popupTransitioning,
+      state.transitionStatus === "ending" && styles.popupEnding,
+      xstyle,
+    );
+  }
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Positioner
         align={align}
-        alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
-        className="isolate z-50"
+        {...stylex.props(styles.positioner)}
       >
         <TooltipPrimitive.Popup
-          data-slot="tooltip-content"
-          className={cn(
-            "bg-foreground text-background data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md px-3 py-1.5 text-xs has-data-[slot=kbd]:pr-1.5 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm",
-            className,
-          )}
           {...props}
+          className={(state) => getPopupStyles(state).className}
+          style={(state) => getPopupStyles(state).style}
         >
-          {children}
-          <TooltipPrimitive.Arrow className="bg-foreground fill-foreground z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
+          {props.children}
+          <TooltipPrimitive.Arrow {...stylex.props(styles.arrow)} />
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>
   );
 }
-
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };

@@ -6,7 +6,6 @@
     "paths": {
       "~/*": ["./*"],
       "~newtab/*": ["./entrypoints/newtab/*"],
-      "~sidepanel/*": ["./entrypoints/sidepanel/*"],
       "~shared/*": ["./entrypoints/shared/*"]
     }
   }

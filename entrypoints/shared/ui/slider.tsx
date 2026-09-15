@@ -1,87 +1,82 @@
+"use client";
+
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
-import { cn } from "~shared/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import { colorVars, motionVars, opacityVars, radiusVars, sizeVars } from "~shared/styles/semantic.stylex";
 
-function Slider<Value extends number | readonly number[]>({
-  className,
-  indicatorClassName,
-  thumbClassName,
-  trackClassName,
-  defaultValue,
-  value,
-  min = 0,
-  max = 100,
-  ...props
-}: SliderPrimitive.Root.Props<Value> & {
-  indicatorClassName?: string;
-  thumbClassName?: string;
-  trackClassName?: string;
-}) {
-  const _values = deriveSliderValues(value, defaultValue, min);
+import type { ControlLayoutStyles } from "./control-layout";
 
+const styles = stylex.create({
+  root: {
+    opacity: { default: 1, ":disabled": opacityVars.disabled },
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "opacity",
+    transitionTimingFunction: motionVars.easingStandard,
+    width: "100%",
+  },
+  control: {
+    alignItems: "center",
+    display: "flex",
+    height: sizeVars.touchTarget,
+    position: "relative",
+    touchAction: "none",
+    width: "100%",
+  },
+  track: {
+    backgroundColor: colorVars.bgSubtle,
+    borderRadius: radiusVars.full,
+    height: sizeVars.trackSm,
+    overflow: "hidden",
+    width: "100%",
+  },
+  indicator: {
+    backgroundColor: colorVars.bgActionPrimary,
+    borderRadius: radiusVars.full,
+    height: "100%",
+  },
+  thumb: {
+    backgroundColor: colorVars.bgSurface,
+    borderColor: colorVars.strokeAction,
+    borderRadius: radiusVars.full,
+    borderStyle: "solid",
+    borderWidth: sizeVars.stroke,
+    height: sizeVars.iconLg,
+    outline: "none",
+    width: sizeVars.iconLg,
+    ":focus-visible": {
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.focusRing,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
+    },
+  },
+});
+
+export type SliderProps = Omit<ComponentProps<typeof SliderPrimitive.Root>, "className" | "style"> & {
+  /** Returns an accessible name for each thumb in a range slider. */
+  getAriaLabel?: (index: number) => string;
+  xstyle?: ControlLayoutStyles;
+};
+
+export function Slider({ defaultValue, getAriaLabel, value, xstyle, ...props }: SliderProps) {
+  const currentValue = value ?? defaultValue;
+  const thumbCount = Array.isArray(currentValue) ? currentValue.length : 1;
   return (
-    <SliderPrimitive.Root
-      className={cn("w-full data-[orientation=vertical]:h-full", className)}
-      data-slot="slider"
-      defaultValue={defaultValue}
-      value={value}
-      min={min}
-      max={max}
-      thumbAlignment="edge"
-      {...props}
-    >
-      <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-[orientation=horizontal]:h-5 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-40 data-[orientation=vertical]:w-5 data-[orientation=vertical]:flex-col">
-        <SliderPrimitive.Track
-          data-slot="slider-track"
-          className={cn(
-            "bg-muted relative grow overflow-hidden rounded-md select-none data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1",
-            trackClassName,
-          )}
-        >
-          <SliderPrimitive.Indicator
-            data-slot="slider-range"
-            className={cn(
-              "bg-primary select-none data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full",
-              indicatorClassName,
-            )}
-          />
+    <SliderPrimitive.Root {...props} defaultValue={defaultValue} value={value} {...stylex.props(styles.root, xstyle)}>
+      <SliderPrimitive.Control {...stylex.props(styles.control)}>
+        <SliderPrimitive.Track {...stylex.props(styles.track)}>
+          <SliderPrimitive.Indicator {...stylex.props(styles.indicator)} />
         </SliderPrimitive.Track>
-        {Array.from({ length: _values.length }, (_, index) => (
+        {Array.from({ length: thumbCount }, (_, index) => (
           <SliderPrimitive.Thumb
-            data-slot="slider-thumb"
+            getAriaLabel={getAriaLabel}
+            index={index}
             key={index}
-            className={cn(
-              "border-primary bg-background ring-ring/30 relative block size-3 shrink-0 rounded-md border transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-2 focus-visible:ring-2 focus-visible:outline-hidden active:ring-2 disabled:pointer-events-none disabled:opacity-50",
-              thumbClassName,
-            )}
+            {...stylex.props(styles.thumb)}
           />
         ))}
       </SliderPrimitive.Control>
     </SliderPrimitive.Root>
   );
 }
-
-function deriveSliderValues(
-  value: number | readonly number[] | undefined,
-  defaultValue: number | readonly number[] | undefined,
-  fallback: number,
-): readonly number[] {
-  if (Array.isArray(value)) {
-    return value;
-  }
-
-  if (typeof value === "number") {
-    return [value];
-  }
-
-  if (Array.isArray(defaultValue)) {
-    return defaultValue;
-  }
-
-  if (typeof defaultValue === "number") {
-    return [defaultValue];
-  }
-
-  return [fallback];
-}
-
-export { Slider };

@@ -1,29 +1,100 @@
-import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
-import { cn } from "~shared/lib";
+"use client";
 
-function Switch({
-  className,
-  size = "default",
-  ...props
-}: SwitchPrimitive.Root.Props & {
-  size?: "sm" | "default";
-}) {
+import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import { colorVars, motionVars, radiusVars, sizeVars, spacingVars } from "~shared/styles/semantic.stylex";
+
+import type { ControlPlacementStyles } from "./control-layout";
+
+const styles = stylex.create({
+  root: {
+    alignItems: "center",
+    appearance: "none",
+    backgroundColor: colorVars.interactionDisabled,
+    borderStyle: "none",
+    borderWidth: 0,
+    borderRadius: radiusVars.full,
+    cursor: "pointer",
+    display: "inline-flex",
+    flexShrink: 0,
+    outline: "none",
+    padding: spacingVars.space0_5,
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "background-color, opacity",
+    transitionTimingFunction: motionVars.easingStandard,
+    ":focus-visible": {
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.focusRing,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
+    },
+    ":disabled": { cursor: "not-allowed" },
+  },
+
+  checked: { backgroundColor: colorVars.bgActionPrimary },
+  disabled: { backgroundColor: colorVars.interactionDisabled, cursor: "not-allowed" },
+  disabledThumb: { backgroundColor: colorVars.fgDisabled },
+  thumb: {
+    backgroundColor: colorVars.bgSurface,
+    borderRadius: radiusVars.full,
+    display: "block",
+    transform: "translateX(0)",
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "background-color, transform",
+    transitionTimingFunction: motionVars.easingStandard,
+    ':is([data-motion-reduced="true"] *)': {
+      transitionDuration: motionVars.durationInstant,
+    },
+  },
+});
+
+const sizeStyles = stylex.create({
+  sm: { height: sizeVars.controlXs, width: sizeVars.controlSm },
+  md: { height: sizeVars.controlXs, width: sizeVars.controlLg },
+});
+
+const thumbSizeStyles = stylex.create({
+  sm: { height: sizeVars.iconMd, width: sizeVars.iconMd },
+  md: { height: sizeVars.iconLg, width: sizeVars.iconLg },
+});
+
+const thumbCheckedStyles = stylex.create({
+  sm: { transform: `translateX(${spacingVars.space3})` },
+  md: { transform: `translateX(${spacingVars.space4})` },
+});
+
+export type SwitchProps = Omit<ComponentProps<typeof SwitchPrimitive.Root>, "className" | "style"> & {
+  size?: "md" | "sm";
+  xstyle?: ControlPlacementStyles;
+};
+
+export function Switch({ size = "md", xstyle, ...props }: SwitchProps) {
+  function getRootStyles(state: SwitchPrimitive.Root.State) {
+    return stylex.props(
+      styles.root,
+      sizeStyles[size],
+      state.checked && styles.checked,
+      state.disabled && styles.disabled,
+      xstyle,
+    );
+  }
   return (
     <SwitchPrimitive.Root
-      data-slot="switch"
-      data-size={size}
-      className={cn(
-        "peer group/switch focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 data-checked:bg-primary data-unchecked:bg-input dark:data-unchecked:bg-input/80 relative inline-flex shrink-0 items-center rounded-full border border-transparent transition-all outline-none group-has-[:focus-visible]/field-label:border-transparent group-has-[:focus-visible]/field-label:ring-0 after:absolute after:-inset-x-3 after:-inset-y-2 focus-visible:ring-2 aria-invalid:ring-2 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-[size=default]:h-[16.6px] data-[size=default]:w-[28px] data-[size=sm]:h-[14px] data-[size=sm]:w-[24px]",
-        className,
-      )}
       {...props}
+      className={(state) => getRootStyles(state).className}
+      style={(state) => getRootStyles(state).style}
     >
       <SwitchPrimitive.Thumb
-        data-slot="switch-thumb"
-        className="bg-background dark:data-checked:bg-primary-foreground dark:data-unchecked:bg-foreground pointer-events-none block rounded-full ring-0 transition-transform group-data-[size=default]/switch:size-3.5 group-data-[size=sm]/switch:size-3 group-data-[size=default]/switch:data-checked:translate-x-[calc(100%-2px)] group-data-[size=sm]/switch:data-checked:translate-x-[calc(100%-2px)] group-data-[size=default]/switch:data-unchecked:translate-x-0 group-data-[size=sm]/switch:data-unchecked:translate-x-0"
+        className={(state) =>
+          stylex.props(
+            styles.thumb,
+            thumbSizeStyles[size],
+            state.checked && thumbCheckedStyles[size],
+            state.disabled && styles.disabledThumb,
+          ).className
+        }
       />
     </SwitchPrimitive.Root>
   );
 }
-
-export { Switch };

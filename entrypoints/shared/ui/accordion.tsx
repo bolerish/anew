@@ -1,65 +1,165 @@
+"use client";
+
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
-import { CaretDownIcon, CaretRightIcon } from "@phosphor-icons/react";
-import { cn } from "~shared/lib/utils";
+import { CaretDownIcon } from "@phosphor-icons/react";
+import * as stylex from "@stylexjs/stylex";
+import type { ComponentProps } from "react";
+import { colorVars, motionVars, sizeVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
 
-function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
-  return (
-    <AccordionPrimitive.Root
-      data-slot="accordion"
-      className={cn("flex w-full flex-col overflow-hidden rounded-md border", className)}
-      {...props}
-    />
-  );
+import type { ControlLayoutStyles } from "./control-layout";
+
+const styles = stylex.create({
+  root: { minWidth: 0, width: "100%" },
+  item: {
+    borderBottomColor: colorVars.strokeDefault,
+    borderBottomStyle: "solid",
+    borderBottomWidth: sizeVars.stroke,
+  },
+  compactTrigger: { minHeight: sizeVars.controlMd, paddingBlock: 0 },
+  header: { display: "flex", margin: 0 },
+  trigger: {
+    alignItems: "center",
+    appearance: "none",
+    backgroundColor: "transparent",
+    borderStyle: "none",
+    borderWidth: 0,
+    color: colorVars.fgPrimary,
+    cursor: "pointer",
+    display: "flex",
+    flex: 1,
+    fontFamily: typographyVars.fontFamilyBody,
+    fontSize: typographyVars.fontSizeSm,
+    fontWeight: typographyVars.fontWeightMedium,
+    justifyContent: "center",
+    lineHeight: typographyVars.lineHeightNormal,
+    outline: "none",
+    paddingBlock: spacingVars.space4,
+    paddingInline: spacingVars.space1,
+    textAlign: "start",
+    transitionDuration: motionVars.durationFast,
+    transitionProperty: "color",
+    transitionTimingFunction: motionVars.easingStandard,
+    ":hover": { textDecoration: "underline", textUnderlineOffset: spacingVars.space1 },
+    ":focus-visible": {
+      outlineColor: colorVars.strokeFocus,
+      outlineOffset: sizeVars.focusRing,
+      outlineStyle: "solid",
+      outlineWidth: sizeVars.focusRing,
+    },
+    ":disabled": { cursor: "not-allowed" },
+  },
+  triggerDisabled: {
+    color: colorVars.fgDisabled,
+    cursor: "not-allowed",
+    ":hover": { textDecoration: "none" },
+  },
+  icon: {
+    alignItems: "center",
+    display: "inline-flex",
+    flexShrink: 0,
+    height: sizeVars.iconMd,
+    justifyContent: "center",
+    transform: "rotate(0deg)",
+    width: sizeVars.iconMd,
+    ":is([data-panel-open] *)": { transform: "rotate(180deg)" },
+  },
+  panel: {
+    color: colorVars.fgSecondary,
+    fontSize: typographyVars.fontSizeSm,
+    height: "var(--accordion-panel-height)",
+    lineHeight: typographyVars.lineHeightNormal,
+    minWidth: 0,
+    opacity: 1,
+    overflow: "clip",
+    // Leave room for control focus outlines without exposing collapsed content.
+    overflowClipMargin: `calc(${sizeVars.focusRing} * 2)`,
+    transitionDuration: motionVars.durationNormal,
+    transitionProperty: "height, opacity",
+    transitionTimingFunction: motionVars.easingStandard,
+    width: "100%",
+    ':is([data-motion-reduced="true"] *)': {
+      transitionDuration: motionVars.durationInstant,
+    },
+  },
+  panelTransitioning: { height: 0, opacity: 0 },
+  panelContent: {
+    paddingBottom: spacingVars.space4,
+    paddingInlineEnd: spacingVars.space6,
+    width: "100%",
+  },
+});
+
+export function Accordion({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof AccordionPrimitive.Root>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  return <AccordionPrimitive.Root {...props} {...stylex.props(styles.root, xstyle)} />;
 }
 
-function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
-  return (
-    <AccordionPrimitive.Item
-      data-slot="accordion-item"
-      className={cn("data-open:bg-muted/50 not-last:border-b", className)}
-      {...props}
-    />
-  );
+export function AccordionItem({
+  xstyle,
+  ...props
+}: Omit<ComponentProps<typeof AccordionPrimitive.Item>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  return <AccordionPrimitive.Item {...props} {...stylex.props(styles.item, xstyle)} />;
 }
 
-function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.Trigger.Props) {
+export function AccordionTrigger({
+  xstyle,
+  size = "default",
+  children,
+  ...props
+}: Omit<ComponentProps<typeof AccordionPrimitive.Trigger>, "className" | "style"> & {
+  xstyle?: ControlLayoutStyles;
+  size?: "default" | "sm";
+}) {
+  function getTriggerStyles(state: AccordionPrimitive.Trigger.State) {
+    return stylex.props(
+      styles.trigger,
+      size === "sm" && styles.compactTrigger,
+      state.disabled && styles.triggerDisabled,
+      xstyle,
+    );
+  }
   return (
-    <AccordionPrimitive.Header className="flex">
+    <AccordionPrimitive.Header {...stylex.props(styles.header)}>
       <AccordionPrimitive.Trigger
-        data-slot="accordion-trigger"
-        className={cn(
-          "group/accordion-trigger **:data-[slot=accordion-trigger-icon]:text-muted-foreground relative flex flex-1 items-start justify-between gap-6 border border-transparent p-2 text-left text-xs/relaxed font-medium transition-all outline-none hover:underline aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4",
-          className,
-        )}
         {...props}
+        className={(state) => getTriggerStyles(state).className}
+        style={(state) => getTriggerStyles(state).style}
       >
         {children}
-        <CaretRightIcon
-          data-slot="accordion-trigger-icon"
-          className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
-        />
-        <CaretDownIcon
-          data-slot="accordion-trigger-icon"
-          className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
-        />
+        <span aria-hidden="true" {...stylex.props(styles.icon)}>
+          <CaretDownIcon />
+        </span>
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
 }
 
-function AccordionContent({ className, children, ...props }: AccordionPrimitive.Panel.Props) {
+export function AccordionContent({
+  xstyle,
+  children,
+  ...props
+}: Omit<ComponentProps<typeof AccordionPrimitive.Panel>, "className" | "style"> & {
+  xstyle?: stylex.StyleXStyles;
+}) {
+  function getPanelStyles(state: AccordionPrimitive.Panel.State) {
+    return stylex.props(
+      styles.panel,
+      (state.transitionStatus === "starting" || state.transitionStatus === "ending") && styles.panelTransitioning,
+    );
+  }
   return (
-    <AccordionPrimitive.Panel data-slot="accordion-content" className="overflow-hidden px-2 text-xs/relaxed" {...props}>
-      <div
-        className={cn(
-          "[&_a]:hover:text-foreground h-accordion-panel pt-0 pb-4 data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4",
-          className,
-        )}
-      >
-        {children}
-      </div>
+    <AccordionPrimitive.Panel
+      {...props}
+      className={(state) => getPanelStyles(state).className}
+      style={(state) => getPanelStyles(state).style}
+    >
+      <div {...stylex.props(styles.panelContent, xstyle)}>{children}</div>
     </AccordionPrimitive.Panel>
   );
 }
-
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };
