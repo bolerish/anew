@@ -20,11 +20,16 @@ export const defaults: WeatherSettings = { enabled: false, city: null };
 export const weatherSettings = storage.defineItem<WeatherSettings>("local:weather:settings", { fallback: defaults });
 const cache = storage.defineItem<Cache>("local:weather:cache", { fallback: { weather: null, retryAt: 0, key: "" } });
 export function formatTemperature(celsius: number, unit: "celsius" | "fahrenheit" = "celsius") {
-  return `${Math.round(unit === "fahrenheit" ? celsius * FAHRENHEIT_SCALE + FAHRENHEIT_OFFSET : celsius)}°${unit === "fahrenheit" ? "F" : "C"}`;
+  const isFahrenheit = unit === "fahrenheit";
+  const temperature = isFahrenheit ? celsius * FAHRENHEIT_SCALE + FAHRENHEIT_OFFSET : celsius;
+  const symbol = isFahrenheit ? "F" : "C";
+  return `${Math.round(temperature)}°${symbol}`;
 }
 
 export function isFresh(weather: Weather | null, key: string, now = Date.now()) {
-  return Boolean(weather && weather.key === key && now >= weather.fetchedAt && now - weather.fetchedAt < CACHE_MS);
+  if (!weather || weather.key !== key) return false;
+  const age = now - weather.fetchedAt;
+  return age >= 0 && age < CACHE_MS;
 }
 export async function loadWeather(): Promise<Weather | null> {
   return navigator.locks.request("min-weather", async () => {

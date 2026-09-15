@@ -12,8 +12,9 @@ export function useWeather(settings: WeatherSettings, language: Language) {
   useEffect(() => {
     const city = settings.city;
     const legacyNames = Object.values(weatherMessages).map((value) => value.currentLocation);
-    if (!settings.enabled || !city || !legacyNames.some((name) => name === city.name) || resolvingLegacyCity.current)
-      return;
+    if (!settings.enabled || !city || resolvingLegacyCity.current) return;
+    const hasLegacyCityName = legacyNames.some((name) => name === city.name);
+    if (!hasLegacyCityName) return;
     resolvingLegacyCity.current = true;
     void fetchCurrentCity(language)
       .then(async (resolved) => {

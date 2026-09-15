@@ -82,6 +82,9 @@ export function WeatherSettings() {
     }
   }
 
+  const hasSearchQuery = (query ?? "").trim().length >= MIN_CITY_QUERY_LENGTH;
+  const isSearchOpen = open && !locating && hasSearchQuery;
+
   return (
     <>
       <Field>
@@ -102,7 +105,7 @@ export function WeatherSettings() {
 
             <Combobox<City>
               disabled={locating}
-              open={open && !locating && (query ?? "").trim().length >= MIN_CITY_QUERY_LENGTH}
+              open={isSearchOpen}
               onOpenChange={setOpen}
               items={cities}
               filter={null}
