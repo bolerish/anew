@@ -1,33 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import { weatherMessages } from "~shared/i18n/weather";
+import { useEffect, useState } from "react";
 import type { Language } from "~shared/lib/preferences";
 
-import { fetchCurrentCity } from "../api/location";
-import { weatherSettings, loadWeather, type Weather, type WeatherSettings } from "./weather";
+import { localizeCity } from "../api/weather";
+import { weatherSettings, loadWeather, type City, type Weather, type WeatherSettings } from "./weather";
 
 export function useWeather(settings: WeatherSettings, language: Language) {
-  const resolvingLegacyCity = useRef(false);
   const [data, setData] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const city = settings.city;
-    const legacyNames = Object.values(weatherMessages).map((value) => value.currentLocation);
-    if (!settings.enabled || !city || resolvingLegacyCity.current) return;
-    const hasLegacyCityName = legacyNames.some((name) => name === city.name);
-    if (!hasLegacyCityName) return;
-    resolvingLegacyCity.current = true;
-    void fetchCurrentCity(language)
-      .then(async (resolved) => {
-        const current = await weatherSettings.getValue();
-        if (
-          current.city?.name === city.name &&
-          current.city.latitude === city.latitude &&
-          current.city.longitude === city.longitude
-        ) {
-          await weatherSettings.setValue({ ...current, city: resolved });
-        }
-      })
-      .catch(() => {});
+    if (!settings.enabled || !city || city.language === language) return;
+    let active = true;
+    async function updateCityName(savedCity: City) {
+      try {
+        const localizedCity = await localizeCity(savedCity, language);
+        if (!active || !localizedCity) return;
+
+        const currentSettings = await weatherSettings.getValue();
+        if (!active) return;
+        const currentCity = currentSettings.city;
+        if (!currentCity || currentCity.name !== savedCity.name) return;
+        if (currentCity.latitude !== savedCity.latitude || currentCity.longitude !== savedCity.longitude) return;
+
+        await weatherSettings.setValue({ ...currentSettings, city: localizedCity });
+      } catch {
+        // Keep the saved name when lookup or persistence fails.
+      }
+    }
+
+    void updateCityName(city);
+    return () => {
+      active = false;
+    };
   }, [settings.enabled, settings.city, language]);
   useEffect(() => {
     let active = true;

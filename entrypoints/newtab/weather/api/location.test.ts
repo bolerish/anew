@@ -12,7 +12,7 @@ test("GPS resolves a city name and rejects denied permissions", async () => {
   Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition } });
   const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(new Response(JSON.stringify({ city: "서울" })));
   vi.stubGlobal("fetch", fetch);
-  expect(await fetchCurrentCity("ko")).toEqual({ name: "서울", latitude: 37.57, longitude: 126.98 });
+  expect(await fetchCurrentCity("ko")).toEqual({ name: "서울", latitude: 37.57, longitude: 126.98, language: "ko" });
   expect(getCurrentPosition).toHaveBeenCalledOnce();
   getCurrentPosition.mockImplementation((_success, failure) =>
     failure?.({ code: 1, message: "Denied" } as GeolocationPositionError),

@@ -1,38 +1,59 @@
 import ky from "ky";
+import { z } from "zod";
 import { MAX_LATITUDE, MAX_LONGITUDE } from "~shared/lib/geolocation";
 
 import type { City, Weather } from "../model/weather";
 
 export const MIN_CITY_QUERY_LENGTH = 2;
 const CITY_RESULT_LIMIT = 5;
+const LOCATION_MATCH_TOLERANCE_DEGREES = 0.1;
 const REQUEST_TIMEOUT_MS = 10_000;
 const weatherApi = ky.create({ timeout: REQUEST_TIMEOUT_MS, retry: 0 });
+const locationNameSchema = z.string().trim().min(1);
+export const searchCitySchema = z.object({
+  name: locationNameSchema,
+  latitude: z.number().min(-MAX_LATITUDE).max(MAX_LATITUDE),
+  longitude: z.number().min(-MAX_LONGITUDE).max(MAX_LONGITUDE),
+  admin1: locationNameSchema.optional().catch(undefined),
+  country: locationNameSchema.optional().catch(undefined),
+});
+const citySearchResponseSchema = z.object({ results: z.array(z.unknown()).catch([]) }).catch({ results: [] });
+export const weatherResponseSchema = z.object({
+  current: z.object({
+    temperature_2m: z.number(),
+    weather_code: z.number().refine(Number.isInteger),
+  }),
+});
+export const cityNameResponseSchema = z.object({
+  city: locationNameSchema.optional().catch(undefined),
+  locality: locationNameSchema.optional().catch(undefined),
+  principalSubdivision: locationNameSchema.optional().catch(undefined),
+  countryName: locationNameSchema.optional().catch(undefined),
+});
 
 export async function searchCities(query: string, language: string, signal?: AbortSignal): Promise<City[]> {
-  if (query.trim().length < MIN_CITY_QUERY_LENGTH) return [];
+  const name = query.trim();
+  if (name.length < MIN_CITY_QUERY_LENGTH) return [];
   const data = await weatherApi
     .get("https://geocoding-api.open-meteo.com/v1/search", {
-      searchParams: { name: query.trim(), language, count: CITY_RESULT_LIMIT },
+      searchParams: { name, language, count: CITY_RESULT_LIMIT },
       signal,
     })
-    .json<{ results?: unknown } | null>();
-  if (!Array.isArray(data?.results)) return [];
+    .json<unknown>();
+  const { results } = citySearchResponseSchema.parse(data);
   const cities: City[] = [];
-  for (const result of data.results) {
-    const city = parseCity(result);
+  for (const result of results) {
+    const city = parseCity(result, language);
     if (city) cities.push(city);
   }
   return cities;
 }
 
-function parseCity(value: unknown): City | null {
-  if (!value || typeof value !== "object") return null;
-  const { name, admin1, country, latitude, longitude } = value as Record<string, unknown>;
-  if (typeof name !== "string" || !name.trim()) return null;
-  if (typeof latitude !== "number" || !Number.isFinite(latitude) || Math.abs(latitude) > MAX_LATITUDE) return null;
-  if (typeof longitude !== "number" || !Number.isFinite(longitude) || Math.abs(longitude) > MAX_LONGITUDE) return null;
-  const address = [name, admin1, country].filter((part) => typeof part === "string" && part.trim());
-  return { name: address.join(", "), latitude, longitude };
+function parseCity(value: unknown, language: string): City | null {
+  const result = searchCitySchema.safeParse(value);
+  if (!result.success) return null;
+  const { name, admin1, country, latitude, longitude } = result.data;
+  return { name: formatLocationName([name, admin1, country]), latitude, longitude, language };
 }
 
 export async function fetchWeather(city: City): Promise<Weather> {
@@ -45,11 +66,10 @@ export async function fetchWeather(city: City): Promise<Weather> {
         forecast_days: 1,
       },
     })
-    .json<{ current?: { temperature_2m?: unknown; weather_code?: unknown } } | null>();
-  const temperature = data?.current?.temperature_2m;
-  const code = data?.current?.weather_code;
-  if (typeof temperature !== "number" || !Number.isFinite(temperature)) throw new Error("Invalid weather temperature");
-  if (typeof code !== "number" || !Number.isInteger(code)) throw new Error("Invalid weather code");
+    .json<unknown>();
+  const result = weatherResponseSchema.safeParse(data);
+  if (!result.success) throw new Error("Invalid weather response", { cause: result.error });
+  const { temperature_2m: temperature, weather_code: code } = result.data.current;
   return { key: `${city.latitude},${city.longitude}`, temperature, code, fetchedAt: Date.now() };
 }
 
@@ -65,10 +85,36 @@ export async function fetchCityName(
         localityLanguage: language,
       },
     })
-    .json<{ city?: unknown; locality?: unknown; principalSubdivision?: unknown } | null>();
-  const name = [data?.city, data?.locality, data?.principalSubdivision].find(
-    (value): value is string => typeof value === "string" && value.trim().length > 0,
-  );
+    .json<unknown>();
+  const location = cityNameResponseSchema.parse(data);
+  const name = location.city ?? location.locality ?? location.principalSubdivision;
   if (!name) throw new Error("City not found");
-  return { name: name.trim(), latitude: coordinates.latitude, longitude: coordinates.longitude };
+  return {
+    name: formatLocationName([name, location.principalSubdivision, location.countryName]),
+    ...coordinates,
+    language,
+  };
+}
+
+function formatLocationName(parts: readonly unknown[]): string {
+  const names = new Set<string>();
+  for (const part of parts) {
+    if (typeof part !== "string") continue;
+    const name = part.trim();
+    if (name) names.add(name);
+  }
+  return [...names].join(", ");
+}
+
+// ponytail: match one nearby search result; use stable place IDs if names become ambiguous.
+export async function localizeCity(city: City, language: string): Promise<City | null> {
+  const [searchName] = city.name.split(",");
+  const cities = await searchCities(searchName, language);
+  const matches = cities.filter((candidate) => {
+    const latitudeDifference = Math.abs(candidate.latitude - city.latitude);
+    const longitudeDifference = Math.abs(candidate.longitude - city.longitude);
+    return Math.max(latitudeDifference, longitudeDifference) < LOCATION_MATCH_TOLERANCE_DEGREES;
+  });
+  if (matches.length !== 1) return null;
+  return { ...city, name: matches[0].name, language };
 }

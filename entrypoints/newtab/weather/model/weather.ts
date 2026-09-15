@@ -1,3 +1,7 @@
+import { z } from "zod";
+import { MAX_LATITUDE, MAX_LONGITUDE } from "~shared/lib/geolocation";
+import { validateStorage } from "~shared/lib/validated-storage";
+
 import { storage } from "#imports";
 
 import { fetchWeather } from "../api/weather";
@@ -7,18 +11,47 @@ const FAHRENHEIT_SCALE = 9 / 5;
 const FAHRENHEIT_OFFSET = 32;
 const RETRY_DELAY_MS = 15 * 60 * 1000;
 
-export type City = { name: string; latitude: number; longitude: number };
-export type WeatherSettings = {
-  enabled: boolean;
-  city: City | null;
-  unit?: "celsius" | "fahrenheit";
-  showCity?: boolean;
-};
-export type Weather = { key: string; temperature: number; code: number; fetchedAt: number };
-type Cache = { weather: Weather | null; retryAt: number; key: string };
+export const citySchema = z.object({
+  name: z.string().min(1),
+  latitude: z.number().min(-MAX_LATITUDE).max(MAX_LATITUDE),
+  longitude: z.number().min(-MAX_LONGITUDE).max(MAX_LONGITUDE),
+  language: z.string().optional(),
+});
+export type City = z.output<typeof citySchema>;
+export const weatherSettingsSchema = z
+  .object({
+    enabled: z.boolean().catch(false),
+    city: citySchema.nullable().catch(null),
+    unit: z.enum(["celsius", "fahrenheit"]).optional().catch(undefined),
+    showCity: z.boolean().optional().catch(undefined),
+  })
+  .catch({ enabled: false, city: null });
+export type WeatherSettings = z.output<typeof weatherSettingsSchema>;
+export const weatherSchema = z.object({
+  key: z.string(),
+  temperature: z.number(),
+  code: z.number().refine(Number.isInteger),
+  fetchedAt: z.number().nonnegative(),
+});
+export type Weather = z.output<typeof weatherSchema>;
+const cacheSchema = z
+  .object({
+    weather: weatherSchema.nullable().catch(null),
+    retryAt: z.number().nonnegative().catch(0),
+    key: z.string().catch(""),
+  })
+  .catch({ weather: null, retryAt: 0, key: "" });
 export const defaults: WeatherSettings = { enabled: false, city: null };
-export const weatherSettings = storage.defineItem<WeatherSettings>("local:weather:settings", { fallback: defaults });
-const cache = storage.defineItem<Cache>("local:weather:cache", { fallback: { weather: null, retryAt: 0, key: "" } });
+export const weatherSettings = validateStorage(
+  storage.defineItem<WeatherSettings>("local:weather:settings", { fallback: defaults }),
+  weatherSettingsSchema,
+);
+const cache = validateStorage(
+  storage.defineItem<z.output<typeof cacheSchema>>("local:weather:cache", {
+    fallback: { weather: null, retryAt: 0, key: "" },
+  }),
+  cacheSchema,
+);
 export function formatTemperature(celsius: number, unit: "celsius" | "fahrenheit" = "celsius") {
   const isFahrenheit = unit === "fahrenheit";
   const temperature = isFahrenheit ? celsius * FAHRENHEIT_SCALE + FAHRENHEIT_OFFSET : celsius;
