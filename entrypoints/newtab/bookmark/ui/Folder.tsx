@@ -10,6 +10,7 @@ import { Button } from "~shared/ui/button";
 
 import { setFolderDisplay } from "../../settings/bookmark/model/settings";
 import { isItemDragData } from "../lib/dnd";
+import { resolveBookmarkView } from "../lib/item-view";
 import { collapsedFoldersStorage, getInitialCollapsedFolders, setFolderExpanded } from "../model/expansion";
 import { useBookmarkContext } from "../model/Provider";
 import type { BookmarkFolder } from "../model/types";
@@ -117,10 +118,10 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
   const { folderDividers } = usePreferences();
   const { folderViews, folderDisplays, bookmarkIconMode, defaultView, isSearchActive, onBookmarksChange } =
     useBookmarkContext();
-  const view =
-    (folderDisplays?.[folder.id]?.icon ?? bookmarkIconMode) === "original"
-      ? (folderViews[folder.id] ?? defaultView)
-      : "list";
+  const view = resolveBookmarkView(
+    folderDisplays?.[folder.id]?.icon ?? bookmarkIconMode,
+    folderViews[folder.id] ?? defaultView,
+  );
   const { drop, sort } = useFolderDnd(folder);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
   const addForm = useAddForm({

@@ -16,6 +16,11 @@ export type BookmarkItemView = {
   showBookmarkIcon: boolean;
 };
 
+/** Grid view is available only for original site icons. */
+export function resolveBookmarkView(icon: BookmarkIconDisplayMode, view: "list" | "icons"): "list" | "icons" {
+  return icon === "original" ? view : "list";
+}
+
 export function deriveItemLabel(item: BookmarkItem): string {
   return item.title || item.url;
 }

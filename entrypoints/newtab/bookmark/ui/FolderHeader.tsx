@@ -41,6 +41,7 @@ import { Input } from "~shared/ui/input";
 
 import { setFolderView, setFolderDisplay } from "../../settings/bookmark/model/settings";
 import { deleteFolder as deleteBookmarkFolder } from "../api/update";
+import { resolveBookmarkView } from "../lib/item-view";
 import { useBookmarkContext } from "../model/Provider";
 import { isRootBookmarkFolder, type BookmarkFolder } from "../model/types";
 import { DragHandle } from "./DragHandle";
@@ -139,6 +140,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
   const titleInputRef = useRef<HTMLInputElement | null>(null);
   const { editor, folderViews, folderDisplays, bookmarkIconMode, defaultView, isEditMode } = useBookmarkContext();
   const display = folderDisplays?.[folder.id] ?? { icon: bookmarkIconMode, showTitle: true };
+  const view = resolveBookmarkView(display.icon, folderViews[folder.id] ?? defaultView);
   const canModify = !isRootBookmarkFolder(folder);
   const isEditing = editor.inlineEditingBookmark?.kind === "folder" && editor.inlineEditingBookmark.id === folder.id;
 
@@ -284,7 +286,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
               />
               <DropdownMenuContent>
                 <DropdownMenuRadioGroup
-                  value={display.icon === "original" ? (folderViews[folder.id] ?? defaultView) : "list"}
+                  value={view}
                   onValueChange={(value) => {
                     if (value === "list" || value === "icons") void setFolderView(folder.id, value);
                   }}
@@ -322,7 +324,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
-                {(folderViews[folder.id] ?? defaultView) === "icons" && display.icon === "original" ? (
+                {view === "icons" ? (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
@@ -336,7 +338,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                     </DropdownMenuGroup>
                   </>
                 ) : null}
-                {display.icon !== "original" || (folderViews[folder.id] ?? defaultView) === "list" ? (
+                {view === "list" ? (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>

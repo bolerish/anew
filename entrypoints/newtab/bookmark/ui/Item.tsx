@@ -30,7 +30,7 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "~share
 
 import { moveItem as moveBookmarkItem } from "../api/move";
 import { deleteItem as deleteBookmarkItem } from "../api/update";
-import { deriveBookmarkItemView, deriveItemLabel, type BookmarkItemEntry } from "../lib/item-view";
+import { resolveBookmarkView, deriveBookmarkItemView, deriveItemLabel, type BookmarkItemEntry } from "../lib/item-view";
 import { canNormalizeUrl } from "../lib/url";
 import { useBookmarkContext } from "../model/Provider";
 import { useItemDnd } from "../model/useItemDnd";
@@ -196,7 +196,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
 
   const display = folderDisplays?.[item.parentId];
   const iconMode = display?.icon ?? bookmarkIconMode;
-  const displayMode = iconMode === "original" ? (folderViews[item.parentId] ?? defaultView) : "list";
+  const displayMode = resolveBookmarkView(iconMode, folderViews[item.parentId] ?? defaultView);
   let domain = "";
   if (displayMode === "list" && display?.showUrl) {
     try {
