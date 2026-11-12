@@ -7,6 +7,8 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Restore centered content and folder spacing, and align the add-bookmark icon
+    and label with the bookmark rows.
 - Keep bookmark order consistent between the editing preview and saved folders
     when moving an item downward within the same folder.
 - Preserve unrelated settings changed in another tab while saving edits, and

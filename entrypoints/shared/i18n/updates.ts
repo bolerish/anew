@@ -5,6 +5,7 @@ export const updatesMessages = {
       {
         title: "북마크",
         items: [
+          "콘텐츠 가운데 정렬과 폴더 간격을 복원하고, 북마크 추가 버튼의 아이콘과 글자를 북마크 행에 맞춰 정렬했습니다.",
           "같은 폴더 안에서 항목을 아래로 옮길 때 편집 미리보기와 저장 후 순서가 일치하도록 수정했습니다.",
           "편집 저장 시 다른 탭에서 바꾼 관련 없는 설정을 보존하고, 여러 Min 탭의 동시 저장이 서로의 북마크 편집을 덮어쓰지 않도록 했습니다.",
           "저장 일부가 실패한 뒤 다시 시도해도 이미 완료한 편집은 유지합니다.",
@@ -67,6 +68,7 @@ export const updatesMessages = {
       {
         title: "Bookmarks",
         items: [
+          "Restore centered content and folder spacing, and align the add-bookmark icon and label with the bookmark rows.",
           "Keep bookmark order consistent between the editing preview and saved folders when moving an item downward within the same folder.",
           "Preserve unrelated settings changed in another tab while saving edits, and prevent simultaneous Min saves from overwriting each other's bookmark edits.",
           "Keep successful edits when retrying after a partial save failure.",
@@ -129,6 +131,7 @@ export const updatesMessages = {
       {
         title: "ブックマーク",
         items: [
+          "コンテンツの中央配置とフォルダーの間隔を復元し、ブックマーク追加ボタンのアイコンと文字をブックマークの行に揃えました。",
           "同じフォルダー内で項目を下へ移動したとき、編集プレビューと保存後の順序が一致するよう修正しました。",
           "編集の保存時に別のタブで変更した無関係な設定を保持し、複数のMinタブの同時保存でブックマーク編集が上書きされないようにしました。",
           "一部の保存に失敗して再試行しても、完了した編集は保持します。",
@@ -189,6 +192,7 @@ export const updatesMessages = {
       {
         title: "Marcadores",
         items: [
+          "Se restauran el contenido centrado y el espaciado de las carpetas, y se alinean el icono y el texto del botón de añadir marcadores con las filas de marcadores.",
           "El orden de la vista previa coincide con el guardado al mover un elemento hacia abajo en la misma carpeta.",
           "Al guardar ediciones se conservan los ajustes no relacionados cambiados en otra pestaña, y los guardados simultáneos de Min no sobrescriben otras ediciones de marcadores.",
           "Los cambios ya guardados se conservan al reintentar después de un fallo parcial.",
@@ -251,6 +255,7 @@ export const updatesMessages = {
       {
         title: "书签",
         items: [
+          "恢复内容居中和文件夹间距，并将添加书签按钮的图标和文字与书签行对齐。",
           "在同一文件夹内向下移动项目时，编辑预览与保存后的顺序保持一致。",
           "保存编辑时保留其他标签页修改的无关设置，并防止多个 Min 标签页同时保存时覆盖彼此的书签编辑。",
           "部分保存失败后重试时，保留已完成的编辑。",

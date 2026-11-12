@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "~shared/lib/theme";
 
 import { getIconAppearance } from "../lib/icon-appearance";
+import { rowStyles } from "./row-styles";
 
 const styles = stylex.create({
   dot: {
@@ -12,11 +13,6 @@ const styles = stylex.create({
     height: `calc(${spacingVars.space1} * var(--mds-content-scale, 1))`,
   },
   marker: {
-    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
-    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
-    display: "grid",
-    placeItems: "center",
-    flexShrink: 0,
     color: colorVars.fgSecondary,
     fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
   },
@@ -57,7 +53,7 @@ export function ItemIcon({ icon, label, marker, size = "default" }: ItemIconProp
 
   if (marker) {
     return (
-      <span aria-hidden="true" {...stylex.props(styles.marker, size === "grid" && styles.gridIcon)}>
+      <span aria-hidden="true" {...stylex.props(rowStyles.iconSlot, styles.marker, size === "grid" && styles.gridIcon)}>
         {marker === "dot" ? <CircleIcon aria-hidden="true" weight="fill" {...stylex.props(styles.dot)} /> : "—"}
       </span>
     );
@@ -65,14 +61,17 @@ export function ItemIcon({ icon, label, marker, size = "default" }: ItemIconProp
 
   if (!icon || hasLoadError) {
     return (
-      <span aria-hidden="true" {...stylex.props(styles.marker, styles.fallback, size === "grid" && styles.gridIcon)}>
+      <span
+        aria-hidden="true"
+        {...stylex.props(rowStyles.iconSlot, styles.marker, styles.fallback, size === "grid" && styles.gridIcon)}
+      >
         {label.trim().charAt(0).toUpperCase() || "?"}
       </span>
     );
   }
 
   return (
-    <span aria-hidden="true" {...stylex.props(styles.marker, size === "grid" && styles.gridIcon)}>
+    <span aria-hidden="true" {...stylex.props(rowStyles.iconSlot, styles.marker, size === "grid" && styles.gridIcon)}>
       <img
         alt=""
         {...stylex.props(

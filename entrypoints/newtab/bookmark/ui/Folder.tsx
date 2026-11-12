@@ -1,7 +1,8 @@
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { colorVars, spacingVars, sizeVars, motionVars } from "@bolerish/tokens/semantic.stylex";
+import { colorVars, spacingVars, sizeVars, motionVars, typo } from "@bolerish/tokens/semantic.stylex";
 import { Accordion, AccordionContent, AccordionItem } from "@bolerish/ui/accordion";
 import { Button } from "@bolerish/ui/button";
+import { Item as BookmarkRow } from "@bolerish/ui/item";
 import { PlusIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { Fragment, useEffect, useState } from "react";
@@ -23,14 +24,18 @@ import { DropIndicator } from "./DropIndicator";
 import { FolderHeader } from "./FolderHeader";
 import { Item } from "./Item";
 import { resizeStyles } from "./resize-styles";
+import { rowStyles } from "./row-styles";
 
 const styles = stylex.create({
   addLabel: {
-    display: "grid",
-    gridTemplateColumns: `calc(${sizeVars.controlSm} - ${spacingVars.space2}) minmax(0,1fr)`,
-    alignItems: "center",
-    gap: spacingVars.space2,
+    width: "100%",
     color: colorVars.fgSecondary,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+  },
+  addText: { minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", textAlign: "start" },
+  addIcon: {
+    width: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
+    height: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
   },
   fullWidth: { width: "100%" },
   root: {
@@ -191,20 +196,27 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
                 {!isSearchActive ? (
                   <div {...stylex.props(styles.add, view === "icons" && styles.gridAdd)}>
                     {!addForm.isAddingBookmark ? (
-                      <Button
-                        xstyle={styles.fullWidth}
-                        align="start"
-                        size="sm"
-                        type="button"
-                        variant="ghost"
-                        data-add-bookmark={folder.id}
-                        onClick={addForm.toggleForm}
-                      >
-                        <span {...stylex.props(styles.addLabel)}>
-                          <PlusIcon aria-hidden="true" />
-                          {UI_LANGUAGE.bookmark.addBookmark}
-                        </span>
-                      </Button>
+                      <BookmarkRow size="xs" xstyle={rowStyles.inset}>
+                        <Button
+                          xstyle={styles.fullWidth}
+                          style={{ borderWidth: 0, paddingInline: 0 }}
+                          align="start"
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                          data-add-bookmark={folder.id}
+                          onClick={addForm.toggleForm}
+                        >
+                          <span {...stylex.props(rowStyles.columns, styles.addLabel)}>
+                            <span aria-hidden="true" {...stylex.props(rowStyles.iconSlot)}>
+                              <PlusIcon aria-hidden="true" {...stylex.props(styles.addIcon)} />
+                            </span>
+                            <span {...stylex.props(rowStyles.labelInset, styles.addText)}>
+                              {UI_LANGUAGE.bookmark.addBookmark}
+                            </span>
+                          </span>
+                        </Button>
+                      </BookmarkRow>
                     ) : null}
                     <AddForm form={addForm} />
                   </div>

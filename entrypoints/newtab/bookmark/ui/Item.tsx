@@ -38,6 +38,7 @@ import { DragHandle } from "./DragHandle";
 import { DropIndicator } from "./DropIndicator";
 import { editorStyles } from "./editor-styles";
 import { ItemIcon } from "./ItemIcon";
+import { rowStyles } from "./row-styles";
 import { SaveError } from "./SaveError";
 
 const styles = stylex.create({
@@ -106,11 +107,9 @@ const styles = stylex.create({
     "--bookmark-actions-opacity": { default: 0, ":hover": 1, ":focus-within": 1 },
   },
   view: {
-    borderWidth: 0,
     paddingBlock: 0,
     alignItems: "center",
     gap: spacingVars.space2,
-    paddingInline: spacingVars.space2,
     minHeight: sizeVars.controlMd,
     borderRadius: radiusVars.sm,
     ":hover": { backgroundColor: colorVars.interactionHover },
@@ -134,12 +133,7 @@ const styles = stylex.create({
     minWidth: 0,
   },
   withoutIcon: { paddingInlineStart: sizeVars.controlSm },
-  withIcon: {
-    gridTemplateColumns: `calc(${sizeVars.controlSm} - ${spacingVars.space2}) minmax(0,1fr)`,
-    gap: spacingVars.space2,
-  },
   link: {
-    paddingInline: spacingVars.space1,
     pointerEvents: "auto",
     width: "100%",
     maxWidth: "100%",
@@ -289,7 +283,12 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
         {!isEditing ? (
           <BookmarkRow
             size="xs"
-            xstyle={[styles.view, displayMode === "icons" && styles.tileView, isActive && styles.active]}
+            xstyle={[
+              rowStyles.inset,
+              styles.view,
+              displayMode === "icons" && styles.tileView,
+              isActive && styles.active,
+            ]}
           >
             <ItemContent xstyle={[styles.titleArea, displayMode === "icons" && styles.tileTitleArea]}>
               <TooltipProvider>
@@ -303,7 +302,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                         onClick={isEditMode ? openEditor : undefined}
                         {...stylex.props(
                           styles.linkArea,
-                          displayMode !== "icons" && (showBookmarkIcon ? styles.withIcon : styles.withoutIcon),
+                          displayMode !== "icons" && (showBookmarkIcon ? rowStyles.columns : styles.withoutIcon),
                           displayMode === "icons" && styles.tileContent,
                           displayMode === "icons" && iconMarker && styles.tileMarkerContent,
                         )}
@@ -320,6 +319,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                           <span
                             title={label}
                             {...stylex.props(
+                              rowStyles.labelInset,
                               styles.link,
                               Boolean(domain) && styles.labelWithUrl,
                               displayMode === "icons" && iconMode === "original" && styles.tileLabel,
