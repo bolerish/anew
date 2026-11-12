@@ -100,7 +100,14 @@ const styles = stylex.create({
     transitionDuration: motionVars.durationFast,
   },
   root: { position: "relative", marginInlineStart: 0, marginInlineEnd: spacingVars.space4 },
-  draggingContent: { opacity: 0.2, filter: "blur(0.0625rem)" },
+  draggingContent: {
+    opacity: 0.5,
+    outlineStyle: "dashed",
+    outlineWidth: sizeVars.stroke,
+    outlineColor: colorVars.strokeFocus,
+    outlineOffset: `calc(${sizeVars.stroke} * -1)`,
+  },
+  created: { backgroundColor: colorVars.bgFeedbackSuccess },
   row: {
     position: "relative",
     "--bookmark-actions-pointer-events": { default: "none", ":hover": "auto", ":focus-within": "auto" },
@@ -168,10 +175,11 @@ type ItemProps = {
   itemEntry: BookmarkItemEntry;
   showDropBefore?: boolean;
   showDropAfter?: boolean;
+  isRecentlyCreated?: boolean;
   onDropIndexChange: (index: number | null) => void;
 };
 
-export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAfter }: ItemProps) {
+export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAfter, isRecentlyCreated }: ItemProps) {
   const UI_LANGUAGE = useLanguage();
   const { item, itemIndex } = itemEntry;
   const label = deriveItemLabel(item);
@@ -275,6 +283,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
             floating={displayMode === "icons"}
             kind="item"
             isDragging={isDragSource}
+            isEditMode={isEditMode}
             label={UI_LANGUAGE.bookmark.move}
             onMove={moveItem}
             ref={handleRef}
@@ -288,6 +297,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
               styles.view,
               displayMode === "icons" && styles.tileView,
               isActive && styles.active,
+              isRecentlyCreated && styles.created,
             ]}
           >
             <ItemContent xstyle={[styles.titleArea, displayMode === "icons" && styles.tileTitleArea]}>

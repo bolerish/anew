@@ -45,5 +45,13 @@ test("arrows skip collapsed items and move across adjacent columns", () => {
   rerender({ activeBookmark: { kind: "item", id: "left" } });
   fireEvent.keyDown(document.body, { key: "ArrowRight" });
   expect(selected).toHaveBeenLastCalledWith({ kind: "item", id: "right" });
+  const resize = document.createElement("button");
+  resize.dataset.bookmarkResize = "";
+  document.body.append(resize);
+  resize.focus();
+  selected.mockClear();
+  fireEvent.keyDown(resize, { key: "ArrowDown" });
+  expect(selected).not.toHaveBeenCalled();
+  expect(document.activeElement).toBe(resize);
   document.body.innerHTML = "";
 });

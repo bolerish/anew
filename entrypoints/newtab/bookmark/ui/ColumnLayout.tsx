@@ -6,6 +6,7 @@ import { useLanguage } from "~shared/lib/preferences";
 
 import { resolveColumnLayout, moveLayoutFolder } from "../../settings/bookmark/lib/layout";
 import { type ColumnLayout as Layout, saveColumnLayout } from "../../settings/bookmark/model/settings";
+import { useBookmarkContext } from "../model/Provider";
 import type { BookmarkFolder } from "../model/types";
 import { useColumnDrop } from "../model/useColumnDrop";
 import { useColumnResize, MIN_COLUMN_RATIO, MAX_COLUMN_RATIO } from "../model/useColumnResize";
@@ -113,6 +114,7 @@ function ColumnRow({
   editable: boolean;
 }) {
   const labels = useLanguage().settings;
+  const { isEditMode } = useBookmarkContext();
   const {
     container,
     widths,
@@ -156,7 +158,12 @@ function ColumnRow({
                 aria-valuemin={MIN_COLUMN_RATIO * 100}
                 aria-valuemax={MAX_COLUMN_RATIO * 100}
                 tabIndex={editable ? 0 : -1}
-                {...stylex.props(resizeStyles.handle, resizeStyles.vertical, styles.resize)}
+                {...stylex.props(
+                  resizeStyles.handle,
+                  resizeStyles.vertical,
+                  isEditMode && [resizeStyles.editing, resizeStyles.verticalGrip],
+                  styles.resize,
+                )}
                 onPointerDown={(event) => handleResizeStart(event, index)}
                 onPointerMove={(e) => resizeTo(e.clientX)}
                 onPointerUp={handleResizeEnd}

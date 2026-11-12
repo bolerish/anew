@@ -7,6 +7,10 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Keep move and resize grips visible while editing, clarify the dragged source
+    and insertion position, and show whether editing has unsaved changes.
+- Briefly highlight a newly added bookmark and slightly reduce the fixed gap
+    between folders while preserving custom folder heights and bookmark sizes.
 - Keep drag insertion lines steady when reordering bookmarks within a folder,
     and avoid saving moves that leave an item in the same position.
 - Show resize lines while resizing or using keyboard focus, without showing

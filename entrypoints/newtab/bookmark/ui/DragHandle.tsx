@@ -15,6 +15,7 @@ const styles = stylex.create({
   floating: { top: 0, margin: 0, transform: "none", insetInlineStart: `calc(${sizeVars.controlXs} * -1)` },
   compactHandle: { margin: 0, width: sizeVars.controlXs, height: sizeVars.controlXs },
   dragging: { opacity: 1 },
+  editing: { opacity: 1, pointerEvents: "auto" },
   suppressed: { opacity: 0, ":focus-within": { opacity: 1 } },
   icon: { width: sizeVars.iconMd, height: sizeVars.iconMd },
   folderWrapper: { top: "50%", transform: "translateY(-50%)", insetInlineStart: `calc(${sizeVars.controlSm} * -1)` },
@@ -39,6 +40,7 @@ const styles = stylex.create({
 type DragHandleProps = {
   floating?: boolean;
   isDragging?: boolean;
+  isEditMode?: boolean;
   suppressActions?: boolean;
   kind: "folder" | "item";
   label: string;
@@ -49,6 +51,7 @@ type DragHandleProps = {
 export function DragHandle({
   floating = false,
   isDragging = false,
+  isEditMode = false,
   kind,
   label,
   onMove,
@@ -70,6 +73,7 @@ export function DragHandle({
         styles.wrapper,
         kind === "folder" && styles.folderWrapper,
         floating && styles.floating,
+        isEditMode && styles.editing,
         isDragging && styles.dragging,
         suppressActions && styles.suppressed,
       )}

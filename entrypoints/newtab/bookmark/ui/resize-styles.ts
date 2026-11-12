@@ -29,4 +29,14 @@ export const resizeStyles = stylex.create({
   },
   vertical: { cursor: "col-resize", backgroundSize: `${sizeVars.focusRing} 100%` },
   horizontal: { cursor: "row-resize", backgroundSize: `100% ${sizeVars.focusRing}` },
+  editing: {
+    color: {
+      default: colorVars.fgSecondary,
+      ":hover": colorVars.strokeFocus,
+      ":active": colorVars.strokeFocus,
+      ":focus-visible": colorVars.strokeFocus,
+    },
+  },
+  horizontalGrip: { backgroundSize: `${sizeVars.controlSm} ${sizeVars.focusRing}` },
+  verticalGrip: { backgroundSize: `${sizeVars.focusRing} ${sizeVars.controlSm}` },
 });

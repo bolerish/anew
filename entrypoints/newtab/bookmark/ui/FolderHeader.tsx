@@ -178,6 +178,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
         <DragHandle
           kind="folder"
           isDragging={isDragging}
+          isEditMode={isEditMode}
           label={UI_LANGUAGE.bookmark.moveFolder}
           onMove={onMove}
           ref={handleRef}

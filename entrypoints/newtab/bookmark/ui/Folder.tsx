@@ -66,7 +66,13 @@ const styles = stylex.create({
     gap: 0,
     paddingInline: sizeVars.controlXs,
   },
-  draggingContent: { opacity: 0.2, filter: "blur(0.0625rem)" },
+  draggingContent: {
+    opacity: 0.5,
+    outlineStyle: "dashed",
+    outlineWidth: sizeVars.stroke,
+    outlineColor: colorVars.strokeFocus,
+    outlineOffset: `calc(${sizeVars.stroke} * -1)`,
+  },
   accordion: { borderWidth: 0, borderRadius: 0, overflow: "visible" },
   item: { position: "relative", width: "100%", borderBottomWidth: 0 },
   divider: {
@@ -116,7 +122,7 @@ type ItemStartDropZoneProps = {
 export function Folder({ folder, parentId, onMove }: FolderProps) {
   const UI_LANGUAGE = useLanguage();
   const { folderDividers } = usePreferences();
-  const { folderViews, folderDisplays, bookmarkIconMode, defaultView, isSearchActive, onBookmarksChange } =
+  const { folderViews, folderDisplays, bookmarkIconMode, defaultView, isSearchActive, isEditMode, onBookmarksChange } =
     useBookmarkContext();
   const view = resolveBookmarkView(
     folderDisplays?.[folder.id]?.icon ?? bookmarkIconMode,
@@ -176,6 +182,7 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
                       {view === "list" ? <ItemDropPlaceholder isActive={activeDropIndex === itemIndex} /> : null}
                       <Item
                         itemEntry={{ item, itemIndex }}
+                        isRecentlyCreated={item.url === addForm.recentlyCreatedUrl}
                         onDropIndexChange={setDropIndex}
                         showDropBefore={view === "icons" && activeDropIndex === itemIndex}
                         showDropAfter={
@@ -221,8 +228,14 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
             {!isSearchActive && expanded.includes(folder.id) ? (
               <button
                 type="button"
+                data-bookmark-resize=""
                 aria-label={UI_LANGUAGE.settings.resizeFolderHeight}
-                {...stylex.props(resizeStyles.handle, resizeStyles.horizontal, styles.resizeHeight)}
+                {...stylex.props(
+                  resizeStyles.handle,
+                  resizeStyles.horizontal,
+                  isEditMode && [resizeStyles.editing, resizeStyles.horizontalGrip],
+                  styles.resizeHeight,
+                )}
                 onPointerDown={heightResize.handleStart}
                 onPointerMove={heightResize.handleMove}
                 onPointerUp={heightResize.handleEnd}

@@ -5,6 +5,8 @@ export const updatesMessages = {
       {
         title: "북마크",
         items: [
+          "편집 중에는 이동·크기 조절 손잡이를 표시하고, 드래그하는 원본과 삽입 위치, 미저장 변경사항을 더 명확히 알려줍니다.",
+          "새로 추가한 북마크를 잠시 강조하고 폴더 사이의 고정 여백을 조금 줄였습니다. 사용자 지정 폴더 높이와 북마크 크기는 유지합니다.",
           "폴더 안에서 북마크 순서를 바꿀 때 삽입선과 항목 위치를 고정하고, 순서가 그대로인 이동은 저장하지 않습니다.",
           "크기 조절선은 조절 중이거나 키보드로 포커스했을 때 표시됩니다. 폴더나 열 사이에 마우스를 올리는 것만으로는 선이 나타나지 않습니다.",
           "콘텐츠 가운데 정렬과 폴더 간격을 복원하고, 북마크 추가 버튼의 아이콘과 글자를 북마크 행에 맞춰 정렬했습니다.",
@@ -70,6 +72,8 @@ export const updatesMessages = {
       {
         title: "Bookmarks",
         items: [
+          "Keep move and resize grips visible while editing, clarify the dragged source and insertion position, and show whether editing has unsaved changes.",
+          "Briefly highlight a newly added bookmark and slightly reduce the fixed gap between folders while preserving custom folder heights and bookmark sizes.",
           "Keep drag insertion lines steady when reordering bookmarks within a folder, and avoid saving moves that leave an item in the same position.",
           "Show resize lines while resizing or using keyboard focus, without showing a line just from hovering between folders or columns.",
           "Restore centered content and folder spacing, and align the add-bookmark icon and label with the bookmark rows.",
@@ -135,6 +139,8 @@ export const updatesMessages = {
       {
         title: "ブックマーク",
         items: [
+          "編集中は移動・サイズ調整のハンドルを表示し、ドラッグ元と挿入位置、未保存の変更をわかりやすく示します。",
+          "追加したブックマークを一時的に強調し、フォルダ間の固定余白を少し縮めました。指定したフォルダの高さとブックマークのサイズは維持します。",
           "フォルダー内でブックマークの順序を変更するとき、挿入線と項目の位置を固定し、順序が変わらない移動は保存しません。",
           "サイズ調整の線は、調整中またはキーボードでフォーカスしたときに表示されます。フォルダーや列の間にマウスを置くだけでは表示されません。",
           "コンテンツの中央配置とフォルダーの間隔を復元し、ブックマーク追加ボタンのアイコンと文字をブックマークの行に揃えました。",
@@ -198,6 +204,8 @@ export const updatesMessages = {
       {
         title: "Marcadores",
         items: [
+          "Los controles de movimiento y tamaño permanecen visibles al editar. Se distinguen mejor el elemento arrastrado, la posición de inserción y los cambios sin guardar.",
+          "Se resalta brevemente el marcador añadido y se reduce ligeramente el espacio fijo entre carpetas, conservando las alturas y los tamaños personalizados.",
           "Las líneas de inserción permanecen estables al reordenar marcadores dentro de una carpeta. Los movimientos que no cambian el orden no se guardan.",
           "Las líneas de tamaño aparecen al ajustar el tamaño o usar el foco del teclado, sin mostrarse solo por pasar el cursor entre carpetas o columnas.",
           "Se restauran el contenido centrado y el espaciado de las carpetas, y se alinean el icono y el texto del botón de añadir marcadores con las filas de marcadores.",
@@ -263,6 +271,8 @@ export const updatesMessages = {
       {
         title: "书签",
         items: [
+          "编辑时显示移动和大小调整手柄，更清楚地标示拖动源、插入位置和未保存的更改。",
+          "短暂突出显示新添加的书签，并略微缩小文件夹之间的固定间距，保留自定义文件夹高度和书签大小。",
           "在文件夹内调整书签顺序时，插入线和条目位置保持稳定，不保存顺序未变的移动。",
           "调整大小或使用键盘聚焦时才显示调整线，仅将鼠标悬停在文件夹或列之间不会显示线条。",
           "恢复内容居中和文件夹间距，并将添加书签按钮的图标和文字与书签行对齐。",

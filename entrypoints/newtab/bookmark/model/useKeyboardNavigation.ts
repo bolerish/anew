@@ -129,7 +129,7 @@ export function isKeyboardShortcutTarget(target: EventTarget | null, allowButton
   }
 
   const protectedControl = target.closest(
-    "input, textarea, select, [contenteditable]:not([contenteditable='false']), [role='slider'], [role='separator'], [role='combobox'], [role='tablist'], [role='toolbar'], [role='dialog'], [role='listbox'], [role='menu'], [role='menubar'], [role='switch']",
+    "input, textarea, select, [contenteditable]:not([contenteditable='false']), [data-bookmark-resize], [role='slider'], [role='separator'], [role='combobox'], [role='tablist'], [role='toolbar'], [role='dialog'], [role='listbox'], [role='menu'], [role='menubar'], [role='switch']",
   );
   return Boolean(protectedControl || (!allowButtons && target.closest("a, button, [role='button']")));
 }

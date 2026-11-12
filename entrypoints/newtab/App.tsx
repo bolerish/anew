@@ -112,7 +112,7 @@ const styles = stylex.create({
     animationFillMode: "both",
     ':is([data-motion-reduced="true"] *)': { animationName: "none", opacity: 0 },
   },
-  editMessage: { color: colorVars.fgSecondary, fontSize: typo.fontSizeXs },
+  editMessage: { color: colorVars.fgSecondary, fontSize: typo.fontSizeXs, maxWidth: "6rem" },
   searchRow: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: spacingVars.space2 },
   search: { flex: 1, minWidth: "12rem" },
   location: { maxWidth: "100%", marginInlineStart: "auto" },
@@ -308,6 +308,9 @@ export default function App() {
               {...stylex.props(styles.editMenubar, isEditMode && styles.editMenubarOpen)}
             >
               <Badge variant="primary">{UI_LANGUAGE.bookmark.editMode}</Badge>
+              <output {...stylex.props(styles.editMessage)}>
+                {hasChangesToSave || hasDraft ? UI_LANGUAGE.bookmark.unsavedChanges : UI_LANGUAGE.bookmark.noChanges}
+              </output>
               <Separator orientation="vertical" xstyle={styles.editMenubarDivider} />
               <TooltipProvider>
                 <div {...stylex.props(styles.editMenubarGroup)}>

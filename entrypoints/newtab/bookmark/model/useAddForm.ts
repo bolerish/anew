@@ -1,9 +1,9 @@
 import { toast } from "@bolerish/ui/toast";
-import { useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { useLanguage } from "~shared/lib/preferences";
 
 import { createItem } from "../api/create";
-import { canNormalizeUrl } from "../lib/url";
+import { canNormalizeUrl, normalizeUrl } from "../lib/url";
 
 type UseAddFormInput = {
   parentId: string | null;
@@ -18,6 +18,12 @@ export function useAddForm({ parentId, onCreated }: UseAddFormInput) {
   const [isSaving, setIsSaving] = useState(false);
   const saving = useRef(false);
   const [url, setUrl] = useState("");
+  const [recentlyCreatedUrl, setRecentlyCreatedUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!recentlyCreatedUrl) return;
+    const timeout = window.setTimeout(() => setRecentlyCreatedUrl(null), 1800);
+    return () => window.clearTimeout(timeout);
+  }, [recentlyCreatedUrl]);
   const isUrlValid = canNormalizeUrl(url);
   const canSave = Boolean(parentId) && isUrlValid && !isSaving;
 
@@ -52,6 +58,7 @@ export function useAddForm({ parentId, onCreated }: UseAddFormInput) {
         return;
       }
       closeForm();
+      setRecentlyCreatedUrl(normalizeUrl(trimmedUrl));
       await onCreated();
     } catch (error) {
       console.error("[min] Could not save bookmark", error);
@@ -73,6 +80,7 @@ export function useAddForm({ parentId, onCreated }: UseAddFormInput) {
 
   return {
     parentId,
+    recentlyCreatedUrl,
     hasSaveError,
     isSaving,
     canSave,
