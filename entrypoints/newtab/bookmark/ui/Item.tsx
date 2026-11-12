@@ -1,3 +1,18 @@
+import { colorVars, spacingVars, sizeVars, radiusVars, motionVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { Button } from "@bolerish/ui/button";
+import { ButtonGroup } from "@bolerish/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@bolerish/ui/dropdown-menu";
+import { Field, FieldError } from "@bolerish/ui/field";
+import { Input } from "@bolerish/ui/input";
+import { InputGroup } from "@bolerish/ui/input-group";
+import { Item as BookmarkRow, ItemContent, ItemActions } from "@bolerish/ui/item";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@bolerish/ui/tooltip";
 import {
   DotsThreeVerticalIcon,
   DotsThreeIcon,
@@ -11,28 +26,6 @@ import { useEffect, useId, useRef, type SubmitEvent, type MouseEvent } from "rea
 import { stopInteraction } from "~shared/lib/event";
 import { notifyError } from "~shared/lib/notify-error";
 import { useLanguage } from "~shared/lib/preferences";
-import {
-  colorVars,
-  spacingVars,
-  sizeVars,
-  radiusVars,
-  motionVars,
-  typographyVars,
-} from "~shared/styles/semantic.stylex";
-import { Button } from "~shared/ui/button";
-import { ButtonGroup } from "~shared/ui/button-group";
-import { ContentRow, ContentRowContent, ContentRowActions } from "~shared/ui/content-row";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "~shared/ui/dropdown-menu";
-import { Field, FieldError } from "~shared/ui/field";
-import { Input } from "~shared/ui/input";
-import { InputGroup } from "~shared/ui/input-group";
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "~shared/ui/tooltip";
 
 import { moveItem as moveBookmarkItem } from "../api/move";
 import { deleteItem as deleteBookmarkItem } from "../api/update";
@@ -151,9 +144,9 @@ const styles = stylex.create({
     maxWidth: "100%",
     minWidth: 0,
     color: colorVars.fgPrimary,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-content-scale, 1))`,
-    fontWeight: typographyVars.fontWeightRegular,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontWeight: typo.fontWeightRegular,
+    lineHeight: typo.lineHeightNormal,
     textDecoration: "none",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -293,11 +286,11 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
           />
         ) : null}
         {!isEditing ? (
-          <ContentRow
+          <BookmarkRow
             size="xs"
             xstyle={[styles.view, displayMode === "icons" && styles.tileView, isActive && styles.active]}
           >
-            <ContentRowContent xstyle={[styles.titleArea, displayMode === "icons" && styles.tileTitleArea]}>
+            <ItemContent xstyle={[styles.titleArea, displayMode === "icons" && styles.tileTitleArea]}>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger
@@ -348,14 +341,19 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                   {hideTitle ? <TooltipContent>{label}</TooltipContent> : null}
                 </Tooltip>
               </TooltipProvider>
-            </ContentRowContent>
-            <ContentRowActions
+            </ItemContent>
+            <ItemActions
               xstyle={[styles.actions, styles.actionVisibility, displayMode === "icons" && styles.floatingActions]}
             >
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <Button variant="ghost" size="icon-xs" aria-label={`${label} ${UI_LANGUAGE.settings.actions}`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      style={{ height: sizeVars.controlXs, width: sizeVars.controlXs }}
+                      aria-label={`${label} ${UI_LANGUAGE.settings.actions}`}
+                    >
                       {displayMode === "icons" ? (
                         <DotsThreeVerticalIcon weight="bold" aria-hidden="true" {...stylex.props(styles.menuIcon)} />
                       ) : (
@@ -376,8 +374,8 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </ContentRowActions>
-          </ContentRow>
+            </ItemActions>
+          </BookmarkRow>
         ) : null}
         {isEditing ? (
           <InputGroup
@@ -439,7 +437,8 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                 <Button
                   aria-label={UI_LANGUAGE.bookmark.save}
                   disabled={!isUrlValid}
-                  size="icon-sm"
+                  size="icon"
+                  style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                   title={UI_LANGUAGE.bookmark.save}
                   variant="ghost"
                   onMouseDown={stopInteraction}
@@ -452,7 +451,8 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                 </Button>
                 <Button
                   aria-label={UI_LANGUAGE.bookmark.cancel}
-                  size="icon-sm"
+                  size="icon"
+                  style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                   title={UI_LANGUAGE.bookmark.cancel}
                   variant="ghost"
                   type="button"

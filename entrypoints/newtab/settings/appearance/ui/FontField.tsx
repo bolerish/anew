@@ -1,11 +1,11 @@
+import { colorVars, spacingVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { Field, FieldDescription, FieldLabel, FieldSet, FieldLegend } from "@bolerish/ui/field";
+import { Input } from "@bolerish/ui/input";
+import { Slider } from "@bolerish/ui/slider";
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useState } from "react";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { useLanguage } from "~shared/lib/preferences";
-import { colorVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Field, FieldDescription, FieldLabel, FieldSet, FieldLegend } from "~shared/ui/field";
-import { Input } from "~shared/ui/input";
-import { Slider } from "~shared/ui/slider";
 
 import { TEXT_SCALE } from "../model/constants";
 import { getInitialAppearanceSettings } from "../model/init";
@@ -13,9 +13,9 @@ import { sanitizeAppearanceSettings } from "../model/sanitize";
 import { appearanceStorage } from "../model/storage";
 import { updateAppearanceSetting } from "../model/update";
 const styles = stylex.create({
-  hint: { color: colorVars.fgSecondary, fontSize: typographyVars.fontSizeSm, margin: 0 },
+  hint: { color: colorVars.fgSecondary, fontSize: typo.fontSizeSm, margin: 0 },
   row: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space2 },
-  value: { color: colorVars.fgSecondary, fontSize: typographyVars.fontSizeSm, fontVariantNumeric: "tabular-nums" },
+  value: { color: colorVars.fgSecondary, fontSize: typo.fontSizeSm, fontVariantNumeric: "tabular-nums" },
 });
 export function FontField() {
   const UI_LANGUAGE = useLanguage();

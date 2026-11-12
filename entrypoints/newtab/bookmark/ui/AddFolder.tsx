@@ -1,14 +1,14 @@
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { spacingVars, sizeVars, typo, motionVars } from "@bolerish/tokens/semantic.stylex";
+import { Button } from "@bolerish/ui/button";
+import { ButtonGroup } from "@bolerish/ui/button-group";
+import { Collapsible, CollapsibleContent, CollapsiblePanel } from "@bolerish/ui/collapsible";
+import { Input } from "@bolerish/ui/input";
 import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 import { useLanguage } from "~shared/lib/preferences";
-import { spacingVars, sizeVars, typographyVars, motionVars } from "~shared/styles/semantic.stylex";
-import { Button } from "~shared/ui/button";
-import { ButtonGroup } from "~shared/ui/button-group";
-import { Collapsible, CollapsibleContent, CollapsiblePanel } from "~shared/ui/collapsible";
-import { Input } from "~shared/ui/input";
 
 import { isFolderDragData } from "../lib/dnd";
 import { useBookmarkContext } from "../model/Provider";
@@ -40,8 +40,8 @@ const styles = stylex.create({
     ":focus-within": { opacity: 1, height: sizeVars.controlSm },
   },
   form: {
-    fontFamily: typographyVars.fontFamilyBody,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontFamily: typo.fontFamilyBody,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
     display: "grid",
     gridTemplateColumns: "minmax(0,1fr) auto",
     alignItems: "center",
@@ -146,7 +146,8 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
                 <Button
                   aria-label={UI_LANGUAGE.bookmark.save}
                   disabled={!form.canSave}
-                  size="icon-sm"
+                  size="icon"
+                  style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                   title={UI_LANGUAGE.bookmark.save}
                   type="submit"
                   variant="ghost"
@@ -155,7 +156,8 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
                 </Button>
                 <Button
                   aria-label={UI_LANGUAGE.bookmark.cancel}
-                  size="icon-sm"
+                  size="icon"
+                  style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                   title={UI_LANGUAGE.bookmark.cancel}
                   type="button"
                   variant="ghost"

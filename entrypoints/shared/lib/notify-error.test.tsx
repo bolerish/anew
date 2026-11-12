@@ -1,6 +1,6 @@
+import { Toaster, toast } from "@bolerish/ui/toast";
 import { act, render } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import { Toaster, toast } from "~shared/ui/toast";
 
 import { notifyError } from "./notify-error";
 import { preferenceStorage, preferenceDefaults } from "./preferences";

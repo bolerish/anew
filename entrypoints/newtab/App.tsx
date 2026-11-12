@@ -1,3 +1,20 @@
+import {
+  colorVars,
+  spacingVars,
+  typo,
+  sizeVars,
+  motionVars,
+  shadowVars,
+  radiusVars,
+  layerVars,
+} from "@bolerish/tokens/semantic.stylex";
+import { Badge } from "@bolerish/ui/badge";
+import { Banner, BannerDescription } from "@bolerish/ui/banner";
+import { Button } from "@bolerish/ui/button";
+import { Kbd, KbdGroup } from "@bolerish/ui/kbd";
+import { Separator } from "@bolerish/ui/separator";
+import { Toaster } from "@bolerish/ui/toast";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@bolerish/ui/tooltip";
 import { CheckIcon, XIcon, ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useLayoutEffect, useState } from "react";
@@ -5,23 +22,6 @@ import { DateTime } from "~newtab/date";
 import { SearchBar, useSearch } from "~newtab/search";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
 import { useThemeSync } from "~shared/lib/theme";
-import {
-  colorVars,
-  spacingVars,
-  typographyVars,
-  sizeVars,
-  motionVars,
-  shadowVars,
-  radiusVars,
-  layerVars,
-} from "~shared/styles/semantic.stylex";
-import { Badge } from "~shared/ui/badge";
-import { Banner, BannerDescription } from "~shared/ui/banner";
-import { Button } from "~shared/ui/button";
-import { Kbd, KbdGroup } from "~shared/ui/kbd";
-import { Separator } from "~shared/ui/separator";
-import { Toaster } from "~shared/ui/toast";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "~shared/ui/tooltip";
 
 import { Bookmark, LocationPicker, useFolders } from "~/entrypoints/newtab/bookmark";
 import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";
@@ -30,6 +30,8 @@ import { undoEditing, redoEditing } from "./bookmark/model/edit-session";
 import { useEditMode } from "./bookmark/model/useEditMode";
 import { contentLayout } from "./layout.stylex";
 import { appearanceStorage, getInitialAppearanceSettings } from "./settings/appearance";
+import { sanitizeAppearanceSettings } from "./settings/appearance/model/sanitize";
+import { syncAppearanceStyles } from "./settings/appearance/model/update";
 import {
   bookmarkSettingsStorage,
   getInitialBookmarkSettings,
@@ -110,7 +112,7 @@ const styles = stylex.create({
     animationFillMode: "both",
     ':is([data-motion-reduced="true"] *)': { animationName: "none", opacity: 0 },
   },
-  editMessage: { color: colorVars.fgSecondary, fontSize: typographyVars.fontSizeXs },
+  editMessage: { color: colorVars.fgSecondary, fontSize: typo.fontSizeXs },
   searchRow: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: spacingVars.space2 },
   search: { flex: 1, minWidth: "12rem" },
   location: { maxWidth: "100%", marginInlineStart: "auto" },
@@ -130,7 +132,7 @@ const styles = stylex.create({
     borderColor: colorVars.strokeDefault,
     borderRadius: radiusVars.full,
     boxShadow: shadowVars.floating,
-    fontSize: typographyVars.fontSizeXs,
+    fontSize: typo.fontSizeXs,
     display: "flex",
     alignItems: "center",
     gap: spacingVars.space2,
@@ -187,7 +189,7 @@ const styles = stylex.create({
     justifyContent: "flex-start",
     gap: spacingVars.space4,
     color: colorVars.fgSecondary,
-    fontSize: typographyVars.fontSizeXs,
+    fontSize: typo.fontSizeXs,
   },
   hideHints: { visibility: "hidden", pointerEvents: "none" },
   hint: { display: "inline-flex", alignItems: "center", gap: spacingVars.space2 },
@@ -205,6 +207,7 @@ export default function App() {
   useLayoutEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
+      document.documentElement.dataset.bolerishMotion = preferences.motion;
       document.documentElement.dataset.motionReduced = String(
         preferences.motion === "off" || (preferences.motion === "system" && media.matches),
       );
@@ -219,7 +222,10 @@ export default function App() {
   const { folders, locations, selectedLocationId, loadBookmarks, setSelectedLocation } = useFolders();
   const search = useSearch(folders);
   const selectedLocation = locations.find((location) => location.id === selectedLocationId);
-  const appearanceSettings = useStorageValue(appearanceStorage, getInitialAppearanceSettings);
+  const appearanceSettings = sanitizeAppearanceSettings(
+    useStorageValue(appearanceStorage, getInitialAppearanceSettings),
+  );
+  useLayoutEffect(() => syncAppearanceStyles(appearanceSettings), [appearanceSettings]);
   const storedBookmarkSettings = sanitizeBookmarkSettings(
     useStorageValue(bookmarkSettingsStorage, getInitialBookmarkSettings),
   );
@@ -309,7 +315,8 @@ export default function App() {
                     <TooltipTrigger
                       render={
                         <Button
-                          size="icon-sm"
+                          size="icon"
+                          style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.undo}
@@ -326,7 +333,8 @@ export default function App() {
                     <TooltipTrigger
                       render={
                         <Button
-                          size="icon-sm"
+                          size="icon"
+                          style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.redo}
@@ -346,7 +354,8 @@ export default function App() {
                     <TooltipTrigger
                       render={
                         <Button
-                          size="icon-sm"
+                          size="icon"
+                          style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.save}
@@ -363,7 +372,8 @@ export default function App() {
                     <TooltipTrigger
                       render={
                         <Button
-                          size="icon-sm"
+                          size="icon"
+                          style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                           shape="circle"
                           variant="ghost"
                           aria-label={UI_LANGUAGE.bookmark.cancel}

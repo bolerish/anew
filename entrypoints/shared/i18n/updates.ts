@@ -36,6 +36,8 @@ export const updatesMessages = {
       {
         title: "설정",
         items: [
+          "공통 UI를 bolerish 디자인 시스템으로 통합하면서 Min의 촘촘한 배치, 사용자 글꼴, 글자 배율과 모서리 설정을 유지했습니다.",
+          "외형 변경이 열려 있는 다른 Min 탭에도 반영됩니다. 설정을 읽지 못해도 새 탭이 열리며, 저장한 설정을 기본값으로 덮어쓰지 않습니다.",
           "제목과 콘텐츠 글꼴을 따로 설정하고 콘텐츠 너비와 5개 표시 언어를 선택할 수 있습니다. 레이아웃에서 폴더 구분선과 단축키 표시를 켜고 끌 수 있습니다.",
           "모바일에서는 상단 정보를 오른쪽으로 정렬합니다. 단축키가 숨겨져도 설정 버튼은 오른쪽에 유지됩니다.",
           "날짜와 시간의 표시 여부와 형식을 선택할 수 있습니다. 시간 형식은 예시로 확인하고, 직접 입력하는 날짜 형식에는 예시와 오류 안내를 제공합니다.",
@@ -95,6 +97,8 @@ export const updatesMessages = {
       {
         title: "Settings",
         items: [
+          "Shared controls now use bolerish's design system while keeping Min's compact layout, custom fonts, text scales, and corner settings.",
+          "Appearance changes also apply to other open Min tabs. A settings read failure no longer prevents the new tab page from opening or replaces saved settings.",
           "Set heading and content fonts separately, adjust content width, and choose from five languages. Toggle folder dividers and keyboard shortcuts in Layout.",
           "Keep the header right-aligned on mobile and the settings button on the right when shortcuts are hidden.",
           "Choose whether to show the date and time and select their formats. Time options show examples, and custom date formats include examples and error guidance.",
@@ -154,6 +158,8 @@ export const updatesMessages = {
       {
         title: "設定",
         items: [
+          "共通UIをbolerishのデザインシステムに統合し、Minのコンパクトな配置、カスタムフォント、文字倍率、角の設定を維持しました。",
+          "外観の変更は開いている他のMinタブにも反映されます。設定の読み込みに失敗しても新しいタブは開き、保存済みの設定を初期値で上書きしません。",
           "見出しと本文のフォント、コンテンツ幅、5つの表示言語を設定できます。レイアウトでフォルダの区切り線とショートカット表示を切り替えられます。",
           "モバイルでは上部の情報を右揃えにします。ショートカットを非表示にしても設定ボタンは右側に残ります。",
           "日付と時刻の表示と形式を選べます。時刻の形式は表示例で確認でき、日付のカスタム形式には例とエラーの案内を表示します。",
@@ -211,6 +217,8 @@ export const updatesMessages = {
       {
         title: "Ajustes",
         items: [
+          "Los controles compartidos usan el sistema de diseño de bolerish y mantienen la disposición compacta, las fuentes, la escala de texto y las esquinas de Min.",
+          "Los cambios de apariencia también se aplican a otras pestañas de Min abiertas. Un fallo al leer ajustes no impide abrir la nueva pestaña ni reemplaza los ajustes guardados.",
           "Configura fuentes distintas para títulos y contenido, ajusta el ancho y elige entre cinco idiomas. Activa separadores y atajos en Diseño.",
           "La cabecera se alinea a la derecha en móviles. El botón de ajustes permanece a la derecha cuando se ocultan los atajos.",
           "Elige si quieres mostrar la fecha y la hora y selecciona sus formatos. Las opciones de hora muestran ejemplos; los formatos de fecha personalizados incluyen ejemplos y ayuda para corregir errores.",
@@ -268,6 +276,8 @@ export const updatesMessages = {
       {
         title: "设置",
         items: [
+          "通用控件已整合为 bolerish 设计系统，同时保留 Min 的紧凑布局、自定义字体、文字缩放和圆角设置。",
+          "外观更改也会应用到其他已打开的 Min 标签页。读取设置失败时仍可打开新标签页，也不会覆盖已保存的设置。",
           "分别设置标题和正文的字体，调整内容宽度，并从五种界面语言中选择。在布局中切换文件夹分隔线和快捷键显示。",
           "在手机上将顶部信息右对齐。隐藏快捷键时，设置按钮仍保留在右侧。",
           "可选择是否显示日期和时间及其格式。时间选项提供显示示例，自定义日期格式提供示例和错误提示。",

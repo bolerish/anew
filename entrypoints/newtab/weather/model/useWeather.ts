@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Language } from "~shared/lib/preferences";
+import { updateStoredValue } from "~shared/lib/write-lock";
 
 import { localizeCity } from "../api/weather";
 import { weatherSettings, loadWeather, type City, type Weather, type WeatherSettings } from "./weather";
@@ -16,13 +17,18 @@ export function useWeather(settings: WeatherSettings, language: Language) {
         const localizedCity = await localizeCity(savedCity, language);
         if (!active || !localizedCity) return;
 
-        const currentSettings = await weatherSettings.getValue();
-        if (!active) return;
-        const currentCity = currentSettings.city;
-        if (!currentCity || currentCity.name !== savedCity.name) return;
-        if (currentCity.latitude !== savedCity.latitude || currentCity.longitude !== savedCity.longitude) return;
-
-        await weatherSettings.setValue({ ...currentSettings, city: localizedCity });
+        await updateStoredValue(weatherSettings, (currentSettings) => {
+          const currentCity = currentSettings.city;
+          if (
+            !active ||
+            !currentCity ||
+            currentCity.name !== savedCity.name ||
+            currentCity.latitude !== savedCity.latitude ||
+            currentCity.longitude !== savedCity.longitude
+          )
+            return currentSettings;
+          return { ...currentSettings, city: localizedCity };
+        });
       } catch {
         // Keep the saved name when lookup or persistence fails.
       }

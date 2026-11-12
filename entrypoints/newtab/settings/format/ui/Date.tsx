@@ -1,5 +1,5 @@
+import { Switch } from "@bolerish/ui/switch";
 import { useLanguage } from "~shared/lib/preferences";
-import { Switch } from "~shared/ui/switch";
 
 import { Section, SectionContent, SectionHeader } from "~/entrypoints/newtab/settings/ui/Section";
 import { useStorageValue } from "~/entrypoints/shared/hooks/useStorageValue";

@@ -1,9 +1,9 @@
+import { spacingVars } from "@bolerish/tokens/semantic.stylex";
+import { Field, FieldDescription, FieldLabel } from "@bolerish/ui/field";
+import { Switch } from "@bolerish/ui/switch";
 import * as stylex from "@stylexjs/stylex";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { useLanguage } from "~shared/lib/preferences";
-import { spacingVars } from "~shared/styles/semantic.stylex";
-import { Field, FieldDescription, FieldLabel } from "~shared/ui/field";
-import { Switch } from "~shared/ui/switch";
 
 import { getInitialShortcutSettings, shortcutStorage, updateShortcutSetting } from "../model/shortcut";
 

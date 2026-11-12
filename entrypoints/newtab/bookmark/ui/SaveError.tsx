@@ -1,6 +1,6 @@
+import { Field, FieldError } from "@bolerish/ui/field";
 import * as stylex from "@stylexjs/stylex";
 import { useLanguage } from "~shared/lib/preferences";
-import { Field, FieldError } from "~shared/ui/field";
 
 const styles = stylex.create({
   root: { gridColumn: "1 / -1" },

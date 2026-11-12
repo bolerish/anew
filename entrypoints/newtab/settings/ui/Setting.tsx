@@ -1,3 +1,18 @@
+import { colorVars, sizeVars, spacingVars, typo, layerVars } from "@bolerish/tokens/semantic.stylex";
+import { Badge } from "@bolerish/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@bolerish/ui/breadcrumb";
+import { Button, type ButtonProps } from "@bolerish/ui/button";
+import { Dialog, DialogTitle } from "@bolerish/ui/dialog";
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger, DrawerClose } from "@bolerish/ui/drawer";
+import { Dialog as DialogPrimitive } from "@bolerish/ui/primitives";
+import { Separator } from "@bolerish/ui/separator";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@bolerish/ui/tooltip";
 import {
   CaretRightIcon,
   GearSixIcon,
@@ -10,16 +25,8 @@ import * as stylex from "@stylexjs/stylex";
 import { lazy, Suspense, useEffect, type Dispatch, type SetStateAction, type ReactNode } from "react";
 import { weatherMessages } from "~shared/i18n/weather";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { colorVars, sizeVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Badge } from "~shared/ui/badge";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbPage, BreadcrumbSeparator } from "~shared/ui/breadcrumb";
-import { Button } from "~shared/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "~shared/ui/dialog";
-import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger, DrawerClose } from "~shared/ui/drawer";
-import { Separator } from "~shared/ui/separator";
 import { Stack } from "~shared/ui/stack/Stack";
 import { useStack } from "~shared/ui/stack/useStack";
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "~shared/ui/tooltip";
 
 import { version } from "../../../../package.json";
 import { useUpdateAnnouncement } from "../../changelog/model/useUpdateAnnouncement";
@@ -37,6 +44,11 @@ const UpdatesPage = lazy(() =>
 );
 const styles = stylex.create({
   reader: {
+    display: "flex",
+    flexDirection: "column",
+    overflow: "auto",
+    outline: "none",
+    zIndex: layerVars.modal,
     position: "fixed",
     inset: 0,
     width: "100vw",
@@ -56,9 +68,9 @@ const styles = stylex.create({
 
   heading: {
     color: colorVars.fgPrimary,
-    fontWeight: typographyVars.fontWeightSemibold,
-    fontFamily: typographyVars.fontFamilyHeading,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontWeight: typo.fontWeightSemibold,
+    fontFamily: typo.fontFamilyHeading,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
   },
   current: {
     display: "inline-flex",
@@ -68,7 +80,7 @@ const styles = stylex.create({
     borderWidth: sizeVars.stroke,
     borderStyle: "solid",
     borderColor: "transparent",
-    lineHeight: typographyVars.lineHeightTight,
+    lineHeight: typo.lineHeightTight,
   },
   hiddenTitle: {
     position: "absolute",
@@ -78,7 +90,7 @@ const styles = stylex.create({
     clipPath: "inset(50%)",
     whiteSpace: "nowrap",
   },
-  ancestor: { color: colorVars.fgSecondary, fontWeight: typographyVars.fontWeightRegular },
+  ancestor: { color: colorVars.fgSecondary, fontWeight: typo.fontWeightRegular },
   screen: {
     flexGrow: 1,
     flexShrink: 0,
@@ -120,16 +132,16 @@ const styles = stylex.create({
     alignItems: "center",
     gap: spacingVars.space2,
     color: colorVars.fgSecondary,
-    fontWeight: typographyVars.fontWeightSemibold,
-    fontFamily: typographyVars.fontFamilyHeading,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontWeight: typo.fontWeightSemibold,
+    fontFamily: typo.fontFamilyHeading,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
     marginBottom: spacingVars.space2,
   },
   notes: {
     whiteSpace: "pre-wrap",
     overflowWrap: "anywhere",
     fontFamily: "inherit",
-    fontSize: typographyVars.fontSizeSm,
+    fontSize: typo.fontSizeSm,
     color: colorVars.fgSecondary,
   },
   links: {
@@ -137,7 +149,7 @@ const styles = stylex.create({
     flexWrap: "wrap",
     gap: spacingVars.space3,
     color: colorVars.fgSecondary,
-    fontSize: typographyVars.fontSizeXs,
+    fontSize: typo.fontSizeXs,
   },
   link: { color: "inherit", textDecoration: "none" },
   home: { display: "grid", gap: spacingVars.space6 },
@@ -146,7 +158,7 @@ const styles = stylex.create({
 type SettingsPage = "theme" | "text" | "layout" | "dateTime" | "search" | "language" | "motion" | "weather";
 
 type SettingProps = {
-  xstyle?: import("~shared/ui/control-layout").ControlLayoutStyles;
+  xstyle?: ButtonProps["xstyle"];
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
 };
@@ -165,7 +177,14 @@ export function Setting({ open, onOpenChange, xstyle }: SettingProps) {
                 <DrawerTrigger
                   aria-label={UI_LANGUAGE.settings.settings}
                   render={
-                    <Button data-settings-trigger="" variant="outline" size="icon-sm" xstyle={xstyle}>
+                    <Button
+                      aria-label={UI_LANGUAGE.settings.settings}
+                      data-settings-trigger=""
+                      variant="outline"
+                      size="icon"
+                      style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
+                      xstyle={xstyle}
+                    >
                       <GearSixIcon aria-hidden="true" />
                     </Button>
                   }
@@ -187,14 +206,16 @@ export function Setting({ open, onOpenChange, xstyle }: SettingProps) {
           if (!open) updates.close();
         }}
       >
-        <DialogContent xstyle={styles.reader} showCloseButton={false} showBackdrop={false}>
-          <div {...stylex.props(styles.hiddenTitle)}>
-            <DialogTitle>{UI_LANGUAGE.settings.updates}</DialogTitle>
-          </div>
-          <Suspense fallback={<output>{UI_LANGUAGE.settings.updates}</output>}>
-            <UpdatesPage onBack={updates.close} />
-          </Suspense>
-        </DialogContent>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Popup {...stylex.props(styles.reader)}>
+            <div {...stylex.props(styles.hiddenTitle)}>
+              <DialogTitle>{UI_LANGUAGE.settings.updates}</DialogTitle>
+            </div>
+            <Suspense fallback={<output>{UI_LANGUAGE.settings.updates}</output>}>
+              <UpdatesPage onBack={updates.close} />
+            </Suspense>
+          </DialogPrimitive.Popup>
+        </DialogPrimitive.Portal>
       </Dialog>
     </>
   );
@@ -268,7 +289,13 @@ function Screens({ updates }: { updates: UpdatesNavigation }) {
         <DrawerClose
           aria-label={labels.close}
           render={
-            <Button variant="ghost" size="icon-sm" xstyle={styles.close}>
+            <Button
+              aria-label={UI_LANGUAGE.settings.close}
+              variant="ghost"
+              size="icon"
+              style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
+              xstyle={styles.close}
+            >
               <XIcon aria-hidden="true" />
             </Button>
           }

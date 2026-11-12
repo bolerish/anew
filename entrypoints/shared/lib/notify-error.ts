@@ -1,4 +1,4 @@
-import { toast } from "~shared/ui/toast";
+import { toast } from "@bolerish/ui/toast";
 
 import { storage } from "#imports";
 

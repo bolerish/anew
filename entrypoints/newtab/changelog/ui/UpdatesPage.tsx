@@ -1,10 +1,7 @@
-import { CaretLeftIcon } from "@phosphor-icons/react";
-import * as stylex from "@stylexjs/stylex";
-import { updatesMessages } from "~shared/i18n/updates";
-import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { colorVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Badge } from "~shared/ui/badge";
-import { Button } from "~shared/ui/button";
+import { sizeVars } from "@bolerish/tokens/semantic.stylex";
+import { colorVars, spacingVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { Badge } from "@bolerish/ui/badge";
+import { Button } from "@bolerish/ui/button";
 import {
   Timeline,
   TimelineItem,
@@ -12,7 +9,11 @@ import {
   TimelineContent,
   TimelineTitle,
   TimelineTime,
-} from "~shared/ui/timeline";
+} from "@bolerish/ui/timeline";
+import { CaretLeftIcon } from "@phosphor-icons/react";
+import * as stylex from "@stylexjs/stylex";
+import { updatesMessages } from "~shared/i18n/updates";
+import { useLanguage, usePreferences } from "~shared/lib/preferences";
 
 import { contentLayout } from "../../layout.stylex";
 import { getUpdateEntries } from "../model/updates";
@@ -21,7 +22,7 @@ const styles = stylex.create({
     flexShrink: 0,
     minWidth: 0,
     color: colorVars.fgPrimary,
-    fontFamily: typographyVars.fontFamilyBody,
+    fontFamily: typo.fontFamilyBody,
   },
   header: {
     position: "sticky",
@@ -37,10 +38,10 @@ const styles = stylex.create({
   },
   back: { flexShrink: 0 },
   title: {
-    fontSize: typographyVars.fontSizeSm,
+    fontSize: typo.fontSizeSm,
     margin: 0,
     minWidth: 0,
-    lineHeight: typographyVars.lineHeightNormal,
+    lineHeight: typo.lineHeightNormal,
     overflowWrap: "anywhere",
   },
   content: {
@@ -52,10 +53,10 @@ const styles = stylex.create({
   },
   version: { display: "flex", alignItems: "center", gap: spacingVars.space2 },
   releaseSection: { display: "grid", gap: spacingVars.space2, marginTop: spacingVars.space4 },
-  releaseHeading: { margin: 0, fontSize: typographyVars.fontSizeSm, fontWeight: typographyVars.fontWeightSemibold },
-  sectionTitle: { fontSize: typographyVars.fontSizeSm, fontWeight: typographyVars.fontWeightSemibold, margin: 0 },
+  releaseHeading: { margin: 0, fontSize: typo.fontSizeSm, fontWeight: typo.fontWeightSemibold },
+  sectionTitle: { fontSize: typo.fontSizeSm, fontWeight: typo.fontWeightSemibold, margin: 0 },
   list: { paddingInlineStart: spacingVars.space5, margin: 0, display: "grid", gap: spacingVars.space2 },
-  text: { whiteSpace: "pre-wrap", overflowWrap: "anywhere", lineHeight: typographyVars.lineHeightNormal },
+  text: { whiteSpace: "pre-wrap", overflowWrap: "anywhere", lineHeight: typo.lineHeightNormal },
 });
 export function UpdatesPage({ onBack }: { onBack?: () => void }) {
   const { width, language } = usePreferences();
@@ -69,7 +70,8 @@ export function UpdatesPage({ onBack }: { onBack?: () => void }) {
         {onBack ? (
           <Button
             variant="ghost"
-            size="icon-sm"
+            size="icon"
+            style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
             xstyle={styles.back}
             aria-label={labels.back}
             title={labels.back}

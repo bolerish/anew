@@ -31,7 +31,7 @@ test("switching items replaces the draft; Enter saves only the editor and Escape
 });
 
 test("failed saving keeps the editor draft and exposes an inline error without a toast", async () => {
-  const { toast } = await import("~shared/ui/toast");
+  const { toast } = await import("@bolerish/ui/toast");
   const notification = vi.spyOn(toast, "add");
   const log = vi.spyOn(console, "error").mockImplementation(() => {});
   const error = new Error("Storage unavailable");

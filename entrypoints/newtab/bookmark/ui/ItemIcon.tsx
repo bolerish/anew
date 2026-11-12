@@ -1,8 +1,8 @@
+import { colorVars, spacingVars, sizeVars, radiusVars, typo } from "@bolerish/tokens/semantic.stylex";
 import { CircleIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useState } from "react";
 import { useTheme } from "~shared/lib/theme";
-import { colorVars, spacingVars, sizeVars, radiusVars, typographyVars } from "~shared/styles/semantic.stylex";
 
 import { getIconAppearance } from "../lib/icon-appearance";
 
@@ -18,12 +18,12 @@ const styles = stylex.create({
     placeItems: "center",
     flexShrink: 0,
     color: colorVars.fgSecondary,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
   },
   fallback: {
     backgroundColor: colorVars.bgSubtle,
     borderRadius: radiusVars.sm,
-    fontSize: `calc(${typographyVars.fontSizeXs} * var(--mds-content-scale, 1))`,
+    fontSize: `calc(${typo.fontSizeXs} * var(--mds-content-scale, 1))`,
   },
   image: {
     width: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,

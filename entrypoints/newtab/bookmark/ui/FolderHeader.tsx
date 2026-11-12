@@ -1,3 +1,20 @@
+import { colorVars, spacingVars, sizeVars, radiusVars, motionVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { AccordionTrigger } from "@bolerish/ui/accordion";
+import { Button } from "@bolerish/ui/button";
+import { ButtonGroup } from "@bolerish/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@bolerish/ui/dropdown-menu";
+import { Input } from "@bolerish/ui/input";
 import {
   GlobeIcon,
   CircleIcon,
@@ -15,30 +32,6 @@ import { useEffect, useRef, type Ref, type SubmitEvent, type MouseEvent } from "
 import { stopInteraction } from "~shared/lib/event";
 import { notifyError } from "~shared/lib/notify-error";
 import { useLanguage } from "~shared/lib/preferences";
-import {
-  colorVars,
-  spacingVars,
-  sizeVars,
-  radiusVars,
-  motionVars,
-  typographyVars,
-} from "~shared/styles/semantic.stylex";
-import { AccordionTrigger } from "~shared/ui/accordion";
-import { Button } from "~shared/ui/button";
-import { ButtonGroup } from "~shared/ui/button-group";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-  DropdownMenuCheckboxItem,
-  DropdownMenuSeparator,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from "~shared/ui/dropdown-menu";
-import { Input } from "~shared/ui/input";
 
 import { setFolderView, setFolderDisplay } from "../../settings/bookmark/model/settings";
 import { deleteFolder as deleteBookmarkFolder } from "../api/update";
@@ -67,10 +60,10 @@ const styles = stylex.create({
     alignItems: "center",
     gap: spacingVars.space2,
     color: colorVars.fgSecondary,
-    fontFamily: typographyVars.fontFamilyBody,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
-    fontWeight: typographyVars.fontWeightRegular,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontFamily: typo.fontFamilyBody,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontWeight: typo.fontWeightRegular,
+    lineHeight: typo.lineHeightNormal,
   },
   titleButton: {
     appearance: "none",
@@ -95,9 +88,9 @@ const styles = stylex.create({
     paddingInline: spacingVars.space1,
     fontWeight: "inherit",
     color: colorVars.fgSecondary,
-    fontFamily: typographyVars.fontFamilyBody,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontFamily: typo.fontFamilyBody,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    lineHeight: typo.lineHeightNormal,
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -159,9 +152,9 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
   const folderToggle = (
     <AccordionTrigger
       data-folder-trigger=""
-      size="sm"
       aria-label={`${folder.displayTitle} ${UI_LANGUAGE.bookmark.toggleFolder}`}
       ref={toggleRef}
+      style={{ minHeight: sizeVars.controlMd, paddingBlock: 0 }}
       xstyle={styles.folderToggle}
       type="button"
     />
@@ -210,7 +203,8 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
           <ButtonGroup xstyle={editorStyles.actions}>
             <Button
               aria-label={UI_LANGUAGE.bookmark.saveFolder}
-              size="icon-sm"
+              size="icon"
+              style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
               title={UI_LANGUAGE.bookmark.saveFolder}
               type="button"
               variant="ghost"
@@ -224,7 +218,8 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
             </Button>
             <Button
               aria-label={UI_LANGUAGE.bookmark.cancel}
-              size="icon-sm"
+              size="icon"
+              style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
               title={UI_LANGUAGE.bookmark.cancel}
               type="button"
               variant="ghost"
@@ -259,7 +254,12 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="icon-sm" aria-label={UI_LANGUAGE.settings.folderOptions}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
+                    aria-label={UI_LANGUAGE.settings.folderOptions}
+                  >
                     <DotsThreeIcon weight="bold" aria-hidden="true" {...stylex.props(styles.menuIcon)} />
                   </Button>
                 }

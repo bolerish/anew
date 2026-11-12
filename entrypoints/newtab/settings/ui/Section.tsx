@@ -1,9 +1,9 @@
+import { spacingVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { Heading } from "@bolerish/ui/heading";
 import * as stylex from "@stylexjs/stylex";
 import type { ReactNode } from "react";
-import { spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Heading } from "~shared/ui/heading";
 const styles = stylex.create({
-  title: { fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))` },
+  title: { fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))` },
   root: { display: "grid", gap: spacingVars.space4 },
   header: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space3 },
 });

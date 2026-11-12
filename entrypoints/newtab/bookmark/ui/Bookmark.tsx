@@ -1,9 +1,9 @@
+import { colorVars, spacingVars, sizeVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { Button } from "@bolerish/ui/button";
+import { Empty, EmptyDescription } from "@bolerish/ui/empty";
+import { ScrollArea, ScrollAreaViewport, ScrollAreaContent } from "@bolerish/ui/scroll-area";
 import * as stylex from "@stylexjs/stylex";
 import { useLanguage } from "~shared/lib/preferences";
-import { colorVars, spacingVars, sizeVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Button } from "~shared/ui/button";
-import { Empty, EmptyDescription } from "~shared/ui/empty";
-import { ScrollArea, ScrollAreaViewport, ScrollAreaContent } from "~shared/ui/scroll-area";
 
 import { resolveColumnLayout } from "../../settings/bookmark/lib/layout";
 import { type BookmarkSettings } from "../../settings/bookmark/model/settings";
@@ -20,9 +20,9 @@ import { FolderContents } from "./FolderContents";
 const styles = stylex.create({
   title: {
     color: colorVars.fgSecondary,
-    fontFamily: typographyVars.fontFamilyBody,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontFamily: typo.fontFamilyBody,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    lineHeight: typo.lineHeightNormal,
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
@@ -133,7 +133,7 @@ function Content({ rootTitle, selectedLocationId, settings }: ContentProps) {
   return (
     <div {...stylex.props(styles.body)}>
       {visibleFolders.length > 1 ? <FolderContents folders={orderedFolders} /> : null}
-      <ScrollArea xstyle={styles.scroll} scrollbars="both" autoHide>
+      <ScrollArea xstyle={styles.scroll} scrollbars="both">
         <ScrollAreaViewport id="bookmark-content" tabIndex={-1} data-bookmark-scroll="">
           <ScrollAreaContent xstyle={styles.content}>
             {selectedLocationId && visibleFolders.length ? (

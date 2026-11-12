@@ -1,3 +1,6 @@
+import { colorVars, sizeVars, spacingVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { Link } from "@bolerish/ui/link";
+import { Separator } from "@bolerish/ui/separator";
 import {
   CloudIcon,
   SunIcon,
@@ -10,9 +13,6 @@ import * as stylex from "@stylexjs/stylex";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { weatherMessages } from "~shared/i18n/weather";
 import { usePreferences } from "~shared/lib/preferences";
-import { colorVars, sizeVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Link } from "~shared/ui/link";
-import { Separator } from "~shared/ui/separator";
 
 import { useWeather } from "../model/useWeather";
 import { defaults, weatherSettings, formatTemperature, CACHE_MS } from "../model/weather";
@@ -28,7 +28,7 @@ const styles = stylex.create({
     alignItems: "center",
     gap: spacingVars.space2,
     color: colorVars.fgSecondary,
-    fontSize: typographyVars.fontSizeSm,
+    fontSize: typo.fontSizeSm,
   },
   error: { color: colorVars.fgFeedbackError },
   warning: { color: colorVars.fgFeedbackWarning },

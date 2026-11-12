@@ -1,22 +1,22 @@
-import { CaretDownIcon, GlobeIcon } from "@phosphor-icons/react";
-import * as stylex from "@stylexjs/stylex";
-import { useLanguage, usePreferences, updatePreference, languages, CONTENT_WIDTH } from "~shared/lib/preferences";
-import { sizeVars, spacingVars } from "~shared/styles/semantic.stylex";
-import { Button } from "~shared/ui/button";
+import { sizeVars, spacingVars } from "@bolerish/tokens/semantic.stylex";
+import { Button } from "@bolerish/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from "~shared/ui/dropdown-menu";
-import { FieldGroup } from "~shared/ui/field";
-import { Field, FieldLabel, FieldDescription } from "~shared/ui/field";
-import { InputGroupButton } from "~shared/ui/input-group";
-import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "~shared/ui/select";
-import { Slider } from "~shared/ui/slider";
-import { Switch } from "~shared/ui/switch";
-import { ToggleGroup, ToggleGroupItem } from "~shared/ui/toggle-group";
+} from "@bolerish/ui/dropdown-menu";
+import { FieldGroup } from "@bolerish/ui/field";
+import { Field, FieldLabel, FieldDescription } from "@bolerish/ui/field";
+import { InputGroupButton } from "@bolerish/ui/input-group";
+import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "@bolerish/ui/select";
+import { Slider } from "@bolerish/ui/slider";
+import { Switch } from "@bolerish/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@bolerish/ui/toggle-group";
+import { CaretDownIcon, GlobeIcon } from "@phosphor-icons/react";
+import * as stylex from "@stylexjs/stylex";
+import { useLanguage, usePreferences, updatePreference, languages, CONTENT_WIDTH } from "~shared/lib/preferences";
 const engineStyles = stylex.create({
   fieldHeading: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space2 },
   visibility: { justifyContent: "space-between" },
@@ -93,7 +93,12 @@ export function EngineSelect({ compact = false }: { compact?: boolean }) {
       <DropdownMenuTrigger
         render={
           compact ? (
-            <InputGroupButton variant="ghost" size="icon-sm" aria-label={`${labels.searchEngine}: ${options[engine]}`}>
+            <InputGroupButton
+              variant="ghost"
+              size="icon"
+              style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
+              aria-label={`${labels.searchEngine}: ${options[engine]}`}
+            >
               <span aria-hidden="true">
                 {engineDisplay === "letter" ? options[engine][0] : <EngineLogo engine={engine} />}
               </span>

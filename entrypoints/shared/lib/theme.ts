@@ -1,15 +1,20 @@
+import { densityStyles } from "@bolerish/tokens/density.stylex";
+import { sizeVars, colorVars, typo, radiusVars } from "@bolerish/tokens/semantic.stylex";
+import { lightColorTheme, darkColorTheme, lightShadowTheme, darkShadowTheme } from "@bolerish/tokens/themes.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { useLayoutEffect, useState } from "react";
 import { z } from "zod";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
-import { compactSizeTheme, compactSpacingTheme, compactTypographyTheme } from "~shared/styles/density.stylex";
-import { colorVars, typographyVars, radiusVars } from "~shared/styles/semantic.stylex";
-import { lightColorTheme, darkColorTheme, lightShadowTheme, darkShadowTheme } from "~shared/styles/themes.stylex";
 
 import { storage } from "#imports";
 
 import { notifyError } from "./notify-error";
 
+const minSizeTheme = stylex.createTheme(sizeVars, {
+  contentXs: "18rem",
+  contentSm: "24rem",
+  contentMd: "32rem",
+});
 const radiusTheme = stylex.createTheme(radiusVars, {
   sm: "var(--mds-corner-radius, 0px)",
   md: "calc(var(--mds-corner-radius, 0px) * 4 / 3)",
@@ -20,8 +25,8 @@ const baseStyles = stylex.create({
   root: {
     backgroundColor: colorVars.bgSurface,
     color: colorVars.fgPrimary,
-    fontFamily: typographyVars.fontFamilyBody,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontFamily: typo.fontFamilyBody,
+    lineHeight: typo.lineHeightNormal,
   },
 });
 
@@ -98,6 +103,7 @@ function syncThemeStyles(theme: Theme, systemPrefersDark: boolean) {
   const resolvedTheme = isDarkModeActive ? "dark" : "light";
   const root = window.document.documentElement;
 
+  root.dataset.bolerishTheme = resolvedTheme;
   root.classList.toggle("dark", isDarkModeActive);
   root.style.colorScheme = resolvedTheme;
   const previousClasses = root.dataset.nueeTheme?.split(" ").filter(Boolean) ?? [];
@@ -106,10 +112,9 @@ function syncThemeStyles(theme: Theme, systemPrefersDark: boolean) {
     stylex
       .props(
         baseStyles.root,
-        compactTypographyTheme,
+        densityStyles.compact,
         radiusTheme,
-        compactSpacingTheme,
-        compactSizeTheme,
+        minSizeTheme,
         isDarkModeActive ? darkColorTheme : lightColorTheme,
         isDarkModeActive ? darkShadowTheme : lightShadowTheme,
       )

@@ -1,7 +1,7 @@
+import { toast } from "@bolerish/ui/toast";
 import { useEffect, useRef } from "react";
 import { updatesMessages } from "~shared/i18n/updates";
 import { usePreferences } from "~shared/lib/preferences";
-import { toast } from "~shared/ui/toast";
 
 import { browser } from "#imports";
 

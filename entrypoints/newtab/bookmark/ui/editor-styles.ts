@@ -1,9 +1,9 @@
+import { colorVars, spacingVars, sizeVars, typo } from "@bolerish/tokens/semantic.stylex";
 import * as stylex from "@stylexjs/stylex";
-import { colorVars, spacingVars, sizeVars, typographyVars } from "~shared/styles/semantic.stylex";
 
 export const editorStyles = stylex.create({
   group: {
-    fontSize: typographyVars.fontSizeSm,
+    fontSize: typo.fontSizeSm,
     borderRadius: 0,
     marginBottom: spacingVars.space3,
     borderBottomWidth: sizeVars.stroke,
@@ -24,9 +24,9 @@ export const editorStyles = stylex.create({
   fields: {
     display: "grid",
     minWidth: 0,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-content-scale, 1))`,
-    fontWeight: typographyVars.fontWeightRegular,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontWeight: typo.fontWeightRegular,
+    lineHeight: typo.lineHeightNormal,
   },
   actions: {
     display: "flex",

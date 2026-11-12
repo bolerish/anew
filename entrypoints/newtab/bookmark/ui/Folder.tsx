@@ -1,12 +1,12 @@
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { colorVars, spacingVars, sizeVars, motionVars } from "@bolerish/tokens/semantic.stylex";
+import { Accordion, AccordionContent, AccordionItem } from "@bolerish/ui/accordion";
+import { Button } from "@bolerish/ui/button";
 import { PlusIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { Fragment, useEffect, useState } from "react";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { colorVars, spacingVars, sizeVars, motionVars } from "~shared/styles/semantic.stylex";
-import { Accordion, AccordionContent, AccordionItem } from "~shared/ui/accordion";
-import { Button } from "~shared/ui/button";
 
 import { setFolderDisplay } from "../../settings/bookmark/model/settings";
 import { isItemDragData } from "../lib/dnd";

@@ -1,15 +1,15 @@
+import { colorVars, spacingVars, sizeVars } from "@bolerish/tokens/semantic.stylex";
+import { Button } from "@bolerish/ui/button";
+import { ButtonGroup } from "@bolerish/ui/button-group";
+import { Collapsible, CollapsibleContent, CollapsiblePanel } from "@bolerish/ui/collapsible";
+import { Field, FieldError } from "@bolerish/ui/field";
+import { Input } from "@bolerish/ui/input";
+import { InputGroup } from "@bolerish/ui/input-group";
 import { CheckIcon, XIcon, GlobeIcon, CircleIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { useId, type KeyboardEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 import { useLanguage } from "~shared/lib/preferences";
-import { colorVars, spacingVars, sizeVars } from "~shared/styles/semantic.stylex";
-import { Button } from "~shared/ui/button";
-import { ButtonGroup } from "~shared/ui/button-group";
-import { Collapsible, CollapsibleContent, CollapsiblePanel } from "~shared/ui/collapsible";
-import { Field, FieldError } from "~shared/ui/field";
-import { Input } from "~shared/ui/input";
-import { InputGroup } from "~shared/ui/input-group";
 
 import { useBookmarkContext } from "../model/Provider";
 import type { useAddForm } from "../model/useAddForm";
@@ -131,7 +131,8 @@ export function AddForm({ form }: AddFormProps) {
                 <Button
                   aria-label={UI_LANGUAGE.bookmark.save}
                   disabled={!form.canSave}
-                  size="icon-sm"
+                  size="icon"
+                  style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                   title={UI_LANGUAGE.bookmark.save}
                   type="submit"
                   variant="ghost"
@@ -142,7 +143,8 @@ export function AddForm({ form }: AddFormProps) {
                 <Button
                   type="button"
                   aria-label={UI_LANGUAGE.bookmark.cancel}
-                  size="icon-sm"
+                  size="icon"
+                  style={{ height: sizeVars.controlSm, width: sizeVars.controlSm }}
                   title={UI_LANGUAGE.bookmark.cancel}
                   variant="ghost"
                   onMouseDown={stopInteraction}

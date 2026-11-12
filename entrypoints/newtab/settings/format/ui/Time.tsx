@@ -1,10 +1,10 @@
+import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "@bolerish/ui/select";
+import { Switch } from "@bolerish/ui/switch";
 import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
 import { formatCurrentTime } from "~newtab/date/lib/format";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "~shared/ui/select";
-import { Switch } from "~shared/ui/switch";
 
 import { Section, SectionContent, SectionHeader } from "../../ui/Section";
 import { getInitialTimeSettings, timeStorage, updateTimeSetting, updateTimeSettings } from "../model/time";

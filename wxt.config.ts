@@ -37,10 +37,16 @@ export default defineConfig({
   vite: () => {
     let devServerOrigin = "";
     return {
-      optimizeDeps: { include: ["@base-ui/react/menu", "@base-ui/react/combobox", "@base-ui/react/tooltip"] },
+      optimizeDeps: {
+        exclude: ["@bolerish/tokens"],
+        include: ["@base-ui/react/menu", "@base-ui/react/combobox", "@base-ui/react/tooltip"],
+      },
       plugins: [
         {
           ...stylex.vite({
+            // Match the published UI style keys and cascade layers when composing xstyle.
+            dev: false,
+            useCSSLayers: true,
             aliases: { "~shared/*": [path.resolve(__dirname, "entrypoints/shared/*")] },
             unstable_moduleResolution: { type: "commonJS", rootDir: __dirname },
           }),

@@ -35,6 +35,11 @@ Released on 2026-09-15.
 
 ### Settings
 
+<!-- prettier-ignore -->
+- Shared controls now use bolerish's design system while keeping Min's compact
+    layout, custom fonts, text scales, and corner settings.
+- Appearance changes also apply to other open Min tabs. A settings read failure
+    no longer prevents the new tab page from opening or replaces saved settings.
 - Set heading and content fonts separately, adjust content width, and choose from five languages. Toggle folder dividers and keyboard shortcuts in Layout.
 - Keep the header right-aligned on mobile and the settings button on the right when shortcuts are hidden.
 - Choose whether to show the date and time and select their formats. Time options show examples, and custom date formats include examples and error guidance.

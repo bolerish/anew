@@ -39,7 +39,7 @@ test("blocks concurrent creates and retains the draft on failure for retry", asy
 });
 
 test("duplicate bookmarks show a toast and keep the form open", async () => {
-  const { toast } = await import("~shared/ui/toast");
+  const { toast } = await import("@bolerish/ui/toast");
   const notification = vi.spyOn(toast, "add");
   vi.mocked(createItem).mockResolvedValueOnce("duplicate");
   const onCreated = vi.fn<() => Promise<void>>(async () => {});

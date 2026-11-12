@@ -9,6 +9,9 @@ export default defineConfig({
     WxtVitest({ configFile: false }),
     {
       ...stylex.vite({
+        // Match the published UI style keys and cascade layers when composing xstyle.
+        dev: false,
+        useCSSLayers: true,
         aliases: { "~shared/*": [resolve("entrypoints/shared/*")] },
         unstable_moduleResolution: { type: "commonJS", rootDir: process.cwd() },
       }),
@@ -19,6 +22,7 @@ export default defineConfig({
   resolve: {
     alias: { "~": resolve("."), "~shared": resolve("entrypoints/shared"), "~newtab": resolve("entrypoints/newtab") },
   },
+  optimizeDeps: { exclude: ["@bolerish/tokens"] },
   oxc: { jsx: { runtime: "automatic" } },
   test: {
     environment: "jsdom",

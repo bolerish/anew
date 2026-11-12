@@ -1,8 +1,8 @@
+import { spacingVars } from "@bolerish/tokens/semantic.stylex";
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- A focusable window splitter needs the interactive separator pattern. */
 import * as stylex from "@stylexjs/stylex";
 import { Fragment, type ReactNode } from "react";
 import { useLanguage } from "~shared/lib/preferences";
-import { spacingVars } from "~shared/styles/semantic.stylex";
 
 import { resolveColumnLayout, moveLayoutFolder } from "../../settings/bookmark/lib/layout";
 import { type ColumnLayout as Layout, saveColumnLayout } from "../../settings/bookmark/model/settings";

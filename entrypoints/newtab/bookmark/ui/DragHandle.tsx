@@ -1,7 +1,7 @@
+import { colorVars, sizeVars, radiusVars } from "@bolerish/tokens/semantic.stylex";
 import { DotsSixVerticalIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import type { Ref, KeyboardEvent } from "react";
-import { colorVars, sizeVars, radiusVars } from "~shared/styles/semantic.stylex";
 
 const styles = stylex.create({
   wrapper: {

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "~shared/styles/reset.css";
+import "@bolerish/ui/global.css";
 import { loadInitialPreferences } from "~shared/lib/preferences";
 import "~shared/styles/global.css";
 
@@ -15,10 +15,10 @@ import { loadInitialDateSettings, loadInitialTimeSettings } from "./settings/for
 import { loadInitialShortcutSettings } from "./settings/shortcut";
 
 async function main() {
-  await Promise.all([
+  await Promise.allSettled([
     initializeTheme(),
-    loadInitialBookmarkTree().catch(console.error),
-    loadInitialBookmarkLocation().catch(console.error),
+    loadInitialBookmarkTree(),
+    loadInitialBookmarkLocation(),
     loadInitialPreferences(),
     loadInitialBookmarkSettings(),
     loadInitialCollapsedFolders(),

@@ -1,5 +1,3 @@
-import * as stylex from "@stylexjs/stylex";
-import { useLanguage } from "~shared/lib/preferences";
 import {
   Select,
   SelectPopup,
@@ -9,7 +7,9 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "~shared/ui/select";
+} from "@bolerish/ui/select";
+import * as stylex from "@stylexjs/stylex";
+import { useLanguage } from "~shared/lib/preferences";
 
 import type { BookmarkLocation } from "../model/types";
 
@@ -19,7 +19,7 @@ const styles = stylex.create({
 });
 
 type LocationPickerProps = {
-  xstyle?: import("~shared/ui/control-layout").ControlLayoutStyles;
+  xstyle?: import("@bolerish/ui/button").ButtonProps["xstyle"];
   ariaLabel?: string;
   locations: readonly BookmarkLocation[];
   onLocationChange: (locationId: string) => void;

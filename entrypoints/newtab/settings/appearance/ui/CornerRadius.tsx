@@ -1,9 +1,9 @@
+import { colorVars, spacingVars, typo, sizeVars } from "@bolerish/tokens/semantic.stylex";
+import { Field, FieldLabel, FieldDescription } from "@bolerish/ui/field";
+import { Slider } from "@bolerish/ui/slider";
 import * as stylex from "@stylexjs/stylex";
 import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { useLanguage } from "~shared/lib/preferences";
-import { colorVars, spacingVars, typographyVars, sizeVars } from "~shared/styles/semantic.stylex";
-import { Field, FieldLabel, FieldDescription } from "~shared/ui/field";
-import { Slider } from "~shared/ui/slider";
 
 import { CORNER_RADIUS } from "../model/constants";
 import { getInitialAppearanceSettings } from "../model/init";
@@ -11,7 +11,7 @@ import { appearanceStorage } from "../model/storage";
 import { updateAppearanceSetting } from "../model/update";
 const styles = stylex.create({
   row: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space2 },
-  value: { color: colorVars.fgSecondary, fontSize: typographyVars.fontSizeSm, fontVariantNumeric: "tabular-nums" },
+  value: { color: colorVars.fgSecondary, fontSize: typo.fontSizeSm, fontVariantNumeric: "tabular-nums" },
   preview: {
     width: sizeVars.iconLg,
     height: sizeVars.iconLg,

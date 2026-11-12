@@ -1,8 +1,8 @@
+import { colorVars, spacingVars, sizeVars, layerVars, radiusVars, motionVars } from "@bolerish/tokens/semantic.stylex";
+import { Button } from "@bolerish/ui/button";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@bolerish/ui/tooltip";
 import * as stylex from "@stylexjs/stylex";
 import { useLanguage } from "~shared/lib/preferences";
-import { colorVars, spacingVars, sizeVars, layerVars, radiusVars, motionVars } from "~shared/styles/semantic.stylex";
-import { Button } from "~shared/ui/button";
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "~shared/ui/tooltip";
 
 import type { BookmarkFolder } from "../model/types";
 import { useFolderNavigation } from "../model/useFolderNavigation";
@@ -63,7 +63,8 @@ export function FolderContents({ folders }: { folders: readonly BookmarkFolder[]
                   <Button
                     render={<button type="button" {...stylex.props(styles.contentsButton)} />}
                     variant="ghost"
-                    size="icon-xs"
+                    size="icon"
+                    style={{ height: sizeVars.controlXs, width: sizeVars.controlXs }}
                     type="button"
                     aria-label={folder.displayTitle}
                     aria-current={active === folder.id ? "location" : undefined}

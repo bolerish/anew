@@ -1,10 +1,10 @@
+import { spacingVars } from "@bolerish/tokens/semantic.stylex";
+import { Field, FieldDescription, FieldError } from "@bolerish/ui/field";
+import { Input } from "@bolerish/ui/input";
+import { Select, SelectPopup, SelectList, SelectItem, SelectTrigger, SelectValue } from "@bolerish/ui/select";
 import * as stylex from "@stylexjs/stylex";
 import { formatDate } from "~newtab/date/lib/format";
 import { useLanguage, usePreferences } from "~shared/lib/preferences";
-import { spacingVars } from "~shared/styles/semantic.stylex";
-import { Field, FieldDescription, FieldError } from "~shared/ui/field";
-import { Input } from "~shared/ui/input";
-import { Select, SelectPopup, SelectList, SelectItem, SelectTrigger, SelectValue } from "~shared/ui/select";
 
 import type { DateFormat } from "../model/date";
 

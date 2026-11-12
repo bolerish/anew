@@ -1,6 +1,6 @@
+import { toast } from "@bolerish/ui/toast";
 import { useRef, useState, type SubmitEvent } from "react";
 import { useLanguage } from "~shared/lib/preferences";
-import { toast } from "~shared/ui/toast";
 
 import { createItem } from "../api/create";
 import { canNormalizeUrl } from "../lib/url";

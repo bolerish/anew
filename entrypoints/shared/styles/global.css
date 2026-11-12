@@ -1,3 +1,7 @@
+html {
+  --bolerish-font-body: system-ui;
+  --bolerish-font-heading: system-ui;
+}
 html,
 body,
 #root {

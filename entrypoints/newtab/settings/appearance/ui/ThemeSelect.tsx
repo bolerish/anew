@@ -1,8 +1,8 @@
+import { Field, FieldLabel } from "@bolerish/ui/field";
+import { ToggleGroup, ToggleGroupItem } from "@bolerish/ui/toggle-group";
 import { MonitorIcon, MoonIcon, SunIcon } from "@phosphor-icons/react";
 import { useLanguage } from "~shared/lib/preferences";
 import { useTheme } from "~shared/lib/theme";
-import { Field, FieldLabel } from "~shared/ui/field";
-import { ToggleGroup, ToggleGroupItem } from "~shared/ui/toggle-group";
 export function ThemeSelect() {
   const UI_LANGUAGE = useLanguage();
   const { theme, setTheme } = useTheme();

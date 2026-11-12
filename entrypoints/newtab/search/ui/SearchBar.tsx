@@ -1,3 +1,13 @@
+import { spacingVars, colorVars, typo } from "@bolerish/tokens/semantic.stylex";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxPopup,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from "@bolerish/ui/combobox";
+import { Kbd } from "@bolerish/ui/kbd";
 import * as stylex from "@stylexjs/stylex";
 import type { ComponentProps } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -7,9 +17,6 @@ import { isKeyboardShortcutTarget } from "~newtab/bookmark/model/useKeyboardNavi
 import { ItemIcon } from "~newtab/bookmark/ui/ItemIcon";
 import { EngineSelect } from "~newtab/settings/ui/Preferences";
 import { useLanguage } from "~shared/lib/preferences";
-import { spacingVars, colorVars, typographyVars } from "~shared/styles/semantic.stylex";
-import { Combobox, ComboboxInput, ComboboxPopup, ComboboxList, ComboboxItem, ComboboxEmpty } from "~shared/ui/combobox";
-import { Kbd } from "~shared/ui/kbd";
 
 const styles = stylex.create({
   popup: {
@@ -21,7 +28,7 @@ const styles = stylex.create({
   result: { display: "grid", minWidth: 0 },
   url: {
     color: colorVars.fgSecondary,
-    fontSize: typographyVars.fontSizeXs,
+    fontSize: typo.fontSizeXs,
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",

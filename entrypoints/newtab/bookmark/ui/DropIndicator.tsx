@@ -1,5 +1,5 @@
+import { colorVars, sizeVars } from "@bolerish/tokens/semantic.stylex";
 import * as stylex from "@stylexjs/stylex";
-import { colorVars, sizeVars } from "~shared/styles/semantic.stylex";
 
 import type { DropEdge } from "../lib/dnd";
 

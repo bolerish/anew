@@ -1,6 +1,6 @@
+import { colorVars, spacingVars, typo } from "@bolerish/tokens/semantic.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { usePreferences } from "~shared/lib/preferences";
-import { colorVars, spacingVars, typographyVars } from "~shared/styles/semantic.stylex";
 
 import {
   dateStorage,
@@ -21,9 +21,9 @@ const styles = stylex.create({
     flexWrap: "wrap",
     gap: spacingVars.space2,
     color: colorVars.fgSecondary,
-    fontFamily: typographyVars.fontFamilyHeading,
-    fontSize: `calc(${typographyVars.fontSizeSm} * var(--mds-heading-scale, 1))`,
-    lineHeight: typographyVars.lineHeightNormal,
+    fontFamily: typo.fontFamilyHeading,
+    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    lineHeight: typo.lineHeightNormal,
   },
 });
 

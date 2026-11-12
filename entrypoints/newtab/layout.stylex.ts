@@ -1,5 +1,5 @@
+import { spacingVars, sizeVars } from "@bolerish/tokens/semantic.stylex";
 import * as stylex from "@stylexjs/stylex";
-import { spacingVars, sizeVars } from "~shared/styles/semantic.stylex";
 export const contentLayout = stylex.create({
   page: {
     marginInline: "auto",

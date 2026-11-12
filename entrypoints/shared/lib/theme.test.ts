@@ -1,9 +1,9 @@
+import { darkColorTheme, lightColorTheme } from "@bolerish/tokens/themes.stylex";
 import * as stylex from "@stylexjs/stylex";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { storage } from "wxt/utils/storage";
 
-import { darkColorTheme, lightColorTheme } from "../styles/themes.stylex";
 import { initializeTheme, useThemeSync } from "./theme";
 test("saved and system themes replace root classes and preserve unrelated classes", async () => {
   document.documentElement.classList.add("app");

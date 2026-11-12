@@ -1,3 +1,19 @@
+import { sizeVars } from "@bolerish/tokens/semantic.stylex";
+import { colorVars, typo, spacingVars } from "@bolerish/tokens/semantic.stylex";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxPopup,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from "@bolerish/ui/combobox";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldSet } from "@bolerish/ui/field";
+import { InputGroupButton } from "@bolerish/ui/input-group";
+import { Link } from "@bolerish/ui/link";
+import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "@bolerish/ui/select";
+import { Spinner } from "@bolerish/ui/spinner";
+import { Switch } from "@bolerish/ui/switch";
 import { BuildingsIcon, GpsFixIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
 import { useState } from "react";
@@ -5,14 +21,7 @@ import { useStorageValue } from "~shared/hooks/useStorageValue";
 import { weatherMessages } from "~shared/i18n/weather";
 import { notifyError } from "~shared/lib/notify-error";
 import { usePreferences } from "~shared/lib/preferences";
-import { colorVars, typographyVars, spacingVars } from "~shared/styles/semantic.stylex";
-import { Combobox, ComboboxInput, ComboboxPopup, ComboboxList, ComboboxItem, ComboboxEmpty } from "~shared/ui/combobox";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldSet } from "~shared/ui/field";
-import { InputGroupButton } from "~shared/ui/input-group";
-import { Link } from "~shared/ui/link";
-import { Select, SelectTrigger, SelectValue, SelectPopup, SelectList, SelectItem } from "~shared/ui/select";
-import { Spinner } from "~shared/ui/spinner";
-import { Switch } from "~shared/ui/switch";
+import { updateStoredValue } from "~shared/lib/write-lock";
 
 import { fetchCurrentCity } from "../api/location";
 import { MIN_CITY_QUERY_LENGTH } from "../api/weather";
@@ -28,7 +37,7 @@ const styles = stylex.create({
     marginTop: "auto",
     paddingTop: spacingVars.space4,
     color: colorVars.fgSecondary,
-    fontSize: typographyVars.fontSizeXs,
+    fontSize: typo.fontSizeXs,
   },
   error: { color: colorVars.fgFeedbackError },
   status: { display: "flex", alignItems: "center", justifyContent: "center", gap: spacingVars.space2 },
@@ -54,8 +63,7 @@ export function WeatherSettings() {
     setMessage("");
     try {
       const city = await fetchCurrentCity(language);
-      const current = await weatherSettings.getValue();
-      await weatherSettings.setValue({ ...current, city });
+      await updateStoredValue(weatherSettings, (current) => ({ ...current, city }));
       setQuery(null);
     } catch (error) {
       const code = error && typeof error === "object" && "code" in error ? error.code : 0;
@@ -73,8 +81,7 @@ export function WeatherSettings() {
   async function handleCityChange(city: City | null) {
     if (!city) return;
     try {
-      const current = await weatherSettings.getValue();
-      await weatherSettings.setValue({ ...current, city });
+      await updateStoredValue(weatherSettings, (current) => ({ ...current, city }));
       setOpen(false);
       setQuery(null);
     } catch {
@@ -93,7 +100,9 @@ export function WeatherSettings() {
           <Switch
             id="weather-enabled"
             checked={settings.enabled}
-            onCheckedChange={(enabled) => void weatherSettings.setValue({ ...settings, enabled }).catch(notifyError)}
+            onCheckedChange={(enabled) =>
+              void updateStoredValue(weatherSettings, (current) => ({ ...current, enabled })).catch(notifyError)
+            }
           />
         </div>
         <FieldDescription>{copy.hint}</FieldDescription>
@@ -130,7 +139,8 @@ export function WeatherSettings() {
                 endAddon={
                   <InputGroupButton
                     type="button"
-                    size="icon-xs"
+                    size="icon"
+                    style={{ height: sizeVars.controlXs, width: sizeVars.controlXs }}
                     aria-label={copy.gps}
                     title={copy.gps}
                     disabled={locating}
@@ -170,7 +180,7 @@ export function WeatherSettings() {
                 id="weather-show-city"
                 checked={settings.showCity !== false}
                 onCheckedChange={(showCity) =>
-                  void weatherSettings.setValue({ ...settings, showCity }).catch(notifyError)
+                  void updateStoredValue(weatherSettings, (current) => ({ ...current, showCity })).catch(notifyError)
                 }
               />
             </div>
@@ -185,7 +195,7 @@ export function WeatherSettings() {
               value={settings.unit ?? "celsius"}
               onValueChange={(unit) => {
                 if (unit === "celsius" || unit === "fahrenheit")
-                  void weatherSettings.setValue({ ...settings, unit }).catch(notifyError);
+                  void updateStoredValue(weatherSettings, (current) => ({ ...current, unit })).catch(notifyError);
               }}
             >
               <SelectTrigger xstyle={styles.full} aria-labelledby="weather-unit-label">
