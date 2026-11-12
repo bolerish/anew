@@ -22,6 +22,7 @@ export const updatesMessages = {
       {
         title: "검색과 탐색",
         items: [
+          "검색창과 북마크 편집기에 포커스하면 아래쪽 테두리만 강조됩니다. 입력칸 둘레에 선이 겹치거나 추가로 표시되지 않습니다.",
           "검색 제안에서 북마크를 찾고 Google·Bing·DuckDuckGo·Brave 중 검색엔진을 선택할 수 있습니다.",
           "방향키로 북마크 사이를 이동하고 /로 검색, E로 편집을 시작할 수 있습니다. Escape로 검색 포커스를 해제하고, 다른 동작이 없을 때 설정을 열 수 있습니다. 편집 후 포커스 복귀와 화면 읽기 프로그램용 안내도 개선했습니다.",
           "설정 상세 화면과 업데이트 기록에서 브라우저 뒤로·앞으로가기를 사용할 수 있습니다.",
@@ -83,6 +84,7 @@ export const updatesMessages = {
       {
         title: "Search and navigation",
         items: [
+          "Focused search and bookmark editors highlight only their bottom border, without overlapping outlines or extra lines around individual fields.",
           "Find bookmarks with search suggestions and choose Google, Bing, DuckDuckGo or Brave.",
           "Navigate bookmarks with arrow keys, focus search with /, and enter editing with E. Escape leaves search focus and opens settings when idle. Editing restores focus, with improved screen-reader guidance.",
           "Use browser back and forward navigation in settings detail screens and update history.",
@@ -144,6 +146,7 @@ export const updatesMessages = {
       {
         title: "検索と移動",
         items: [
+          "検索欄とブックマーク編集欄にフォーカスすると、下側の枠線だけを強調します。入力欄の周囲に線が重なったり、余分な線が表示されたりしません。",
           "検索候補からブックマークを探し、Google・Bing・DuckDuckGo・Braveを選べます。",
           "矢印キーでブックマーク間を移動し、/で検索、Eで編集を開始できます。Escapeで検索のフォーカスを外し、操作中でなければ設定を開けます。編集後のフォーカス復帰とスクリーンリーダー向けの案内も改善しました。",
           "設定の詳細画面と更新履歴で、ブラウザーの戻る・進むを使えます。",
@@ -203,6 +206,7 @@ export const updatesMessages = {
       {
         title: "Búsqueda y navegación",
         items: [
+          "Al enfocar la búsqueda o los editores de marcadores, solo se resalta el borde inferior, sin contornos superpuestos ni líneas adicionales alrededor de cada campo.",
           "Busca marcadores en las sugerencias y elige Google, Bing, DuckDuckGo o Brave.",
           "Usa las flechas para moverte entre marcadores, / para buscar y E para editar. Escape quita el foco de la búsqueda y abre los ajustes cuando no hay otra acción en curso. Se ha mejorado la recuperación del foco y la información para lectores de pantalla.",
           "Usa los botones de atrás y adelante del navegador en los detalles de ajustes y el historial de actualizaciones.",
@@ -264,6 +268,7 @@ export const updatesMessages = {
       {
         title: "搜索与导航",
         items: [
+          "搜索框和书签编辑框获得焦点时，仅突出显示底部边框，不再在各输入框周围显示重叠或多余的线条。",
           "通过搜索建议查找书签，并选择 Google、Bing、DuckDuckGo 或 Brave。",
           "使用方向键在书签间移动，按 / 搜索，按 E 编辑。Escape 可取消搜索焦点，空闲时可打开设置。还改进了编辑后的焦点恢复和屏幕阅读器提示。",
           "在设置详情和更新记录中，可以使用浏览器的后退和前进功能。",

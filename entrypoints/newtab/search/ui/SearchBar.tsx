@@ -17,6 +17,7 @@ import { isKeyboardShortcutTarget } from "~newtab/bookmark/model/useKeyboardNavi
 import { ItemIcon } from "~newtab/bookmark/ui/ItemIcon";
 import { EngineSelect } from "~newtab/settings/ui/Preferences";
 import { useLanguage } from "~shared/lib/preferences";
+import { inputFocusStyles } from "~shared/styles/input-focus";
 
 const styles = stylex.create({
   popup: {
@@ -122,6 +123,7 @@ export function SearchBar({ onSearch, onValueChange, value, results }: SearchBar
       >
         <ComboboxInput
           variant="inline"
+          className={stylex.props(inputFocusStyles.underline).className}
           startAddon={<EngineSelect compact />}
           endAddon={<Kbd>/</Kbd>}
           aria-label={UI_LANGUAGE.search.label}

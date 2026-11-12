@@ -32,6 +32,7 @@ import { useEffect, useRef, type Ref, type SubmitEvent, type MouseEvent } from "
 import { stopInteraction } from "~shared/lib/event";
 import { notifyError } from "~shared/lib/notify-error";
 import { useLanguage } from "~shared/lib/preferences";
+import { inputFocusStyles } from "~shared/styles/input-focus";
 
 import { setFolderView, setFolderDisplay } from "../../settings/bookmark/model/settings";
 import { deleteFolder as deleteBookmarkFolder } from "../api/update";
@@ -172,7 +173,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
   }, [isEditing]);
 
   return (
-    <header {...stylex.props(styles.header, isEditing && editorStyles.group)}>
+    <header {...stylex.props(styles.header, isEditing && [editorStyles.group, inputFocusStyles.underline])}>
       {!isEditing ? (
         <DragHandle
           kind="folder"

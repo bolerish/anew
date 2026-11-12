@@ -10,6 +10,7 @@ import * as stylex from "@stylexjs/stylex";
 import { useId, type KeyboardEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 import { useLanguage } from "~shared/lib/preferences";
+import { inputFocusStyles } from "~shared/styles/input-focus";
 
 import { useBookmarkContext } from "../model/Provider";
 import type { useAddForm } from "../model/useAddForm";
@@ -71,6 +72,7 @@ export function AddForm({ form }: AddFormProps) {
       <CollapsiblePanel>
         <CollapsibleContent xstyle={styles.collapseContent}>
           <InputGroup
+            className={stylex.props(inputFocusStyles.underline).className}
             invalid={hasUrlError}
             xstyle={[editorStyles.group, editorStyles.inputGroup, hasUrlError && editorStyles.invalid]}
           >

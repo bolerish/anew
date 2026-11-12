@@ -26,6 +26,7 @@ import { useEffect, useId, useRef, type SubmitEvent, type MouseEvent } from "rea
 import { stopInteraction } from "~shared/lib/event";
 import { notifyError } from "~shared/lib/notify-error";
 import { useLanguage } from "~shared/lib/preferences";
+import { inputFocusStyles } from "~shared/styles/input-focus";
 
 import { moveItem as moveBookmarkItem } from "../api/move";
 import { deleteItem as deleteBookmarkItem } from "../api/update";
@@ -379,6 +380,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
         ) : null}
         {isEditing ? (
           <InputGroup
+            className={stylex.props(inputFocusStyles.underline).className}
             invalid={!isUrlValid}
             xstyle={[editorStyles.group, editorStyles.inputGroup, !isUrlValid && editorStyles.invalid]}
           >

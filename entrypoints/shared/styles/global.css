@@ -28,8 +28,12 @@ html[data-motion-reduced="true"] *::after {
 [data-bookmark-scroll] :focus-visible {
   scroll-margin-block: 2rem 5rem;
 }
+/* The editor's shared bottom border carries focus for its nested inputs. */
+[data-bookmark-draft] input:focus-visible {
+  outline-style: none;
+}
 @media (forced-colors: active) {
-  [data-bookmark-column] :focus-visible {
+  [data-bookmark-column] :focus-visible:not([data-bookmark-draft] input) {
     outline: 2px solid Highlight;
   }
 }

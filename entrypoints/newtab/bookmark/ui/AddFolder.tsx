@@ -9,6 +9,7 @@ import * as stylex from "@stylexjs/stylex";
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 import { useLanguage } from "~shared/lib/preferences";
+import { inputFocusStyles } from "~shared/styles/input-focus";
 
 import { isFolderDragData } from "../lib/dnd";
 import { useBookmarkContext } from "../model/Provider";
@@ -126,7 +127,7 @@ export function AddFolder({ alwaysVisible = false, index, parentId }: AddFolderP
         <CollapsiblePanel>
           <CollapsibleContent xstyle={styles.collapseContent}>
             <form
-              {...stylex.props(styles.form, editorStyles.group)}
+              {...stylex.props(styles.form, editorStyles.group, inputFocusStyles.underline)}
               ref={focus.formRef}
               data-bookmark-draft={form.isAdding ? "" : undefined}
               aria-busy={form.isSaving}

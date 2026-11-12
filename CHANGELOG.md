@@ -25,6 +25,9 @@ Released on 2026-09-15.
 
 ### Search and navigation
 
+<!-- prettier-ignore -->
+- Focused search and bookmark editors highlight only their bottom border, without
+    overlapping outlines or extra lines around individual fields.
 - Find bookmarks with search suggestions and choose Google, Bing, DuckDuckGo or Brave.
 - Navigate bookmarks with arrow keys, focus search with /, and enter editing with E. Escape leaves search focus and opens settings when idle. Editing restores focus, with improved screen-reader guidance.
 - Use browser back and forward navigation in settings detail screens and update history.
