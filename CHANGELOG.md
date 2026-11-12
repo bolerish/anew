@@ -7,6 +7,10 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Keep drag insertion lines steady when reordering bookmarks within a folder,
+    and avoid saving moves that leave an item in the same position.
+- Show resize lines while resizing or using keyboard focus, without showing
+    a line just from hovering between folders or columns.
 - Restore centered content and folder spacing, and align the add-bookmark icon
     and label with the bookmark rows.
 - Keep bookmark order consistent between the editing preview and saved folders

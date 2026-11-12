@@ -67,8 +67,12 @@ export function useDndMove({ folders, isSearchActive, onBookmarksChange }: UseDn
 
     if (item.id === target.item.id) return false;
 
+    const index = computeItemInsertIndex(folders, target.item, target.edge);
+    const sourceIndex = item.bookmarkIndex ?? getItemIndex(item);
+    if (item.parentId === target.item.parentId && (index === sourceIndex || index === sourceIndex + 1)) return false;
+
     await moveItem(item, {
-      index: computeItemInsertIndex(folders, target.item, target.edge),
+      index,
       parentId: target.item.parentId,
     });
     return true;

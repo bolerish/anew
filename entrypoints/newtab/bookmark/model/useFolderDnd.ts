@@ -94,6 +94,7 @@ export function useFolderDnd(folder: BookmarkFolder) {
             element: folderElement,
             dragHandle: handleElement,
             onDrag: updateSelfDrop,
+            onDropTargetChange: updateSelfDrop,
             getInitialData: () => ({ folder, kind: "folder" }),
             onGenerateDragPreview: () => flushSync(() => setIsFolderDragSource(true)),
             onDragStart: () => setIsFolderDragSource(true),

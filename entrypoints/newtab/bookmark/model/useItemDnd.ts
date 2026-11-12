@@ -83,6 +83,7 @@ export function useItemDnd({
             element: itemElement,
             dragHandle: handleElement,
             onDrag: updateSelfDrop,
+            onDropTargetChange: updateSelfDrop,
             getInitialData: () => ({ kind: "item", item }),
             onDragStart: () => {
               setIsDragSource(true);

@@ -1,5 +1,5 @@
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { colorVars, spacingVars, sizeVars, motionVars, typo } from "@bolerish/tokens/semantic.stylex";
+import { colorVars, spacingVars, sizeVars, typo } from "@bolerish/tokens/semantic.stylex";
 import { Accordion, AccordionContent, AccordionItem } from "@bolerish/ui/accordion";
 import { Button } from "@bolerish/ui/button";
 import { Item as BookmarkRow } from "@bolerish/ui/item";
@@ -97,13 +97,8 @@ const styles = stylex.create({
     position: "relative",
     marginInlineStart: 0,
     marginInlineEnd: spacingVars.space4,
-    overflow: "hidden",
     height: 0,
-    transitionProperty: "height",
-    transitionDuration: motionVars.durationFast,
-    transitionTimingFunction: motionVars.easingStandard,
   },
-  placeholderActive: { height: sizeVars.controlMd, backgroundColor: colorVars.bgSubtle },
   start: { position: "relative", marginBottom: `calc(${spacingVars.space3} * -1)`, height: spacingVars.space3 },
 });
 
@@ -246,10 +241,8 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
 
 function ItemDropPlaceholder({ isActive }: { isActive: boolean }) {
   return (
-    <div aria-hidden="true" {...stylex.props(styles.placeholder, isActive && styles.placeholderActive)}>
-      <div hidden={!isActive}>
-        <DropIndicator edge="before" placement="inside" />
-      </div>
+    <div aria-hidden="true" {...stylex.props(styles.placeholder)}>
+      {isActive ? <DropIndicator edge="before" placement="inside" /> : null}
     </div>
   );
 }

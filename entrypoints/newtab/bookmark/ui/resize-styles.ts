@@ -23,7 +23,6 @@ export const resizeStyles = stylex.create({
     backgroundRepeat: "no-repeat",
     color: {
       default: "transparent",
-      ":hover": colorVars.fgSecondary,
       ":active": colorVars.strokeFocus,
       ":focus-visible": colorVars.strokeFocus,
     },

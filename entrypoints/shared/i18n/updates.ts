@@ -5,6 +5,8 @@ export const updatesMessages = {
       {
         title: "북마크",
         items: [
+          "폴더 안에서 북마크 순서를 바꿀 때 삽입선과 항목 위치를 고정하고, 순서가 그대로인 이동은 저장하지 않습니다.",
+          "크기 조절선은 조절 중이거나 키보드로 포커스했을 때 표시됩니다. 폴더나 열 사이에 마우스를 올리는 것만으로는 선이 나타나지 않습니다.",
           "콘텐츠 가운데 정렬과 폴더 간격을 복원하고, 북마크 추가 버튼의 아이콘과 글자를 북마크 행에 맞춰 정렬했습니다.",
           "같은 폴더 안에서 항목을 아래로 옮길 때 편집 미리보기와 저장 후 순서가 일치하도록 수정했습니다.",
           "편집 저장 시 다른 탭에서 바꾼 관련 없는 설정을 보존하고, 여러 Min 탭의 동시 저장이 서로의 북마크 편집을 덮어쓰지 않도록 했습니다.",
@@ -68,6 +70,8 @@ export const updatesMessages = {
       {
         title: "Bookmarks",
         items: [
+          "Keep drag insertion lines steady when reordering bookmarks within a folder, and avoid saving moves that leave an item in the same position.",
+          "Show resize lines while resizing or using keyboard focus, without showing a line just from hovering between folders or columns.",
           "Restore centered content and folder spacing, and align the add-bookmark icon and label with the bookmark rows.",
           "Keep bookmark order consistent between the editing preview and saved folders when moving an item downward within the same folder.",
           "Preserve unrelated settings changed in another tab while saving edits, and prevent simultaneous Min saves from overwriting each other's bookmark edits.",
@@ -131,6 +135,8 @@ export const updatesMessages = {
       {
         title: "ブックマーク",
         items: [
+          "フォルダー内でブックマークの順序を変更するとき、挿入線と項目の位置を固定し、順序が変わらない移動は保存しません。",
+          "サイズ調整の線は、調整中またはキーボードでフォーカスしたときに表示されます。フォルダーや列の間にマウスを置くだけでは表示されません。",
           "コンテンツの中央配置とフォルダーの間隔を復元し、ブックマーク追加ボタンのアイコンと文字をブックマークの行に揃えました。",
           "同じフォルダー内で項目を下へ移動したとき、編集プレビューと保存後の順序が一致するよう修正しました。",
           "編集の保存時に別のタブで変更した無関係な設定を保持し、複数のMinタブの同時保存でブックマーク編集が上書きされないようにしました。",
@@ -192,6 +198,8 @@ export const updatesMessages = {
       {
         title: "Marcadores",
         items: [
+          "Las líneas de inserción permanecen estables al reordenar marcadores dentro de una carpeta. Los movimientos que no cambian el orden no se guardan.",
+          "Las líneas de tamaño aparecen al ajustar el tamaño o usar el foco del teclado, sin mostrarse solo por pasar el cursor entre carpetas o columnas.",
           "Se restauran el contenido centrado y el espaciado de las carpetas, y se alinean el icono y el texto del botón de añadir marcadores con las filas de marcadores.",
           "El orden de la vista previa coincide con el guardado al mover un elemento hacia abajo en la misma carpeta.",
           "Al guardar ediciones se conservan los ajustes no relacionados cambiados en otra pestaña, y los guardados simultáneos de Min no sobrescriben otras ediciones de marcadores.",
@@ -255,6 +263,8 @@ export const updatesMessages = {
       {
         title: "书签",
         items: [
+          "在文件夹内调整书签顺序时，插入线和条目位置保持稳定，不保存顺序未变的移动。",
+          "调整大小或使用键盘聚焦时才显示调整线，仅将鼠标悬停在文件夹或列之间不会显示线条。",
           "恢复内容居中和文件夹间距，并将添加书签按钮的图标和文字与书签行对齐。",
           "在同一文件夹内向下移动项目时，编辑预览与保存后的顺序保持一致。",
           "保存编辑时保留其他标签页修改的无关设置，并防止多个 Min 标签页同时保存时覆盖彼此的书签编辑。",

@@ -75,6 +75,47 @@ test("original position highlights only while the pointer is inside it", () => {
   expect(result.current.sort.isSelfDrop).toBe(false);
   move(50, 40);
   expect(result.current.sort.isSelfDrop).toBe(true);
+  act(() =>
+    source.onDropTargetChange?.({ location: { current: { input: { clientX: 50, clientY: 90 } } } } as Parameters<
+      NonNullable<typeof source.onDropTargetChange>
+    >[0]),
+  );
+  expect(result.current.sort.isSelfDrop).toBe(false);
+  move(50, 40);
   act(() => source.onDrop?.({} as Parameters<NonNullable<typeof source.onDrop>>[0]));
   expect(result.current.sort.isSelfDrop).toBe(false);
+});
+
+test("item self-drop feedback clears as soon as the pointer enters another target", () => {
+  const item = { id: "item", parentId: "folder", title: "Item", url: "https://example.com" };
+  const { result } = renderHook(() =>
+    useItemDnd({
+      item,
+      itemIndex: 0,
+      isActive: false,
+      isEditing: false,
+      onDropIndexChange: vi.fn<(index: number | null) => void>(),
+    }),
+  );
+  const element = document.createElement("div");
+  element.getBoundingClientRect = () => new DOMRect(10, 20, 100, 60);
+  act(() => {
+    result.current.setItemElement(element);
+    result.current.handleRef(document.createElement("button"));
+  });
+  const source = vi.mocked(draggable).mock.calls.at(-1)![0];
+  const inside = { location: { current: { input: { clientX: 50, clientY: 40 } } } } as Parameters<
+    NonNullable<typeof source.onDrag>
+  >[0];
+  const outside = { location: { current: { input: { clientX: 120, clientY: 40 } } } } as Parameters<
+    NonNullable<typeof source.onDropTargetChange>
+  >[0];
+  act(() => source.onDrag?.(inside));
+  expect(result.current.isSelfDrop).toBe(true);
+  act(() => source.onDropTargetChange?.(outside));
+  expect(result.current.isSelfDrop).toBe(false);
+  act(() => source.onDropTargetChange?.(inside));
+  expect(result.current.isSelfDrop).toBe(true);
+  act(() => source.onDrop?.(inside));
+  expect(result.current.isSelfDrop).toBe(false);
 });
