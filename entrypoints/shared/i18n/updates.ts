@@ -5,6 +5,10 @@ export const updatesMessages = {
       {
         title: "북마크",
         items: [
+          "같은 폴더 안에서 항목을 아래로 옮길 때 편집 미리보기와 저장 후 순서가 일치하도록 수정했습니다.",
+          "편집 저장 시 다른 탭에서 바꾼 관련 없는 설정을 보존하고, 여러 Min 탭의 동시 저장이 서로의 북마크 편집을 덮어쓰지 않도록 했습니다.",
+          "저장 일부가 실패한 뒤 다시 시도해도 이미 완료한 편집은 유지합니다.",
+          "파일·메일 링크 등 지원하는 주소 형식을 보존하고, 지원하지 않는 형식은 웹 주소로 바꾸는 대신 오류를 표시합니다.",
           "폴더를 여러 행과 열로 배치하고 열 너비와 폴더 높이를 조절할 수 있습니다. 조절 핸들을 두 번 클릭하면 기본 크기로 돌아갑니다.",
           "폴더마다 목록·그리드 보기, 아이콘, 제목과 도메인 표시를 선택할 수 있습니다. 그리드 아이콘과 항목 크기를 더 촘촘하게 조정했습니다.",
           "접은 폴더는 새로고침하거나 새 탭을 열어도 접힌 상태를 유지합니다. 북마크나 폴더를 제자리에 놓으면 순서가 바뀌지 않습니다.",
@@ -60,6 +64,10 @@ export const updatesMessages = {
       {
         title: "Bookmarks",
         items: [
+          "Keep bookmark order consistent between the editing preview and saved folders when moving an item downward within the same folder.",
+          "Preserve unrelated settings changed in another tab while saving edits, and prevent simultaneous Min saves from overwriting each other's bookmark edits.",
+          "Keep successful edits when retrying after a partial save failure.",
+          "Preserve supported address schemes, including file and mail links, and show an error for unsupported schemes instead of changing them into web addresses.",
           "Arrange folders in rows and resizable columns, resize folder heights, and double-click a resize handle to reset it.",
           "Choose list or grid view, icon style, titles and domain visibility for each folder. Grid tiles are more compact.",
           "Keep folders collapsed after reloading or opening a new tab. Dropping an item or folder onto itself keeps it in place.",
@@ -115,6 +123,10 @@ export const updatesMessages = {
       {
         title: "ブックマーク",
         items: [
+          "同じフォルダー内で項目を下へ移動したとき、編集プレビューと保存後の順序が一致するよう修正しました。",
+          "編集の保存時に別のタブで変更した無関係な設定を保持し、複数のMinタブの同時保存でブックマーク編集が上書きされないようにしました。",
+          "一部の保存に失敗して再試行しても、完了した編集は保持します。",
+          "ファイルやメールのリンクなど対応するアドレス形式を保持し、未対応の形式はWebアドレスに変換せずエラーを表示します。",
           "フォルダを複数の行と列に配置し、列幅とフォルダの高さを調整できます。ハンドルをダブルクリックするとサイズをリセットできます。",
           "フォルダごとにリスト・グリッド表示、アイコン、タイトル、ドメイン表示を選べます。グリッドのアイコンと項目をコンパクトにしました。",
           "再読み込みや新しいタブでもフォルダの折りたたみ状態を保持します。元の位置にドロップしても順序は変わりません。",
@@ -168,6 +180,10 @@ export const updatesMessages = {
       {
         title: "Marcadores",
         items: [
+          "El orden de la vista previa coincide con el guardado al mover un elemento hacia abajo en la misma carpeta.",
+          "Al guardar ediciones se conservan los ajustes no relacionados cambiados en otra pestaña, y los guardados simultáneos de Min no sobrescriben otras ediciones de marcadores.",
+          "Los cambios ya guardados se conservan al reintentar después de un fallo parcial.",
+          "Se conservan los formatos de dirección admitidos, incluidos los enlaces a archivos y correo. Los formatos no admitidos muestran un error en lugar de convertirse en direcciones web.",
           "Organiza carpetas en filas y columnas ajustables y cambia su altura. Haz doble clic en un control de tamaño para restablecerlo.",
           "Elige lista o cuadrícula, iconos, títulos y dominios por carpeta. Las tarjetas de la cuadrícula son más compactas.",
           "Las carpetas contraídas se mantienen así al recargar o abrir otra pestaña. Soltar un elemento sobre sí mismo conserva su posición.",
@@ -223,6 +239,10 @@ export const updatesMessages = {
       {
         title: "书签",
         items: [
+          "在同一文件夹内向下移动项目时，编辑预览与保存后的顺序保持一致。",
+          "保存编辑时保留其他标签页修改的无关设置，并防止多个 Min 标签页同时保存时覆盖彼此的书签编辑。",
+          "部分保存失败后重试时，保留已完成的编辑。",
+          "保留文件和邮件链接等受支持的地址格式；对不支持的格式显示错误，而不是将其改为网页地址。",
           "将文件夹排列为多行多列，并调整列宽和文件夹高度。双击调整手柄可恢复默认尺寸。",
           "为每个文件夹选择列表或网格视图、图标、标题和域名显示。网格图标和项目布局更加紧凑。",
           "刷新或打开新标签页后保留文件夹的折叠状态。将书签或文件夹放回原位不会改变顺序。",

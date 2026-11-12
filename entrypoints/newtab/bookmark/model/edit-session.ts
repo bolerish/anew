@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { browser } from "wxt/browser";
+import { withMinWriteLock } from "~shared/lib/write-lock";
 
 import type { BookmarkSettings } from "../../settings/bookmark/model/settings";
 import type { BookmarkTreeNode } from "./types";
@@ -103,7 +104,7 @@ function reindex(node: BookmarkTreeNode) {
 }
 export async function performBookmarkCommand(command: Command) {
   if (!state.active) {
-    await execute(command);
+    await withMinWriteLock(() => execute(command));
     return;
   }
   if (state.busy || state.failed) throw new Error("Finish saving before editing again.");
@@ -126,13 +127,16 @@ export async function performBookmarkCommand(command: Command) {
     else {
       const parent = find(draft.tree, node.parentId!);
       if (!parent?.children) throw new Error("Bookmark folder no longer exists.");
+      const sourceIndex = parent.children.findIndex((child) => child.id === node.id);
       parent.children = parent.children.filter((child) => child.id !== node.id);
       reindex(parent);
       if (command.type === "move") {
         const destination = find(draft.tree, command.input.parentId);
         if (!destination || destination.url || destination.id === node.id) throw new Error("Invalid destination.");
         destination.children ??= [];
-        destination.children.splice(command.input.index ?? destination.children.length, 0, node);
+        let index = command.input.index ?? destination.children.length;
+        if (destination.id === parent.id && command.input.index !== undefined && sourceIndex < index) index--;
+        destination.children.splice(index, 0, node);
         reindex(destination);
       }
     }
@@ -158,38 +162,42 @@ async function execute(command: Command) {
   else if (command.folder) await browser.bookmarks.removeTree(id);
   else await browser.bookmarks.remove(id);
 }
-export async function saveEditing(saveSettings: (settings: BookmarkSettings) => Promise<void>) {
+export async function saveEditing(saveSettings: (settings: BookmarkSettings, base: BookmarkSettings) => Promise<void>) {
   if (!state.active || state.busy) return;
   state = { ...state, busy: true };
   publish();
   try {
-    if (completed === 0 && fingerprint(await browser.bookmarks.getTree()) !== baseline)
-      throw new Error("Bookmarks changed outside this editor. Cancel and reopen editing.");
-    const draft = history[cursor];
-    // Browser bookmark APIs have no transaction: retain progress so a retry cannot duplicate successful operations.
-    while (completed < draft.commands.length) {
-      // oxlint-disable-next-line no-await-in-loop -- Later commands can reference IDs created by earlier commands.
-      await execute(draft.commands[completed]);
-      completed++;
-    }
-    const settings = structuredClone(draft.settings);
-    for (const [temporary, real] of createdIds) {
-      if (settings.folderDisplays?.[temporary]) {
-        settings.folderDisplays[real] = settings.folderDisplays[temporary];
-        delete settings.folderDisplays[temporary];
+    await withMinWriteLock(async () => {
+      if (fingerprint(await browser.bookmarks.getTree()) !== baseline)
+        throw new Error("Bookmarks changed outside this editor. Cancel and reopen editing.");
+      const draft = history[cursor];
+      // Browser bookmark APIs have no transaction: retain progress so a retry cannot duplicate successful operations.
+      while (completed < draft.commands.length) {
+        // oxlint-disable-next-line no-await-in-loop -- Later commands can reference IDs created by earlier commands.
+        await execute(draft.commands[completed]);
+        completed++;
+        const savedDraft = history.find((entry) => entry.commands.length === completed)!;
+        baseline = fingerprint(resolveCreatedNodes(savedDraft.tree));
       }
-      if (settings.folderViews[temporary]) {
-        settings.folderViews[real] = settings.folderViews[temporary];
-        delete settings.folderViews[temporary];
+      const settings = structuredClone(draft.settings);
+      for (const [temporary, real] of createdIds) {
+        if (settings.folderDisplays?.[temporary]) {
+          settings.folderDisplays[real] = settings.folderDisplays[temporary];
+          delete settings.folderDisplays[temporary];
+        }
+        if (settings.folderViews[temporary]) {
+          settings.folderViews[real] = settings.folderViews[temporary];
+          delete settings.folderViews[temporary];
+        }
+        for (const layout of Object.values(settings.layouts))
+          layout.columns = layout.columns.map((column) => column.map((id) => (id === temporary ? real : id)));
+        if (settings.layouts[temporary]) {
+          settings.layouts[real] = settings.layouts[temporary];
+          delete settings.layouts[temporary];
+        }
       }
-      for (const layout of Object.values(settings.layouts))
-        layout.columns = layout.columns.map((column) => column.map((id) => (id === temporary ? real : id)));
-      if (settings.layouts[temporary]) {
-        settings.layouts[real] = settings.layouts[temporary];
-        delete settings.layouts[temporary];
-      }
-    }
-    await saveSettings(settings);
+      await saveSettings(settings, history[0].settings);
+    });
     history = [];
     cursor = -1;
     state = { ...state, active: false, failed: false };
@@ -200,4 +208,13 @@ export async function saveEditing(saveSettings: (settings: BookmarkSettings) => 
     state = { ...state, busy: false };
     publish();
   }
+}
+
+function resolveCreatedNodes(tree: readonly BookmarkTreeNode[]): BookmarkTreeNode[] {
+  return tree.map((node) => ({
+    ...node,
+    id: createdIds.get(node.id) ?? node.id,
+    parentId: createdIds.get(node.parentId ?? "") ?? node.parentId,
+    ...(node.children ? { children: resolveCreatedNodes(node.children) } : {}),
+  }));
 }

@@ -1,4 +1,4 @@
-import { test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 import { browser, type Browser } from "wxt/browser";
 
 import type { BookmarkSettings } from "../../settings/bookmark/model/settings";
@@ -99,4 +99,46 @@ test("deferred edits, undo/redo, retry after partial save and external conflict"
   await session.performBookmarkCommand({ type: "update", id: "a", input: { title: "Normal mode" } });
   assert.equal(children()[0].title, "Normal mode", "Normal-mode changes apply immediately");
   assert.equal(session.getEditSession().active, false);
+});
+
+test("same-folder downward moves match Chrome's pre-removal insertion index", async () => {
+  const tree: BookmarkTreeNode[] = [
+    {
+      id: "1",
+      title: "Bar",
+      children: ["a", "b", "c"].map((id, index) => ({ id, index, parentId: "1", title: id, url: `https://${id}.com` })),
+    },
+  ];
+  vi.spyOn(browser.bookmarks, "getTree").mockImplementation(async () => structuredClone(tree));
+  await session.beginEditing({ folderViews: {}, layouts: {}, defaultView: "list", initialColumns: 1 });
+  await session.performBookmarkCommand({ type: "move", id: "a", input: { parentId: "1", index: 2 } });
+  expect(session.getEditSession().draft!.tree[0].children!.map((node) => node.id)).toEqual(["b", "a", "c"]);
+  session.undoEditing();
+  await session.performBookmarkCommand({ type: "move", id: "a", input: { parentId: "1", index: 3 } });
+  expect(session.getEditSession().draft!.tree[0].children!.map((node) => node.id)).toEqual(["b", "c", "a"]);
+  session.cancelEditing();
+});
+
+test("two tabs cannot both commit a draft based on the same bookmark tree", async () => {
+  const tree: BookmarkTreeNode[] = [
+    { id: "1", title: "Bar", children: [{ id: "a", parentId: "1", title: "Original", url: "https://example.com" }] },
+  ];
+  vi.spyOn(browser.bookmarks, "getTree").mockImplementation(async () => structuredClone(tree));
+  vi.spyOn(browser.bookmarks, "update").mockImplementation(async (_id, input) =>
+    Object.assign(tree[0].children![0], input),
+  );
+  vi.resetModules();
+  const secondTab = await import("./edit-session");
+  const settings: BookmarkSettings = { folderViews: {}, layouts: {}, defaultView: "list", initialColumns: 1 };
+  await session.beginEditing(settings);
+  await secondTab.beginEditing(settings);
+  await session.performBookmarkCommand({ type: "update", id: "a", input: { title: "First tab" } });
+  await secondTab.performBookmarkCommand({ type: "update", id: "a", input: { title: "Second tab" } });
+  const results = await Promise.allSettled([
+    session.saveEditing(async () => {}),
+    secondTab.saveEditing(async () => {}),
+  ]);
+  expect(results.map((result) => result.status)).toEqual(["fulfilled", "rejected"]);
+  expect(tree[0].children![0].title).toBe("First tab");
+  secondTab.cancelEditing();
 });

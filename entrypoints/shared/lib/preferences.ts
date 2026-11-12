@@ -6,6 +6,7 @@ import { notifyError } from "~shared/lib/notify-error";
 import { storage } from "#imports";
 
 import { getMessages } from "../i18n";
+import { updateStoredValue } from "./write-lock";
 
 export const languages = { ko: "한국어", en: "English", zh: "中文", ja: "日本語", es: "Español" };
 const MOTION_MODES = ["system", "on", "off"] as const;
@@ -69,7 +70,7 @@ export function sanitizePreferences(value: unknown): Preferences {
 
 export async function updatePreference<K extends keyof Preferences>(key: K, value: Preferences[K]) {
   try {
-    await preferenceStorage.setValue(sanitizePreferences({ ...(await preferenceStorage.getValue()), [key]: value }));
+    await updateStoredValue(preferenceStorage, (current) => sanitizePreferences({ ...current, [key]: value }));
   } catch (error) {
     await notifyError(error);
   }

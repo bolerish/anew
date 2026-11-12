@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import { useLanguage } from "~shared/lib/preferences";
 
-import { bookmarkSettingsStorage, type BookmarkSettings } from "../../settings/bookmark/model/settings";
+import { saveEditedBookmarkSettings, type BookmarkSettings } from "../../settings/bookmark/model/settings";
 import { useEditSession, beginEditing, saveEditing, cancelEditing } from "./edit-session";
 import { isKeyboardShortcutTarget } from "./useKeyboardNavigation";
 
@@ -105,7 +105,7 @@ export function useEditMode({
     try {
       setEditMessage("");
       restoreToolbarFocus();
-      await saveEditing((settings) => bookmarkSettingsStorage.setValue(settings));
+      await saveEditing(saveEditedBookmarkSettings);
       await loadBookmarks();
     } catch (error) {
       console.error("[bookmark] Could not save editing", error);

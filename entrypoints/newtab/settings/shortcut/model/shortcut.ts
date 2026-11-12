@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
+import { updateStoredValue } from "~shared/lib/write-lock";
 
 import { storage } from "#imports";
 
@@ -32,9 +33,7 @@ export async function updateShortcutSetting<SettingName extends keyof ShortcutSe
   value: ShortcutSettings[SettingName],
 ): Promise<void> {
   try {
-    const settings = await shortcutStorage.getValue();
-
-    await shortcutStorage.setValue(
+    await updateStoredValue(shortcutStorage, (settings) =>
       sanitizeShortcutSettings({
         ...settings,
         [settingName]: value,

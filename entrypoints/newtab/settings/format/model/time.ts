@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
+import { updateStoredValue } from "~shared/lib/write-lock";
 
 import { storage } from "#imports";
 
@@ -41,9 +42,7 @@ export async function updateTimeSetting<SettingName extends keyof TimeSettings>(
 
 export async function updateTimeSettings(patch: Partial<TimeSettings>): Promise<void> {
   try {
-    const settings = await timeStorage.getValue();
-
-    await timeStorage.setValue(
+    await updateStoredValue(timeStorage, (settings) =>
       sanitizeTimeSettings({
         ...settings,
         ...patch,

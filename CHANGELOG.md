@@ -6,6 +6,14 @@ Released on 2026-09-15.
 
 ### Bookmarks
 
+<!-- prettier-ignore -->
+- Keep bookmark order consistent between the editing preview and saved folders
+    when moving an item downward within the same folder.
+- Preserve unrelated settings changed in another tab while saving edits, and
+    prevent simultaneous Min saves from overwriting each other's bookmark edits.
+- Keep successful edits when retrying after a partial save failure.
+- Preserve supported address schemes, including file and mail links, and show an
+    error for unsupported schemes instead of changing them into web addresses.
 - Arrange folders in rows and resizable columns, resize folder heights, and double-click a resize handle to reset it.
 - Choose list or grid view, icon style, titles and domain visibility for each folder. Grid tiles are more compact.
 - Keep folders collapsed after reloading or opening a new tab. Dropping an item or folder onto itself keeps it in place.

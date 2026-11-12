@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { notifyError } from "~shared/lib/notify-error";
+import { updateStoredValue } from "~shared/lib/write-lock";
 
 import { storage } from "#imports";
 
@@ -53,9 +54,7 @@ export async function updateDateSetting<SettingName extends keyof DateSettings>(
   value: DateSettings[SettingName],
 ): Promise<void> {
   try {
-    const settings = await dateStorage.getValue();
-
-    await dateStorage.setValue(
+    await updateStoredValue(dateStorage, (settings) =>
       sanitizeDateSettings({
         ...settings,
         [settingName]: value,

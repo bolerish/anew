@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { bookmarkIconDisplayModeSchema } from "~shared/config/appearance";
 import { notifyError } from "~shared/lib/notify-error";
+import { updateStoredValue } from "~shared/lib/write-lock";
 
 import { storage } from "#imports";
 
@@ -109,35 +110,54 @@ export function sanitizeBookmarkSettings(value: unknown): BookmarkSettings {
 }
 
 export async function setFolderView(id: string, view: FolderView) {
-  try {
-    const current = sanitizeBookmarkSettings(
-      getEditSession().draft?.settings ?? (await bookmarkSettingsStorage.getValue()),
-    );
-    const next = { ...current, folderViews: { ...current.folderViews, [id]: view } };
-    if (!stageBookmarkSettings(next)) await bookmarkSettingsStorage.setValue(next);
-  } catch (error) {
-    await notifyError(error);
-  }
+  await updateBookmarkSettings((current) => ({ ...current, folderViews: { ...current.folderViews, [id]: view } }));
 }
 export async function setFolderDisplay(id: string, display: FolderDisplay) {
+  await updateBookmarkSettings((current) => ({
+    ...current,
+    folderDisplays: { ...current.folderDisplays, [id]: display },
+  }));
+}
+export async function saveColumnLayout(id: string, layout: ColumnLayout) {
+  await updateBookmarkSettings((current) => ({ ...current, layouts: { ...current.layouts, [id]: layout } }));
+}
+async function updateBookmarkSettings(update: (current: BookmarkSettings) => BookmarkSettings) {
   try {
-    const current = sanitizeBookmarkSettings(
-      getEditSession().draft?.settings ?? (await bookmarkSettingsStorage.getValue()),
+    const draft = getEditSession().draft;
+    if (draft && stageBookmarkSettings(sanitizeBookmarkSettings(update(draft.settings)))) return;
+    await updateStoredValue(bookmarkSettingsStorage, (current) =>
+      sanitizeBookmarkSettings(update(sanitizeBookmarkSettings(current))),
     );
-    const next = sanitizeBookmarkSettings({ ...current, folderDisplays: { ...current.folderDisplays, [id]: display } });
-    if (!stageBookmarkSettings(next)) await bookmarkSettingsStorage.setValue(next);
   } catch (error) {
     await notifyError(error);
   }
 }
-export async function saveColumnLayout(id: string, layout: ColumnLayout) {
-  try {
-    const current = sanitizeBookmarkSettings(
-      getEditSession().draft?.settings ?? (await bookmarkSettingsStorage.getValue()),
-    );
-    const next = { ...current, layouts: { ...current.layouts, [id]: layout } };
-    if (!stageBookmarkSettings(next)) await bookmarkSettingsStorage.setValue(next);
-  } catch (error) {
-    await notifyError(error);
+
+/** Merge only this editing session's changes; the caller holds the Min write lock. */
+export async function saveEditedBookmarkSettings(settings: BookmarkSettings, base: BookmarkSettings) {
+  const current = sanitizeBookmarkSettings(await bookmarkSettingsStorage.getValue());
+  current.folderViews = mergeEditedEntries(current.folderViews, base.folderViews, settings.folderViews);
+  current.folderDisplays = mergeEditedEntries(
+    current.folderDisplays ?? {},
+    base.folderDisplays ?? {},
+    settings.folderDisplays ?? {},
+  );
+  current.layouts = mergeEditedEntries(current.layouts, base.layouts, settings.layouts);
+  if (settings.defaultView !== base.defaultView) current.defaultView = settings.defaultView;
+  if (settings.initialColumns !== base.initialColumns) current.initialColumns = settings.initialColumns;
+  await bookmarkSettingsStorage.setValue(sanitizeBookmarkSettings(current));
+}
+
+function mergeEditedEntries<T>(
+  current: Record<string, T>,
+  before: Record<string, T>,
+  after: Record<string, T>,
+): Record<string, T> {
+  const merged = { ...current };
+  for (const id of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    if (JSON.stringify(before[id]) === JSON.stringify(after[id])) continue;
+    if (Object.hasOwn(after, id)) merged[id] = after[id];
+    else delete merged[id];
   }
+  return merged;
 }
