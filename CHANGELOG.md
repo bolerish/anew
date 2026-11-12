@@ -7,6 +7,8 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Spread grid tiles evenly across each folder while keeping sparse grids compact,
+    and add bookmarks from a matching plus tile with a readable input card.
 - Keep move and resize grips visible while editing, clarify the dragged source
     and insertion position, and show whether editing has unsaved changes.
 - Briefly highlight a newly added bookmark and slightly reduce the fixed gap

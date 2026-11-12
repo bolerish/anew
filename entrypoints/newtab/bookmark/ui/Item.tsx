@@ -40,6 +40,7 @@ import { editorStyles } from "./editor-styles";
 import { ItemIcon } from "./ItemIcon";
 import { rowStyles } from "./row-styles";
 import { SaveError } from "./SaveError";
+import { tileStyles } from "./tile-styles";
 
 const styles = stylex.create({
   menuIcon: { width: sizeVars.iconLg, height: sizeVars.iconLg },
@@ -55,30 +56,7 @@ const styles = stylex.create({
     insetInlineEnd: 0,
     zIndex: 1,
   },
-  tileView: {
-    paddingInline: 0,
-    paddingBlock: 0,
-    display: "flex",
-    flexDirection: "column",
-    height: "4.5rem",
-    minHeight: "4.5rem",
-    justifyContent: "center",
-  },
-  tileContent: { display: "flex", flexDirection: "column", alignItems: "center", gap: spacingVars.space1 },
   tileMarkerContent: { flexDirection: "row", justifyContent: "center" },
-  tileLabel: {
-    width: "fit-content",
-    maxWidth: "100%",
-    height: "2lh",
-    flexShrink: 0,
-    display: "-webkit-box",
-    WebkitBoxOrient: "vertical",
-    WebkitLineClamp: 2,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "normal",
-    overflowWrap: "anywhere",
-  },
   tileTitleArea: { width: "100%" },
   labelWithUrl: { display: "flex", alignItems: "baseline", gap: spacingVars.space1 },
   titleText: { overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 },
@@ -295,7 +273,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
             xstyle={[
               rowStyles.inset,
               styles.view,
-              displayMode === "icons" && styles.tileView,
+              displayMode === "icons" && tileStyles.view,
               isActive && styles.active,
               isRecentlyCreated && styles.created,
             ]}
@@ -313,7 +291,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                         {...stylex.props(
                           styles.linkArea,
                           displayMode !== "icons" && (showBookmarkIcon ? rowStyles.columns : styles.withoutIcon),
-                          displayMode === "icons" && styles.tileContent,
+                          displayMode === "icons" && tileStyles.content,
                           displayMode === "icons" && iconMarker && styles.tileMarkerContent,
                         )}
                       >
@@ -332,7 +310,7 @@ export function Item({ itemEntry, onDropIndexChange, showDropBefore, showDropAft
                               rowStyles.labelInset,
                               styles.link,
                               Boolean(domain) && styles.labelWithUrl,
-                              displayMode === "icons" && iconMode === "original" && styles.tileLabel,
+                              displayMode === "icons" && iconMode === "original" && tileStyles.label,
                               displayMode === "icons" && !iconMarker && styles.tileLink,
                             )}
                           >

@@ -25,6 +25,7 @@ import { FolderHeader } from "./FolderHeader";
 import { Item } from "./Item";
 import { resizeStyles } from "./resize-styles";
 import { rowStyles } from "./row-styles";
+import { tileStyles } from "./tile-styles";
 
 const styles = stylex.create({
   addLabel: {
@@ -61,8 +62,9 @@ const styles = stylex.create({
   },
   list: { paddingInlineStart: sizeVars.controlSm },
   iconGrid: {
-    gridTemplateColumns: "repeat(auto-fill, min(100%, 5rem))",
-    justifyContent: "start",
+    gridTemplateColumns:
+      "repeat(auto-fill, minmax(min(100%, max(5rem, calc(5rem * var(--mds-content-scale, 1)))), 1fr))",
+    "--bookmark-tile-height": "max(4.5rem, calc(4.5rem * var(--mds-content-scale, 1)))",
     gap: 0,
     paddingInline: sizeVars.controlXs,
   },
@@ -97,7 +99,13 @@ const styles = stylex.create({
     zIndex: 1,
   },
   items: { position: "relative", display: "grid", alignContent: "start", alignItems: "start" },
-  gridAdd: { marginTop: spacingVars.space2 },
+  gridAdd: { minWidth: 0 },
+  gridEditor: { gridColumn: "1 / -1", width: "100%", maxWidth: "24rem" },
+  gridAddContent: { width: "100%", fontWeight: typo.fontWeightRegular, lineHeight: typo.lineHeightNormal },
+  gridAddIcon: {
+    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+  },
   add: { marginInlineStart: sizeVars.controlSm, marginInlineEnd: spacingVars.space4 },
   placeholder: {
     position: "relative",
@@ -194,9 +202,40 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
                     </Fragment>
                   ))}
                   {view === "list" ? <ItemDropPlaceholder isActive={activeDropIndex === folder.items.length} /> : null}
+                  {view === "icons" && !isSearchActive ? (
+                    <div {...stylex.props(styles.gridAdd, addForm.isAddingBookmark && styles.gridEditor)}>
+                      {!addForm.isAddingBookmark ? (
+                        <Button
+                          xstyle={styles.fullWidth}
+                          style={{
+                            height: "var(--bookmark-tile-height)",
+                            minHeight: "var(--bookmark-tile-height)",
+                            borderWidth: 0,
+                            paddingInline: 0,
+                            paddingBlock: 0,
+                          }}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                          aria-label={UI_LANGUAGE.bookmark.addBookmark}
+                          title={UI_LANGUAGE.bookmark.addBookmark}
+                          data-add-bookmark={folder.id}
+                          onClick={addForm.toggleForm}
+                        >
+                          <span {...stylex.props(tileStyles.content, styles.addLabel, styles.gridAddContent)}>
+                            <PlusIcon aria-hidden="true" {...stylex.props(styles.gridAddIcon)} />
+                            {display.showTitle ? (
+                              <span {...stylex.props(tileStyles.label)}>{UI_LANGUAGE.bookmark.addBookmark}</span>
+                            ) : null}
+                          </span>
+                        </Button>
+                      ) : null}
+                      <AddForm form={addForm} view="icons" />
+                    </div>
+                  ) : null}
                 </div>
-                {!isSearchActive ? (
-                  <div {...stylex.props(styles.add, view === "icons" && styles.gridAdd)}>
+                {view === "list" && !isSearchActive ? (
+                  <div {...stylex.props(styles.add)}>
                     {!addForm.isAddingBookmark ? (
                       <BookmarkRow size="xs" xstyle={rowStyles.inset}>
                         <Button

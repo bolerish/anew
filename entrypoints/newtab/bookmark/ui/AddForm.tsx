@@ -1,4 +1,4 @@
-import { colorVars, spacingVars, sizeVars } from "@bolerish/tokens/semantic.stylex";
+import { colorVars, spacingVars, sizeVars, radiusVars } from "@bolerish/tokens/semantic.stylex";
 import { Button } from "@bolerish/ui/button";
 import { ButtonGroup } from "@bolerish/ui/button-group";
 import { Collapsible, CollapsibleContent, CollapsiblePanel } from "@bolerish/ui/collapsible";
@@ -23,6 +23,20 @@ const styles = stylex.create({
   icon: { width: sizeVars.iconMd, height: sizeVars.iconMd },
   input: { minWidth: 0, width: "100%", flexGrow: 1 },
   collapseContent: { padding: 0 },
+  tileGroup: {
+    marginBottom: 0,
+    borderWidth: sizeVars.stroke,
+    borderStyle: "solid",
+    borderColor: colorVars.strokeDefault,
+    borderTopColor: { default: colorVars.strokeDefault, ":focus-within": colorVars.strokeDefault },
+    borderInlineStartColor: { default: colorVars.strokeDefault, ":focus-within": colorVars.strokeDefault },
+    borderInlineEndColor: { default: colorVars.strokeDefault, ":focus-within": colorVars.strokeDefault },
+    borderRadius: radiusVars.sm,
+    backgroundColor: colorVars.bgSubtle,
+  },
+  tileForm: { gridTemplateColumns: "minmax(0,1fr)", padding: spacingVars.space2 },
+  tileIcon: { justifySelf: "center", height: sizeVars.controlMd },
+  tileActions: { justifySelf: "center" },
   withIcon: { gridTemplateColumns: "auto minmax(0,1fr) auto" },
   iconSlot: {
     display: "flex",
@@ -44,9 +58,10 @@ const styles = stylex.create({
 
 type AddFormProps = {
   form: ReturnType<typeof useAddForm>;
+  view?: "list" | "icons";
 };
 
-export function AddForm({ form }: AddFormProps) {
+export function AddForm({ form, view = "list" }: AddFormProps) {
   const UI_LANGUAGE = useLanguage();
   const { bookmarkIconMode: defaultIconMode, folderDisplays } = useBookmarkContext();
   const bookmarkIconMode = (form.parentId ? folderDisplays?.[form.parentId]?.icon : undefined) ?? defaultIconMode;
@@ -74,17 +89,22 @@ export function AddForm({ form }: AddFormProps) {
           <InputGroup
             className={stylex.props(inputFocusStyles.underline).className}
             invalid={hasUrlError}
-            xstyle={[editorStyles.group, editorStyles.inputGroup, hasUrlError && editorStyles.invalid]}
+            xstyle={[
+              editorStyles.group,
+              editorStyles.inputGroup,
+              view === "icons" && styles.tileGroup,
+              hasUrlError && editorStyles.invalid,
+            ]}
           >
             <form
-              {...stylex.props(styles.form, showIcon && styles.withIcon)}
+              {...stylex.props(styles.form, showIcon && styles.withIcon, view === "icons" && styles.tileForm)}
               ref={focus.formRef}
               data-bookmark-draft={form.isAddingBookmark ? "" : undefined}
               aria-busy={form.isSaving}
               onSubmit={form.handleSubmit}
             >
               {showIcon ? (
-                <div aria-hidden="true" {...stylex.props(styles.iconSlot)}>
+                <div aria-hidden="true" {...stylex.props(styles.iconSlot, view === "icons" && styles.tileIcon)}>
                   {bookmarkIconMode === "original" ? (
                     <GlobeIcon {...stylex.props(styles.icon)} />
                   ) : (
@@ -129,7 +149,7 @@ export function AddForm({ form }: AddFormProps) {
                   ) : null}
                 </Field>
               </div>
-              <ButtonGroup xstyle={editorStyles.actions}>
+              <ButtonGroup xstyle={[editorStyles.actions, view === "icons" && styles.tileActions]}>
                 <Button
                   aria-label={UI_LANGUAGE.bookmark.save}
                   disabled={!form.canSave}
