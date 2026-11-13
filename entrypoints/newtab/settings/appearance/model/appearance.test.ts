@@ -1,5 +1,6 @@
-import { test } from "vitest";
+import { test, expect } from "vitest";
 
+import { loadInitialAppearanceSettings } from "./init";
 import { sanitizeAppearanceSettings } from "./sanitize";
 import { appearanceStorage } from "./storage";
 import { updateAppearanceSetting, syncAppearanceStyles } from "./update";
@@ -29,18 +30,48 @@ test("legacy font migration, independent edits and CSS synchronization", async (
   assert.equal(sanitizeAppearanceSettings({ headingScale: 100 }).headingScale, 1.5);
   assert.equal(sanitizeAppearanceSettings({ fontScale: 0 }).fontScale, 0.75);
   assert.equal(sanitizeAppearanceSettings({}).headingScale, 1);
-
-  assert.equal(sanitizeAppearanceSettings({ fontFamily: "Legacy" }).headingFontFamily, "Legacy");
-  await updateAppearanceSetting("headingFontFamily", "Heading Font");
-  await updateAppearanceSetting("fontFamily", "Body Font");
-  assert.equal((await appearanceStorage.getValue()).headingFontFamily, "Heading Font");
-  assert.equal((await appearanceStorage.getValue()).fontFamily, "Body Font");
-  assert.equal(sanitizeAppearanceSettings({ fontFamily: "Body", headingFontFamily: "" }).headingFontFamily, "");
 });
 
 test("invalid persisted appearance values fall back safely", () => {
   assert.equal(sanitizeAppearanceSettings(null).fontScale, 1);
-  assert.equal(sanitizeAppearanceSettings("invalid").headingFontFamily, "");
+  assert.equal(sanitizeAppearanceSettings("invalid").fontFamily, "");
+});
+
+test.each([
+  [{ fontFamily: " Body Font ", headingFontFamily: "Heading Font" }, "Body Font"],
+  [{ fontFamily: " ", headingFontFamily: " 제목 글꼴 " }, "제목 글꼴"],
+  [{ fontFamily: null, headingFontFamily: "제목 글꼴" }, "제목 글꼴"],
+  [{ headingFontFamily: "Heading Font" }, "Heading Font"],
+  [{ fontFamily: "본문 글꼴", headingFontFamily: "" }, "본문 글꼴"],
+  [{ fontFamily: "", headingFontFamily: "" }, ""],
+])("font consolidation preserves the content choice with a heading fallback: %j", (stored, fontFamily) => {
+  const migrated = sanitizeAppearanceSettings({ ...stored, fontScale: 1.4, headingScale: 0.8 });
+  expect(migrated).toMatchObject({ fontFamily, fontScale: 1.4, headingScale: 0.8 });
+  expect(migrated).not.toHaveProperty("headingFontFamily");
+  expect(sanitizeAppearanceSettings(migrated)).toEqual(migrated);
+});
+
+test("startup migration, concurrent edits and clearing cannot revive a legacy heading font", async () => {
+  await appearanceStorage.setValue(
+    JSON.parse('{"fontFamily":" ","headingFontFamily":"맑은 고딕","fontScale":1.4,"headingScale":0.8}'),
+  );
+  await Promise.all([loadInitialAppearanceSettings(), updateAppearanceSetting("cornerRadius", 5)]);
+  expect(await appearanceStorage.getValue()).toMatchObject({
+    fontFamily: "맑은 고딕",
+    fontScale: 1.4,
+    headingScale: 0.8,
+    cornerRadius: 5,
+  });
+  expect(await appearanceStorage.getValue()).not.toHaveProperty("headingFontFamily");
+  for (const variable of ["--bolerish-font-body", "--bolerish-font-heading"]) {
+    expect(document.documentElement.style.getPropertyValue(variable)).toBe("맑은 고딕");
+  }
+  await updateAppearanceSetting("fontFamily", "");
+  await Promise.all([loadInitialAppearanceSettings(), loadInitialAppearanceSettings()]);
+  expect(await appearanceStorage.getValue()).toMatchObject({ fontFamily: "", fontScale: 1.4, headingScale: 0.8 });
+  for (const variable of ["--bolerish-font-body", "--bolerish-font-heading"]) {
+    expect(document.documentElement.style.getPropertyValue(variable)).toBe("system-ui");
+  }
 });
 
 test("legacy square and current dot settings both resolve to dot", () => {

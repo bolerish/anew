@@ -7,7 +7,6 @@ export const DEFAULT_APPEARANCE_SETTINGS = {
   bookmarkIconDisplayMode: "original",
   cornerRadius: CORNER_RADIUS.default,
   fontFamily: "",
-  headingFontFamily: "",
   fontScale: TEXT_SCALE.default,
   headingScale: TEXT_SCALE.default,
 } as const satisfies AppearanceSettings;

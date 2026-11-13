@@ -21,6 +21,16 @@ const radiusTheme = stylex.createTheme(radiusVars, {
   lg: "calc(var(--mds-corner-radius, 0px) * 2)",
   xl: "calc(var(--mds-corner-radius, 0px) * 8 / 3)",
 });
+const typographyTheme = stylex.createTheme(typo, {
+  fontFamily: "var(--bolerish-font-body, system-ui)",
+  fontFamilyBody: "var(--bolerish-font-body, system-ui)",
+  fontFamilyHeading: "var(--bolerish-font-heading, system-ui)",
+  fontSizeXs: "calc(0.75 * var(--bolerish-unit, 1rem) * var(--bolerish-density, 1) * var(--mds-content-scale, 1))",
+  fontSizeSm: "calc(0.875 * var(--bolerish-unit, 1rem) * var(--bolerish-density, 1) * var(--mds-content-scale, 1))",
+  fontSizeMd: "calc(1 * var(--bolerish-unit, 1rem) * var(--bolerish-density, 1) * var(--mds-content-scale, 1))",
+  fontSizeLg: "calc(1.125 * var(--bolerish-unit, 1rem) * var(--bolerish-density, 1) * var(--mds-content-scale, 1))",
+  fontSizeXl: "calc(1.5 * var(--bolerish-unit, 1rem) * var(--bolerish-density, 1) * var(--mds-content-scale, 1))",
+});
 const baseStyles = stylex.create({
   root: {
     "--min-page-background": colorVars.bgSurface,
@@ -117,6 +127,7 @@ function syncThemeStyles(theme: Theme, systemPrefersDark: boolean) {
         densityStyles.compact,
         radiusTheme,
         minSizeTheme,
+        typographyTheme,
         isDarkModeActive ? darkColorTheme : lightColorTheme,
         isDarkModeActive ? darkShadowTheme : lightShadowTheme,
       )

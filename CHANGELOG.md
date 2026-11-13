@@ -61,7 +61,12 @@ Released on 2026-09-15.
     layout, custom fonts, text scales, and corner settings.
 - Appearance changes also apply to other open Min tabs. A settings read failure
     no longer prevents the new tab page from opening or replaces saved settings.
-- Set heading and content fonts separately, adjust content width, and choose from five languages. Toggle folder dividers and keyboard shortcuts in Layout.
+- Choose one font for the entire page and adjust default text and heading sizes
+    independently. Existing text scales are preserved; your content font takes
+    priority when combining saved fonts, with the heading font used if it is blank.
+    Default text size also applies to inputs and settings items. Adjust content
+    width and choose from five languages. Toggle folder dividers and keyboard
+    shortcuts in Layout.
 - Keep the header right-aligned on mobile and the settings button on the right when shortcuts are hidden.
 - Choose whether to show the date and time and select their formats. Time options show examples, and custom date formats include examples and error guidance.
 - Choose light, dark, or system themes, and turn animations on, off, or follow system settings. Saved themes are applied before new-tab content loads.

@@ -20,8 +20,8 @@ import { FolderContents } from "./FolderContents";
 const styles = stylex.create({
   title: {
     color: colorVars.fgSecondary,
-    fontFamily: typo.fontFamilyBody,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontFamily: typo.fontFamilyHeading,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))`,
     lineHeight: typo.lineHeightNormal,
     overflow: "hidden",
     textOverflow: "ellipsis",

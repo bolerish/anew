@@ -14,12 +14,12 @@ const styles = stylex.create({
   },
   marker: {
     color: colorVars.fgSecondary,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontSize: typo.fontSizeSm,
   },
   fallback: {
     backgroundColor: colorVars.bgSubtle,
     borderRadius: radiusVars.sm,
-    fontSize: `calc(${typo.fontSizeXs} * var(--mds-content-scale, 1))`,
+    fontSize: typo.fontSizeXs,
   },
   image: {
     width: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,

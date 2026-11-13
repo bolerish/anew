@@ -61,8 +61,8 @@ const styles = stylex.create({
     alignItems: "center",
     gap: spacingVars.space2,
     color: colorVars.fgSecondary,
-    fontFamily: typo.fontFamilyBody,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontFamily: typo.fontFamilyHeading,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))`,
     fontWeight: typo.fontWeightRegular,
     lineHeight: typo.lineHeightNormal,
   },
@@ -89,8 +89,8 @@ const styles = stylex.create({
     paddingInline: spacingVars.space1,
     fontWeight: "inherit",
     color: colorVars.fgSecondary,
-    fontFamily: typo.fontFamilyBody,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontFamily: typo.fontFamilyHeading,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))`,
     lineHeight: typo.lineHeightNormal,
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -197,6 +197,7 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
               variant="inline"
               aria-label={UI_LANGUAGE.bookmark.folderName}
               xstyle={styles.input}
+              style={{ fontSize: typo.fontSizeSm }}
               ref={titleInputRef}
               value={editor.inlineTitle}
               onChange={(e) => editor.setInlineTitle(e.target.value)}

@@ -14,7 +14,6 @@ export const appearanceSchema = z.object({
     .transform((value) => clamp(value, CORNER_RADIUS.min, CORNER_RADIUS.max))
     .catch(DEFAULT_APPEARANCE_SETTINGS.cornerRadius),
   fontFamily: z.string().trim().catch(DEFAULT_APPEARANCE_SETTINGS.fontFamily),
-  headingFontFamily: z.string().trim().catch(DEFAULT_APPEARANCE_SETTINGS.fontFamily),
   fontScale: z
     .number()
     .transform((value) => clamp(value, TEXT_SCALE.min, TEXT_SCALE.max))
@@ -31,9 +30,11 @@ const legacyFontSizeSchema = z
 
 export function sanitizeAppearanceSettings(value: unknown): AppearanceSettings {
   const settings = storedAppearanceSchema.parse(value);
+  const bodyFont = appearanceSchema.shape.fontFamily.parse(settings.fontFamily);
+  const headingFont = appearanceSchema.shape.fontFamily.parse(settings.headingFontFamily);
   return appearanceSchema.parse({
     ...settings,
-    headingFontFamily: settings.headingFontFamily ?? settings.fontFamily,
+    fontFamily: bodyFont || headingFont,
     fontScale: migrateTextScale(settings.fontScale, settings.fontSize),
     headingScale: migrateTextScale(
       settings.headingScale,

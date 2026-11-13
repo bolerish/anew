@@ -124,7 +124,7 @@ const styles = stylex.create({
     maxWidth: "100%",
     minWidth: 0,
     color: colorVars.fgPrimary,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontSize: typo.fontSizeSm,
     fontWeight: typo.fontWeightRegular,
     lineHeight: typo.lineHeightNormal,
     textDecoration: "none",

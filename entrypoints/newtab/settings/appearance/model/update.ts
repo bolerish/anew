@@ -32,14 +32,9 @@ export function syncAppearanceStyles(settings: Partial<AppearanceSettings>): voi
   }
   if (settings.fontScale !== undefined) rootStyle.setProperty("--mds-content-scale", String(settings.fontScale));
   if (settings.headingScale !== undefined) rootStyle.setProperty("--mds-heading-scale", String(settings.headingScale));
-  if (settings.headingFontFamily !== undefined) {
-    if (settings.headingFontFamily.trim())
-      rootStyle.setProperty("--bolerish-font-heading", settings.headingFontFamily.trim());
-    else rootStyle.setProperty("--bolerish-font-heading", "system-ui");
-  }
   if (settings.fontFamily !== undefined) {
-    const fontFamily = settings.fontFamily.trim();
-    if (fontFamily) rootStyle.setProperty("--bolerish-font-body", fontFamily);
-    else rootStyle.setProperty("--bolerish-font-body", "system-ui");
+    const fontFamily = settings.fontFamily.trim() || "system-ui";
+    rootStyle.setProperty("--bolerish-font-body", fontFamily);
+    rootStyle.setProperty("--bolerish-font-heading", fontFamily);
   }
 }

@@ -3,7 +3,7 @@ import { Heading } from "@bolerish/ui/heading";
 import * as stylex from "@stylexjs/stylex";
 import type { ReactNode } from "react";
 const styles = stylex.create({
-  title: { fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))` },
+  title: { fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))` },
   root: { display: "grid", gap: spacingVars.space4 },
   header: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space3 },
 });

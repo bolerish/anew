@@ -31,7 +31,7 @@ const styles = stylex.create({
   addLabel: {
     width: "100%",
     color: colorVars.fgSecondary,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontSize: typo.fontSizeSm,
   },
   addText: { minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", textAlign: "start" },
   addIcon: {

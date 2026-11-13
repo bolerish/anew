@@ -17,6 +17,7 @@ body,
 body {
   background: inherit;
   color: inherit;
+  font-family: inherit;
 }
 html[data-motion-reduced="true"] *,
 html[data-motion-reduced="true"] *::before,

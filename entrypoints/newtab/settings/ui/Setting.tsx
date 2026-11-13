@@ -70,7 +70,7 @@ const styles = stylex.create({
     color: colorVars.fgPrimary,
     fontWeight: typo.fontWeightSemibold,
     fontFamily: typo.fontFamilyHeading,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))`,
   },
   current: {
     display: "inline-flex",
@@ -134,7 +134,7 @@ const styles = stylex.create({
     color: colorVars.fgSecondary,
     fontWeight: typo.fontWeightSemibold,
     fontFamily: typo.fontFamilyHeading,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))`,
     marginBottom: spacingVars.space2,
   },
   notes: {

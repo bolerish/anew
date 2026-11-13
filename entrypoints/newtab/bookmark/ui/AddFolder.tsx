@@ -41,7 +41,7 @@ const styles = stylex.create({
   },
   form: {
     fontFamily: typo.fontFamilyBody,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontSize: typo.fontSizeSm,
     display: "grid",
     gridTemplateColumns: "minmax(0,1fr) auto",
     alignItems: "center",

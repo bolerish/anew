@@ -1,5 +1,5 @@
 import { colorVars, spacingVars, typo } from "@bolerish/tokens/semantic.stylex";
-import { Field, FieldDescription, FieldLabel, FieldSet, FieldLegend } from "@bolerish/ui/field";
+import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSet, FieldLegend } from "@bolerish/ui/field";
 import { Input } from "@bolerish/ui/input";
 import { Slider } from "@bolerish/ui/slider";
 import * as stylex from "@stylexjs/stylex";
@@ -13,7 +13,7 @@ import { sanitizeAppearanceSettings } from "../model/sanitize";
 import { appearanceStorage } from "../model/storage";
 import { updateAppearanceSetting } from "../model/update";
 const styles = stylex.create({
-  hint: { color: colorVars.fgSecondary, fontSize: typo.fontSizeSm, margin: 0 },
+  legend: { fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))` },
   row: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacingVars.space2 },
   value: { color: colorVars.fgSecondary, fontSize: typo.fontSizeSm, fontVariantNumeric: "tabular-nums" },
 });
@@ -22,7 +22,13 @@ export function FontField() {
   const [placeholder, setPlaceholder] = useState("");
   const storedSettings = useStorageValue(appearanceStorage, getInitialAppearanceSettings);
   const settings = sanitizeAppearanceSettings(storedSettings);
+  const [fontFamily, setFontFamily] = useState(settings.fontFamily);
+  const [isEditing, setIsEditing] = useState(false);
   useEffect(() => {
+    if (!isEditing) setFontFamily(settings.fontFamily);
+  }, [isEditing, settings.fontFamily]);
+  useEffect(() => {
+    if (!browser.fontSettings) return;
     let active = true;
     void browser.fontSettings
       .getFont({ genericFamily: "standard" })
@@ -37,34 +43,30 @@ export function FontField() {
     };
   }, []);
   return (
-    <FieldSet>
-      {(["headingFontFamily", "fontFamily"] as const).map((setting) => (
-        <FieldSet key={setting}>
-          <FieldLegend>
-            {setting === "headingFontFamily" ? UI_LANGUAGE.settings.header : UI_LANGUAGE.settings.body}
-          </FieldLegend>
-          <Field>
-            <FieldLabel htmlFor={setting}>{UI_LANGUAGE.settings.font}</FieldLabel>
-            <FieldDescription>
-              {setting === "headingFontFamily"
-                ? UI_LANGUAGE.settings.headingFontDescription
-                : UI_LANGUAGE.settings.bodyFontDescription}
-            </FieldDescription>
-            <Input
-              id={setting}
-              aria-describedby="font-input-hint"
-              placeholder={placeholder}
-              value={settings[setting]}
-              onChange={(e) => void updateAppearanceSetting(setting, e.target.value)}
-            />
-          </Field>
-          <FontScaleField setting={setting === "headingFontFamily" ? "headingScale" : "fontScale"} />
-        </FieldSet>
-      ))}
-      <p id="font-input-hint" {...stylex.props(styles.hint)}>
-        {UI_LANGUAGE.settings.fontDescription}
-      </p>
-    </FieldSet>
+    <FieldGroup>
+      <Field>
+        <FieldLabel htmlFor="fontFamily">{UI_LANGUAGE.settings.font}</FieldLabel>
+        <FieldDescription id="font-scope-hint">{UI_LANGUAGE.settings.fontScopeDescription}</FieldDescription>
+        <Input
+          id="fontFamily"
+          aria-describedby="font-scope-hint font-input-hint"
+          placeholder={placeholder}
+          value={fontFamily}
+          onFocus={() => setIsEditing(true)}
+          onBlur={() => setIsEditing(false)}
+          onChange={(e) => {
+            setFontFamily(e.target.value);
+            void updateAppearanceSetting("fontFamily", e.target.value);
+          }}
+        />
+        <FieldDescription id="font-input-hint">{UI_LANGUAGE.settings.fontDescription}</FieldDescription>
+      </Field>
+      <FieldSet>
+        <FieldLegend xstyle={styles.legend}>{UI_LANGUAGE.settings.textSize}</FieldLegend>
+        <FontScaleField setting="fontScale" />
+        <FontScaleField setting="headingScale" />
+      </FieldSet>
+    </FieldGroup>
   );
 }
 
@@ -72,7 +74,7 @@ export function FontScaleField({ setting }: { setting: "fontScale" | "headingSca
   const UI_LANGUAGE = useLanguage();
   const settings = useStorageValue(appearanceStorage, getInitialAppearanceSettings);
   const scale = sanitizeAppearanceSettings(settings)[setting];
-  const label = UI_LANGUAGE.settings.textSize;
+  const label = setting === "fontScale" ? UI_LANGUAGE.settings.body : UI_LANGUAGE.settings.header;
   const description =
     setting === "fontScale" ? UI_LANGUAGE.settings.bodyDescription : UI_LANGUAGE.settings.headerDescription;
   return (

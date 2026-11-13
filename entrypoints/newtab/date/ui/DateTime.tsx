@@ -22,7 +22,7 @@ const styles = stylex.create({
     gap: spacingVars.space2,
     color: colorVars.fgSecondary,
     fontFamily: typo.fontFamilyHeading,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-heading-scale, 1))`,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1) * var(--mds-heading-scale, 1))`,
     lineHeight: typo.lineHeightNormal,
   },
 });

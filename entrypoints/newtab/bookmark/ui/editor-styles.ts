@@ -24,7 +24,7 @@ export const editorStyles = stylex.create({
   fields: {
     display: "grid",
     minWidth: 0,
-    fontSize: `calc(${typo.fontSizeSm} * var(--mds-content-scale, 1))`,
+    fontSize: typo.fontSizeSm,
     fontWeight: typo.fontWeightRegular,
     lineHeight: typo.lineHeightNormal,
   },
