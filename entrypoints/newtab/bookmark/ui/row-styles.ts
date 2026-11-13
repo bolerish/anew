@@ -2,7 +2,7 @@ import { sizeVars, spacingVars } from "@bolerish/tokens/semantic.stylex";
 import * as stylex from "@stylexjs/stylex";
 
 export const rowStyles = stylex.create({
-  inset: { borderWidth: 0, paddingInline: spacingVars.space2 },
+  inset: { borderWidth: 0, paddingInlineStart: spacingVars.space2, paddingInlineEnd: 0 },
   columns: {
     display: "grid",
     gridTemplateColumns: `calc(${sizeVars.controlSm} - ${spacingVars.space2}) minmax(0,1fr)`,

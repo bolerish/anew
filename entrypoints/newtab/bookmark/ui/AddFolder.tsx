@@ -26,7 +26,6 @@ const styles = stylex.create({
   root: {
     overflow: "clip",
     marginInlineStart: sizeVars.controlSm,
-    marginInlineEnd: spacingVars.space4,
     marginBlock: spacingVars.space0_5,
     height: sizeVars.controlSm,
     transitionProperty: "height, opacity",

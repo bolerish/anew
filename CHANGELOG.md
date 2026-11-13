@@ -7,6 +7,8 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Align folder headers and bookmark right edges, and highlight move and resize
+    handles without rectangular outlines or overlap with the add-folder control.
 - Spread grid tiles evenly across each folder while keeping sparse grids compact,
     and add bookmarks from a matching plus tile with a readable input card.
 - Keep move and resize grips visible while editing, clarify the dragged source

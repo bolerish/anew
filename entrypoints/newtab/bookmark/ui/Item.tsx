@@ -77,7 +77,7 @@ const styles = stylex.create({
     transitionProperty: "opacity",
     transitionDuration: motionVars.durationFast,
   },
-  root: { position: "relative", marginInlineStart: 0, marginInlineEnd: spacingVars.space4 },
+  root: { position: "relative", marginInlineStart: 0 },
   draggingContent: {
     opacity: 0.5,
     outlineStyle: "dashed",

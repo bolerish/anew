@@ -152,6 +152,7 @@ function ColumnRow({
             {position > 0 ? (
               <div
                 role="separator"
+                data-bookmark-resize="column"
                 aria-label={labels.resizeColumn}
                 aria-orientation="vertical"
                 aria-valuenow={Math.round((widths[index - 1] / (widths[index - 1] + widths[index])) * 100)}

@@ -32,8 +32,12 @@ const styles = stylex.create({
     color: colorVars.fgSecondary,
     cursor: "grab",
     borderRadius: radiusVars.sm,
+    outlineStyle: "none",
     ":active": { cursor: "grabbing" },
-    ":focus-visible": { outlineStyle: "solid", outlineColor: colorVars.strokeFocus, outlineWidth: sizeVars.focusRing },
+    ":focus-visible": {
+      backgroundColor: { default: colorVars.bgActionPrimary, "@media (forced-colors: active)": "Highlight" },
+      color: { default: colorVars.fgOnActionPrimary, "@media (forced-colors: active)": "HighlightText" },
+    },
   },
 });
 
@@ -79,6 +83,7 @@ export function DragHandle({
       )}
     >
       <button
+        data-bookmark-drag=""
         aria-label={label}
         aria-keyshortcuts={onMove ? "Alt+ArrowUp Alt+ArrowDown" : undefined}
         {...stylex.props(styles.handle, kind === "folder" && styles.folderHandle, floating && styles.compactHandle)}

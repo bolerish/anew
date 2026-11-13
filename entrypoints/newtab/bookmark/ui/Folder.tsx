@@ -66,7 +66,7 @@ const styles = stylex.create({
       "repeat(auto-fill, minmax(min(100%, max(5rem, calc(5rem * var(--mds-content-scale, 1)))), 1fr))",
     "--bookmark-tile-height": "max(4.5rem, calc(4.5rem * var(--mds-content-scale, 1)))",
     gap: 0,
-    paddingInline: sizeVars.controlXs,
+    paddingInlineStart: sizeVars.controlXs,
   },
   draggingContent: {
     opacity: 0.5,
@@ -82,7 +82,7 @@ const styles = stylex.create({
     borderBottomStyle: "solid",
     borderBottomColor: colorVars.strokeDefault,
   },
-  content: { padding: 0 },
+  content: { paddingBottom: spacingVars.space4, paddingInlineEnd: 0 },
   height: (value: number) => ({ minHeight: `${value}rem` }),
   heightTransition: {
     transition: "min-height 200ms ease",
@@ -92,7 +92,6 @@ const styles = stylex.create({
     position: "absolute",
     insetInline: 0,
     bottom: 0,
-    transform: "translateY(50%)",
     display: "block",
     width: "100%",
     height: spacingVars.space2,
@@ -106,11 +105,10 @@ const styles = stylex.create({
     width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
     height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
   },
-  add: { marginInlineStart: sizeVars.controlSm, marginInlineEnd: spacingVars.space4 },
+  add: { marginInlineStart: sizeVars.controlSm },
   placeholder: {
     position: "relative",
     marginInlineStart: 0,
-    marginInlineEnd: spacingVars.space4,
     height: 0,
   },
   start: { position: "relative", marginBottom: `calc(${spacingVars.space3} * -1)`, height: spacingVars.space3 },

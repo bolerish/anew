@@ -35,7 +35,7 @@ html[data-motion-reduced="true"] *::after {
   outline-style: none;
 }
 @media (forced-colors: active) {
-  [data-bookmark-column] :focus-visible:not([data-bookmark-draft] input) {
+  [data-bookmark-column] :focus-visible:not([data-bookmark-draft] input, [data-bookmark-drag], [data-bookmark-resize]) {
     outline: 2px solid Highlight;
   }
 }
