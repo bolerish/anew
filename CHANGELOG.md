@@ -7,6 +7,8 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Reveal hidden bookmark and folder move handles when hovering directly over
+    their position, so dragging can start without hovering the content first.
 - Align folder headers and bookmark right edges, and highlight move and resize
     handles without rectangular outlines or overlap with the add-folder control.
 - Spread grid tiles evenly across each folder while keeping sparse grids compact,
