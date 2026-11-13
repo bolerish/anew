@@ -51,6 +51,8 @@ Released on 2026-09-15.
 ### Settings
 
 <!-- prettier-ignore -->
+- Restore the white page background in light mode while preserving the dark
+    background and following system theme changes.
 - Shared controls now use bolerish's design system while keeping Min's compact
     layout, custom fonts, text scales, and corner settings.
 - Appearance changes also apply to other open Min tabs. A settings read failure

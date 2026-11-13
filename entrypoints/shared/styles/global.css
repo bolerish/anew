@@ -1,6 +1,8 @@
 html {
   --bolerish-font-body: system-ui;
   --bolerish-font-heading: system-ui;
+  /* Keep Min's page surface above the design system's layered canvas rule. */
+  background-color: var(--min-page-background);
 }
 html,
 body,

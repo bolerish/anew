@@ -43,6 +43,7 @@ export const updatesMessages = {
       {
         title: "설정",
         items: [
+          "라이트 모드의 흰색 페이지 배경을 복원했습니다. 다크 배경은 유지하며 시스템 테마 변경도 따릅니다.",
           "공통 UI를 bolerish 디자인 시스템으로 통합하면서 Min의 촘촘한 배치, 사용자 글꼴, 글자 배율과 모서리 설정을 유지했습니다.",
           "외형 변경이 열려 있는 다른 Min 탭에도 반영됩니다. 설정을 읽지 못해도 새 탭이 열리며, 저장한 설정을 기본값으로 덮어쓰지 않습니다.",
           "제목과 콘텐츠 글꼴을 따로 설정하고 콘텐츠 너비와 5개 표시 언어를 선택할 수 있습니다. 레이아웃에서 폴더 구분선과 단축키 표시를 켜고 끌 수 있습니다.",
@@ -111,6 +112,7 @@ export const updatesMessages = {
       {
         title: "Settings",
         items: [
+          "Restore the white page background in light mode while preserving the dark background and following system theme changes.",
           "Shared controls now use bolerish's design system while keeping Min's compact layout, custom fonts, text scales, and corner settings.",
           "Appearance changes also apply to other open Min tabs. A settings read failure no longer prevents the new tab page from opening or replaces saved settings.",
           "Set heading and content fonts separately, adjust content width, and choose from five languages. Toggle folder dividers and keyboard shortcuts in Layout.",
@@ -179,6 +181,7 @@ export const updatesMessages = {
       {
         title: "設定",
         items: [
+          "ライトモードの白いページ背景を復元しました。ダークモードの背景は維持し、システムのテーマ変更にも追従します。",
           "共通UIをbolerishのデザインシステムに統合し、Minのコンパクトな配置、カスタムフォント、文字倍率、角の設定を維持しました。",
           "外観の変更は開いている他のMinタブにも反映されます。設定の読み込みに失敗しても新しいタブは開き、保存済みの設定を初期値で上書きしません。",
           "見出しと本文のフォント、コンテンツ幅、5つの表示言語を設定できます。レイアウトでフォルダの区切り線とショートカット表示を切り替えられます。",
@@ -245,6 +248,7 @@ export const updatesMessages = {
       {
         title: "Ajustes",
         items: [
+          "Se restaura el fondo blanco de la página en modo claro, manteniendo el fondo oscuro y siguiendo los cambios del tema del sistema.",
           "Los controles compartidos usan el sistema de diseño de bolerish y mantienen la disposición compacta, las fuentes, la escala de texto y las esquinas de Min.",
           "Los cambios de apariencia también se aplican a otras pestañas de Min abiertas. Un fallo al leer ajustes no impide abrir la nueva pestaña ni reemplaza los ajustes guardados.",
           "Configura fuentes distintas para títulos y contenido, ajusta el ancho y elige entre cinco idiomas. Activa separadores y atajos en Diseño.",
@@ -311,6 +315,7 @@ export const updatesMessages = {
       {
         title: "设置",
         items: [
+          "恢复浅色模式下的白色页面背景，同时保留深色背景并跟随系统主题变化。",
           "通用控件已整合为 bolerish 设计系统，同时保留 Min 的紧凑布局、自定义字体、文字缩放和圆角设置。",
           "外观更改也会应用到其他已打开的 Min 标签页。读取设置失败时仍可打开新标签页，也不会覆盖已保存的设置。",
           "分别设置标题和正文的字体，调整内容宽度，并从五种界面语言中选择。在布局中切换文件夹分隔线和快捷键显示。",

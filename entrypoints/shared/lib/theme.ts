@@ -23,11 +23,12 @@ const radiusTheme = stylex.createTheme(radiusVars, {
 });
 const baseStyles = stylex.create({
   root: {
-    backgroundColor: colorVars.bgSurface,
+    "--min-page-background": colorVars.bgSurface,
     color: colorVars.fgPrimary,
     fontFamily: typo.fontFamilyBody,
     lineHeight: typo.lineHeightNormal,
   },
+  dark: { "--min-page-background": colorVars.bgCanvas },
 });
 
 export const themeSchema = z.enum(["dark", "light", "system"]);
@@ -112,6 +113,7 @@ function syncThemeStyles(theme: Theme, systemPrefersDark: boolean) {
     stylex
       .props(
         baseStyles.root,
+        isDarkModeActive && baseStyles.dark,
         densityStyles.compact,
         radiusTheme,
         minSizeTheme,
