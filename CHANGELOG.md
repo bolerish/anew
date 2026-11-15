@@ -7,6 +7,8 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Show selected folder options with a checkmark on the right, keeping icon
+    previews and labels together on the left.
 - Reveal hidden bookmark and folder move handles when hovering directly over
     their position, so dragging can start without hovering the content first.
 - Align folder headers and bookmark right edges, and highlight move and resize

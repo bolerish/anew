@@ -28,7 +28,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react";
 import * as stylex from "@stylexjs/stylex";
-import { useEffect, useRef, type Ref, type SubmitEvent, type MouseEvent } from "react";
+import { useEffect, useRef, type ComponentProps, type Ref, type SubmitEvent, type MouseEvent } from "react";
 import { stopInteraction } from "~shared/lib/event";
 import { notifyError } from "~shared/lib/notify-error";
 import { useLanguage } from "~shared/lib/preferences";
@@ -47,6 +47,19 @@ const styles = stylex.create({
   icon: { width: sizeVars.iconMd, height: sizeVars.iconMd },
   dotPreview: { transform: "scale(0.25)" },
   menuIcon: { width: sizeVars.iconLg, height: sizeVars.iconLg },
+  menuPreview: {
+    position: "absolute",
+    insetInlineStart: spacingVars.space2,
+    width: sizeVars.iconMd,
+    height: sizeVars.iconMd,
+  },
+  menuCheck: {
+    marginInlineStart: "auto",
+    flexShrink: 0,
+    width: sizeVars.iconMd,
+    height: sizeVars.iconMd,
+  },
+  menuCheckHidden: { visibility: "hidden" },
   actions: {
     alignSelf: "center",
     display: "flex",
@@ -284,14 +297,14 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                   }}
                 >
                   <DropdownMenuLabel>{UI_LANGUAGE.settings.viewOptions}</DropdownMenuLabel>
-                  <DropdownMenuRadioItem value="list">
-                    <ListIcon aria-hidden="true" />
+                  <FolderMenuRadioItem value="list">
+                    <ListIcon aria-hidden="true" {...stylex.props(styles.menuPreview)} />
                     {UI_LANGUAGE.settings.listView}
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="icons" disabled={display.icon !== "original"}>
-                    <SquaresFourIcon aria-hidden="true" />
+                  </FolderMenuRadioItem>
+                  <FolderMenuRadioItem value="icons" disabled={display.icon !== "original"}>
+                    <SquaresFourIcon aria-hidden="true" {...stylex.props(styles.menuPreview)} />
                     {UI_LANGUAGE.settings.iconView}
-                  </DropdownMenuRadioItem>
+                  </FolderMenuRadioItem>
                 </DropdownMenuRadioGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
@@ -310,16 +323,16 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                       ["none", UI_LANGUAGE.settings.none, null],
                     ] as const
                   ).map(([value, label, Icon]) => (
-                    <DropdownMenuRadioItem key={value} value={value}>
+                    <FolderMenuRadioItem key={value} value={value}>
                       {Icon ? (
                         <Icon
                           aria-hidden="true"
                           weight={value === "dot" ? "fill" : "regular"}
-                          {...stylex.props(value === "dot" && styles.dotPreview)}
+                          {...stylex.props(styles.menuPreview, value === "dot" && styles.dotPreview)}
                         />
                       ) : null}
                       {label}
-                    </DropdownMenuRadioItem>
+                    </FolderMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
                 {view === "icons" ? (
@@ -327,12 +340,12 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>{UI_LANGUAGE.settings.displayOptions}</DropdownMenuLabel>
-                      <DropdownMenuCheckboxItem
+                      <FolderMenuCheckboxItem
                         checked={display.showTitle}
                         onCheckedChange={(showTitle) => void setFolderDisplay(folder.id, { ...display, showTitle })}
                       >
                         {UI_LANGUAGE.settings.showTitle}
-                      </DropdownMenuCheckboxItem>
+                      </FolderMenuCheckboxItem>
                     </DropdownMenuGroup>
                   </>
                 ) : null}
@@ -341,12 +354,12 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>{UI_LANGUAGE.settings.displayOptions}</DropdownMenuLabel>
-                      <DropdownMenuCheckboxItem
+                      <FolderMenuCheckboxItem
                         checked={display.showUrl ?? false}
                         onCheckedChange={(showUrl) => void setFolderDisplay(folder.id, { ...display, showUrl })}
                       >
                         {UI_LANGUAGE.settings.showUrl}
-                      </DropdownMenuCheckboxItem>
+                      </FolderMenuCheckboxItem>
                     </DropdownMenuGroup>
                   </>
                 ) : null}
@@ -365,5 +378,38 @@ export function FolderHeader({ folder, handleRef, isDragging, onMove }: FolderHe
         </>
       )}
     </header>
+  );
+}
+
+// Replace the DS's fixed left indicator through its public render API,
+// retaining its styles, interaction handlers, ref and accessibility attributes.
+function FolderMenuRadioItem({ children, ...props }: Omit<ComponentProps<typeof DropdownMenuRadioItem>, "render">) {
+  return (
+    <DropdownMenuRadioItem
+      {...props}
+      render={(itemProps, { checked }) => (
+        <div {...itemProps}>
+          {children}
+          <CheckIcon aria-hidden="true" {...stylex.props(styles.menuCheck, !checked && styles.menuCheckHidden)} />
+        </div>
+      )}
+    />
+  );
+}
+
+function FolderMenuCheckboxItem({
+  children,
+  ...props
+}: Omit<ComponentProps<typeof DropdownMenuCheckboxItem>, "render">) {
+  return (
+    <DropdownMenuCheckboxItem
+      {...props}
+      render={(itemProps, { checked }) => (
+        <div {...itemProps}>
+          {children}
+          <CheckIcon aria-hidden="true" {...stylex.props(styles.menuCheck, !checked && styles.menuCheckHidden)} />
+        </div>
+      )}
+    />
   );
 }
