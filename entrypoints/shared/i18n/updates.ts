@@ -5,6 +5,7 @@ export const updatesMessages = {
       {
         title: "북마크",
         items: [
+          "글자 크기를 바꿔도 북마크 아이콘, 격자 너비와 간격을 유지합니다. 타일은 커진 글자가 들어가는 데 필요한 만큼만 높아지고, 사용자 지정 폴더 높이는 보존합니다.",
           "폴더 메뉴의 선택 체크를 오른쪽에 표시하고, 왼쪽에는 아이콘 미리보기와 이름을 나란히 배치했습니다.",
           "숨겨진 북마크·폴더 이동 손잡이 위치에 바로 마우스를 올려도 손잡이가 나타나 드래그를 시작할 수 있습니다.",
           "폴더 헤더와 북마크의 오른쪽 끝을 맞췄습니다. 이동·크기 조절 손잡이는 사각 테두리 없이 강조하고 폴더 추가 영역과 겹치지 않도록 했습니다.",
@@ -77,6 +78,7 @@ export const updatesMessages = {
       {
         title: "Bookmarks",
         items: [
+          "Changing text size keeps bookmark icons, grid widths, and spacing stable. Tiles grow only as needed to fit larger text, preserving custom folder heights.",
           "Show selected folder options with a checkmark on the right, keeping icon previews and labels together on the left.",
           "Reveal hidden bookmark and folder move handles when hovering directly over their position, so dragging can start without hovering the content first.",
           "Align folder headers and bookmark right edges, and highlight move and resize handles without rectangular outlines or overlap with the add-folder control.",
@@ -149,6 +151,7 @@ export const updatesMessages = {
       {
         title: "ブックマーク",
         items: [
+          "文字サイズを変更しても、ブックマークのアイコン、グリッドの幅と間隔を維持します。タイルは大きな文字に必要な分だけ高くなり、設定したフォルダーの高さは保持されます。",
           "フォルダメニューの選択チェックを右側に表示し、左側にはアイコンのプレビューと名前を並べました。",
           "非表示のブックマーク・フォルダー移動ハンドルの位置に直接マウスを置くと、ハンドルが表示されてドラッグを開始できます。",
           "フォルダーヘッダーとブックマークの右端を揃えました。移動・サイズ変更ハンドルは四角い枠線なしで強調し、フォルダー追加領域と重ならないようにしました。",
@@ -219,6 +222,7 @@ export const updatesMessages = {
       {
         title: "Marcadores",
         items: [
+          "Al cambiar el tamaño del texto se mantienen los iconos, el ancho de la cuadrícula y el espaciado. Las tarjetas solo crecen lo necesario para el texto más grande y se conservan las alturas de carpeta configuradas.",
           "Las opciones seleccionadas de la carpeta muestran una marca a la derecha, con la vista previa del icono y el nombre a la izquierda.",
           "Los controles ocultos para mover marcadores y carpetas aparecen al pasar el cursor directamente por su posición, sin tener que pasar antes por el contenido.",
           "Se alinean los bordes derechos de las cabeceras de carpeta y los marcadores. Los controles de movimiento y tamaño se resaltan sin contornos rectangulares ni superponerse al control para añadir carpetas.",
@@ -291,6 +295,7 @@ export const updatesMessages = {
       {
         title: "书签",
         items: [
+          "更改文字大小时，书签图标、网格宽度和间距保持不变。卡片仅在容纳较大文字时增加必要的高度，并保留自定义文件夹高度。",
           "文件夹菜单在右侧显示选中标记，左侧并排显示图标预览和名称。",
           "将鼠标直接移到隐藏的书签或文件夹移动手柄位置，即可显示手柄并开始拖动，无需先悬停内容。",
           "对齐文件夹标题与书签的右边缘。移动和调整大小的手柄不再显示矩形轮廓，并且不会与添加文件夹区域重叠。",

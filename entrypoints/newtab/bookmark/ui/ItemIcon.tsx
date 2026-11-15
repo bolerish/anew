@@ -9,26 +9,26 @@ import { rowStyles } from "./row-styles";
 
 const styles = stylex.create({
   dot: {
-    width: `calc(${spacingVars.space1} * var(--mds-content-scale, 1))`,
-    height: `calc(${spacingVars.space1} * var(--mds-content-scale, 1))`,
+    width: spacingVars.space1,
+    height: spacingVars.space1,
   },
   marker: {
     color: colorVars.fgSecondary,
-    fontSize: typo.fontSizeSm,
+    fontSize: `calc(${typo.fontSizeSm} / var(--mds-content-scale, 1))`,
   },
   fallback: {
     backgroundColor: colorVars.bgSubtle,
     borderRadius: radiusVars.sm,
-    fontSize: typo.fontSizeXs,
+    fontSize: `calc(${typo.fontSizeXs} / var(--mds-content-scale, 1))`,
   },
   image: {
-    width: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
-    height: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
+    width: sizeVars.iconMd,
+    height: sizeVars.iconMd,
     objectFit: "contain",
   },
   gridIcon: {
-    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
-    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+    width: sizeVars.iconLg,
+    height: sizeVars.iconLg,
   },
   invert: { filter: "invert(1)" },
   dim: { filter: "brightness(0.9)" },

@@ -7,7 +7,7 @@ export const tileStyles = stylex.create({
     paddingBlock: 0,
     display: "flex",
     flexDirection: "column",
-    height: "var(--bookmark-tile-height)",
+    height: "auto",
     minHeight: "var(--bookmark-tile-height)",
     justifyContent: "center",
   },

@@ -35,8 +35,8 @@ const styles = stylex.create({
   },
   addText: { minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", textAlign: "start" },
   addIcon: {
-    width: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
-    height: `calc(${sizeVars.iconMd} * var(--mds-content-scale, 1))`,
+    width: sizeVars.iconMd,
+    height: sizeVars.iconMd,
   },
   fullWidth: { width: "100%" },
   root: {
@@ -62,9 +62,8 @@ const styles = stylex.create({
   },
   list: { paddingInlineStart: sizeVars.controlSm },
   iconGrid: {
-    gridTemplateColumns:
-      "repeat(auto-fill, minmax(min(100%, max(5rem, calc(5rem * var(--mds-content-scale, 1)))), 1fr))",
-    "--bookmark-tile-height": "max(4.5rem, calc(4.5rem * var(--mds-content-scale, 1)))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 5rem), 1fr))",
+    "--bookmark-tile-height": "4.5rem",
     gap: 0,
     paddingInlineStart: sizeVars.controlXs,
   },
@@ -102,8 +101,8 @@ const styles = stylex.create({
   gridEditor: { gridColumn: "1 / -1", width: "100%", maxWidth: "24rem" },
   gridAddContent: { width: "100%", fontWeight: typo.fontWeightRegular, lineHeight: typo.lineHeightNormal },
   gridAddIcon: {
-    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
-    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+    width: sizeVars.iconLg,
+    height: sizeVars.iconLg,
   },
   add: { marginInlineStart: sizeVars.controlSm },
   placeholder: {
@@ -206,7 +205,7 @@ export function Folder({ folder, parentId, onMove }: FolderProps) {
                         <Button
                           xstyle={styles.fullWidth}
                           style={{
-                            height: "var(--bookmark-tile-height)",
+                            height: "auto",
                             minHeight: "var(--bookmark-tile-height)",
                             borderWidth: 0,
                             paddingInline: 0,

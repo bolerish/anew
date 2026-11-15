@@ -7,6 +7,8 @@ Released on 2026-09-15.
 ### Bookmarks
 
 <!-- prettier-ignore -->
+- Changing text size keeps bookmark icons, grid widths, and spacing stable.
+    Tiles grow only as needed to fit larger text, preserving custom folder heights.
 - Show selected folder options with a checkmark on the right, keeping icon
     previews and labels together on the left.
 - Reveal hidden bookmark and folder move handles when hovering directly over

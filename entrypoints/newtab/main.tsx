@@ -1,3 +1,4 @@
+import { IconContext } from "@phosphor-icons/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "@bolerish/ui/global.css";
@@ -14,6 +15,8 @@ import { loadInitialBookmarkSettings } from "./settings/bookmark/model/settings"
 import { loadInitialDateSettings, loadInitialTimeSettings } from "./settings/format";
 import { loadInitialShortcutSettings } from "./settings/shortcut";
 
+const iconDefaults = { size: "1em", style: { fontSize: "calc(1em / var(--mds-content-scale, 1))" } };
+
 async function main() {
   await Promise.allSettled([
     initializeTheme(),
@@ -29,7 +32,9 @@ async function main() {
   ]);
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-      <App />
+      <IconContext.Provider value={iconDefaults}>
+        <App />
+      </IconContext.Provider>
     </React.StrictMode>,
   );
 }

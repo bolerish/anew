@@ -11,8 +11,8 @@ export const rowStyles = stylex.create({
     minWidth: 0,
   },
   iconSlot: {
-    width: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
-    height: `calc(${sizeVars.iconLg} * var(--mds-content-scale, 1))`,
+    width: sizeVars.iconLg,
+    height: sizeVars.iconLg,
     display: "grid",
     placeItems: "center",
     flexShrink: 0,
