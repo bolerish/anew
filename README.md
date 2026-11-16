@@ -2,9 +2,9 @@
 
 ![Logo](./public/logo.png)
 
-Anew is a minimal new tab page for Chrome bookmarks.
+Anew is a customizable new tab page for Chrome bookmarks.
 
-Search, open, and organize your bookmarks in a simple new tab page.
+Find and open bookmarks, organize folders, and adjust the layout to suit you.
 
 ## Features
 

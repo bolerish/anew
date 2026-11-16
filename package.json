@@ -2,7 +2,7 @@
   "name": "anew",
   "version": "1.2.1",
   "private": true,
-  "description": "Search, open, and organize your bookmarks in a simple new tab page.",
+  "description": "Find, open, and organize your bookmarks in a customizable new tab page.",
   "type": "module",
   "scripts": {
     "dev": "wxt",
