@@ -12,7 +12,7 @@ export const updatesMessages = {
     latest: "최신",
     currentSections: [
       {
-        title: "달라진 점",
+        title: "",
         items: [
           "폴더 배치와 크기, 북마크 순서와 표시 방식을 바꿀 수 있어요. 접은 폴더는 다음에도 접힌 상태로 열려요.",
           "북마크를 편집하면서 실행 취소와 다시 실행을 사용할 수 있어요. 중복 주소와 저장 오류도 안내해요.",
@@ -23,10 +23,9 @@ export const updatesMessages = {
       },
     ],
     releasedItems: [
-      "설정을 드롭다운 메뉴에서 왼쪽 사이드바로 옮겼습니다.",
-      "북마크를 드래그하면 주변 항목이 움직여 놓일 위치를 미리 보여줍니다.",
-      "북마크 폴더를 접거나 펼칠 수 있습니다.",
-      "북마크를 저장할 때 하위 폴더도 선택할 수 있습니다.",
+      "설정을 왼쪽 사이드바에서 확인할 수 있어요.",
+      "북마크를 드래그하면 놓일 위치를 미리 볼 수 있어요.",
+      "폴더를 접거나 펼치고, 하위 폴더에도 북마크를 저장할 수 있어요.",
     ],
     updated: "업데이트했어요",
     viewUpdates: "업데이트 기록 보기",
@@ -44,7 +43,7 @@ export const updatesMessages = {
     latest: "Latest",
     currentSections: [
       {
-        title: "What’s new",
+        title: "",
         items: [
           "Customize folder positions and sizes, bookmark order, and display options. Collapsed folders stay collapsed when you return.",
           "Undo and redo bookmark edits, with guidance for duplicate addresses and save errors.",
@@ -55,10 +54,9 @@ export const updatesMessages = {
       },
     ],
     releasedItems: [
-      "Settings moved from a dropdown to a left sidebar.",
-      "Dragging a bookmark previews its position by moving nearby bookmarks.",
-      "Bookmark folders can expand and collapse.",
-      "Choose nested folders when saving a bookmark.",
+      "Find settings in the left sidebar.",
+      "Preview where a bookmark will go as you drag it.",
+      "Expand or collapse folders and save bookmarks in nested folders.",
     ],
     updated: "Updated",
     viewUpdates: "View update history",
@@ -76,7 +74,7 @@ export const updatesMessages = {
     latest: "最新",
     currentSections: [
       {
-        title: "主な変更",
+        title: "",
         items: [
           "フォルダの配置やサイズ、ブックマークの順序と表示を変更できます。折りたたんだ状態も保持されます。",
           "ブックマークの編集を元に戻したり、やり直したりできます。重複するアドレスや保存エラーも案内します。",
@@ -87,10 +85,9 @@ export const updatesMessages = {
       },
     ],
     releasedItems: [
-      "設定をドロップダウンから左サイドバーに移しました。",
-      "ドラッグ中に周囲のブックマークが動き、移動先を示します。",
-      "ブックマークフォルダを開閉できるようになりました。",
-      "保存先として子フォルダも選べるようになりました。",
+      "左サイドバーから設定を開けます。",
+      "ブックマークをドラッグすると、移動先を確認できます。",
+      "フォルダの開閉と、子フォルダへのブックマーク保存に対応しました。",
     ],
     updated: "アップデートしました",
     viewUpdates: "更新履歴を見る",
@@ -108,7 +105,7 @@ export const updatesMessages = {
     latest: "Más reciente",
     currentSections: [
       {
-        title: "Novedades",
+        title: "",
         items: [
           "Personaliza la posición y el tamaño de las carpetas, el orden y la vista de los marcadores. Las carpetas plegadas conservan su estado.",
           "Deshaz y rehace las ediciones de marcadores, con avisos sobre direcciones duplicadas y errores al guardar.",
@@ -119,10 +116,9 @@ export const updatesMessages = {
       },
     ],
     releasedItems: [
-      "Los ajustes pasaron de un menú desplegable a una barra lateral izquierda.",
-      "Al arrastrar un marcador, los marcadores cercanos se mueven para indicar su posición.",
-      "Las carpetas de marcadores se pueden expandir y contraer.",
-      "Puedes elegir subcarpetas al guardar un marcador.",
+      "Accede a los ajustes desde la barra lateral izquierda.",
+      "Consulta dónde quedará un marcador al arrastrarlo.",
+      "Expande o contrae carpetas y guarda marcadores en subcarpetas.",
     ],
     updated: "Se ha actualizado",
     viewUpdates: "Ver historial de actualizaciones",
@@ -140,7 +136,7 @@ export const updatesMessages = {
     latest: "最新",
     currentSections: [
       {
-        title: "更新内容",
+        title: "",
         items: [
           "可调整文件夹的位置和大小、书签顺序及显示方式。折叠的文件夹会保持折叠状态。",
           "编辑书签时可撤销和重做，并会收到重复网址和保存错误的提示。",
@@ -151,10 +147,9 @@ export const updatesMessages = {
       },
     ],
     releasedItems: [
-      "设置从下拉菜单移至左侧边栏。",
-      "拖动书签时，周围的书签会移动以预览放置位置。",
-      "书签文件夹可以展开和折叠。",
-      "保存书签时可以选择子文件夹。",
+      "可在左侧边栏打开设置。",
+      "拖动书签时可预览放置位置。",
+      "可展开或折叠文件夹，并将书签保存到子文件夹。",
     ],
     updated: "已更新",
     viewUpdates: "查看更新记录",

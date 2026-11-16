@@ -29,8 +29,8 @@ test("the 1.2.0 changelog matches the in-app English release notes", () => {
   expect(release).toContain("Released on 2026-09-15.");
   const items = release?.match(/^- .+(?:\n {2,4}.+)*/gm)?.map((item) => item.slice(2).replace(/\n {2,4}/g, " "));
   expect(items).toEqual(updatesMessages.en.currentSections.flatMap((section) => section.items));
-  expect(release?.match(/^### .+$/gm)).toEqual(
-    updatesMessages.en.currentSections.map((section) => `### ${section.title}`),
+  expect(release?.match(/^### .+$/gm) ?? []).toEqual(
+    updatesMessages.en.currentSections.filter((section) => section.title).map((section) => `### ${section.title}`),
   );
 });
 

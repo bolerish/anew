@@ -15,8 +15,6 @@ Released on 2026-11-17.
 
 Released on 2026-09-15.
 
-### What’s new
-
 - Customize folder positions and sizes, bookmark order, and display options. Collapsed folders stay collapsed when you return.
 - Undo and redo bookmark edits, with guidance for duplicate addresses and save errors.
 - Search bookmarks, choose a search engine, and use keyboard shortcuts to start searching or editing.
@@ -27,9 +25,6 @@ Released on 2026-09-15.
 
 Released on 2026-08-25.
 
-- Moved settings from a dropdown menu to a left sidebar.
-- Dragging a bookmark now pushes nearby bookmarks aside to preview its new
-  position.
-- Bookmark folders now expand and collapse as accordions.
-- You can now choose nested folders, not just root folders, when saving a
-  bookmark.
+- Find settings in the left sidebar.
+- Preview where a bookmark will go as you drag it.
+- Expand or collapse folders and save bookmarks in nested folders.
