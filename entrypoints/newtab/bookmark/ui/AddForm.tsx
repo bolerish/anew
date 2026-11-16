@@ -32,7 +32,7 @@ const styles = stylex.create({
     borderInlineStartColor: { default: colorVars.strokeDefault, ":focus-within": colorVars.strokeDefault },
     borderInlineEndColor: { default: colorVars.strokeDefault, ":focus-within": colorVars.strokeDefault },
     borderRadius: radiusVars.sm,
-    backgroundColor: colorVars.bgSubtle,
+    backgroundColor: "transparent",
   },
   tileForm: { gridTemplateColumns: "minmax(0,1fr)", padding: spacingVars.space2 },
   tileIcon: { justifySelf: "center", height: sizeVars.controlMd },

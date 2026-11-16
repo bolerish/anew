@@ -111,6 +111,7 @@ const styles = stylex.create({
     height: sizeVars.controlLg,
   },
   content: {
+    padding: 0,
     backgroundColor: colorVars.bgSurface,
     overflowY: "auto",
     scrollbarGutter: "stable",
