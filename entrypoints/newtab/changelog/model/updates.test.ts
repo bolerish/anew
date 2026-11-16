@@ -16,3 +16,14 @@ test("a version update is announced only once", async () => {
   await scheduleUpdateAnnouncement("update", "1.2.0");
   expect(await claimUpdateAnnouncement()).toBeNull();
 });
+
+test("the newest release matches the package version in every language", async () => {
+  const { getUpdateEntries } = await import("./updates");
+  const { default: metadata } = await import("../../../../package.json");
+  for (const language of ["ko", "en", "ja", "es", "zh"] as const) {
+    const entries = getUpdateEntries(language);
+    expect(entries[0].version).toBe(metadata.version);
+    expect(entries[0].sections[0].items).toHaveLength(2);
+    expect(entries[1].version).toBe("1.2.0");
+  }
+});

@@ -1,7 +1,7 @@
 export const weatherMessages = {
   ko: {
     locationReload:
-      "위치 권한이 적용되지 않았습니다. 확장 프로그램 관리 화면에서 MIN을 새로고침한 뒤 새 탭을 열어 주세요.",
+      "위치 권한이 적용되지 않았습니다. 확장 프로그램 관리 화면에서 Anew를 새로고침한 뒤 새 탭을 열어 주세요.",
     locationDenied:
       "위치 접근이 차단됐습니다. 시스템 설정과 브라우저의 위치 권한을 확인하거나 도시 이름으로 검색해 주세요.",
     locationTimeout: "위치 요청 시간이 초과됐습니다. 다시 시도하거나 도시를 검색해 주세요.",
@@ -27,7 +27,7 @@ export const weatherMessages = {
   },
   en: {
     locationReload:
-      "Location permission is not active. Reload MIN from your browser’s extensions page, then open a new tab.",
+      "Location permission is not active. Reload Anew from your browser’s extensions page, then open a new tab.",
     locationDenied:
       "Location access is blocked. Check location permissions in your system and browser, or search for a city.",
     locationTimeout: "The location request timed out. Try again or search for a city.",
@@ -53,7 +53,7 @@ export const weatherMessages = {
   },
   ja: {
     locationReload:
-      "位置情報の権限が反映されていません。ブラウザの拡張機能画面でMINを再読み込みし、新しいタブを開いてください。",
+      "位置情報の権限が反映されていません。ブラウザの拡張機能画面でAnewを再読み込みし、新しいタブを開いてください。",
     locationDenied:
       "位置情報へのアクセスがブロックされています。システムとブラウザの権限を確認するか、都市名で検索してください。",
     locationTimeout: "位置の取得がタイムアウトしました。再試行するか都市を検索してください。",
@@ -79,7 +79,7 @@ export const weatherMessages = {
   },
   es: {
     locationReload:
-      "El permiso de ubicación no está activo. Recarga MIN desde la página de extensiones del navegador y abre una nueva pestaña.",
+      "El permiso de ubicación no está activo. Recarga Anew desde la página de extensiones del navegador y abre una nueva pestaña.",
     locationDenied:
       "El acceso a la ubicación está bloqueado. Revisa los permisos del sistema y del navegador, o busca una ciudad.",
     locationTimeout: "La solicitud de ubicación tardó demasiado. Reinténtalo o busca una ciudad.",
@@ -104,7 +104,7 @@ export const weatherMessages = {
     saveError: "No se pudo guardar la ciudad. Selecciónala de nuevo.",
   },
   zh: {
-    locationReload: "位置权限尚未生效。请在浏览器扩展管理页面重新加载 MIN，然后打开新标签页。",
+    locationReload: "位置权限尚未生效。请在浏览器扩展管理页面重新加载 Anew，然后打开新标签页。",
     locationDenied: "位置访问被阻止。请检查系统和浏览器的位置权限，或搜索城市名称。",
     locationTimeout: "位置请求超时。请重试或搜索城市。",
     gps: "使用当前位置",

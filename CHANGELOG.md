@@ -1,83 +1,27 @@
 # Changelog
 
+## Version v1.2.1
+
+Released on 2026-11-17.
+
+### Introducing Anew
+
+<!-- prettier-ignore -->
+- Min is now Anew, with a new logo. Your bookmarks and saved settings stay
+    available.
+- Made search guidance and settings labels easier to understand.
+
 ## Version v1.2.0
 
 Released on 2026-09-15.
 
-### Bookmarks
+### What’s new
 
-<!-- prettier-ignore -->
-- Changing text size keeps bookmark icons, grid widths, and spacing stable.
-    Tiles grow only as needed to fit larger text, preserving custom folder heights.
-- Show selected folder options with a checkmark on the right, keeping icon
-    previews and labels together on the left.
-- Reveal hidden bookmark and folder move handles when hovering directly over
-    their position, so dragging can start without hovering the content first.
-- Align folder headers and bookmark right edges, and highlight move and resize
-    handles without rectangular outlines or overlap with the add-folder control.
-- Spread grid tiles evenly across each folder while keeping sparse grids compact,
-    and add bookmarks from a matching plus tile with a readable input card.
-- Keep move and resize grips visible while editing, clarify the dragged source
-    and insertion position, and show whether editing has unsaved changes.
-- Briefly highlight a newly added bookmark and slightly reduce the fixed gap
-    between folders while preserving custom folder heights and bookmark sizes.
-- Keep drag insertion lines steady when reordering bookmarks within a folder,
-    and avoid saving moves that leave an item in the same position.
-- Show resize lines while resizing or using keyboard focus, without showing
-    a line just from hovering between folders or columns.
-- Restore centered content and folder spacing, and align the add-bookmark icon
-    and label with the bookmark rows.
-- Keep bookmark order consistent between the editing preview and saved folders
-    when moving an item downward within the same folder.
-- Preserve unrelated settings changed in another tab while saving edits, and
-    prevent simultaneous Min saves from overwriting each other's bookmark edits.
-- Keep successful edits when retrying after a partial save failure.
-- Preserve supported address schemes, including file and mail links, and show an
-    error for unsupported schemes instead of changing them into web addresses.
-- Arrange folders in rows and resizable columns, resize folder heights, and double-click a resize handle to reset it.
-- Choose list or grid view, icon style, titles and domain visibility for each folder. Grid tiles are more compact.
-- Keep folders collapsed after reloading or opening a new tab. Dropping an item or folder onto itself keeps it in place.
-- Edit with undo, redo, save and cancel. Close an add form by moving to another control.
-- Adding the same address to the same folder shows a notification instead of creating a duplicate, including bookmarks not yet saved in edit mode.
-- Bookmark input and save errors appear below the fields without clearing your entries. Repeated submissions are blocked while saving, and location searches distinguish loading from errors.
-- Use the table of contents to navigate to folders and reveal their names on hover or keyboard focus. A clicked item stays highlighted until you manually scroll. The destination folder outline fades after a short delay while the table-of-contents selection and keyboard focus remain.
-- Fixed invisible add-column areas intercepting drag handles in multi-column layouts.
-
-### Search and navigation
-
-<!-- prettier-ignore -->
-- Focused search and bookmark editors highlight only their bottom border, without
-    overlapping outlines or extra lines around individual fields.
-- Find bookmarks with search suggestions and choose Google, Bing, DuckDuckGo or Brave.
-- Navigate bookmarks with arrow keys, focus search with /, and enter editing with E. Escape leaves search focus and opens settings when idle. Editing restores focus, with improved screen-reader guidance.
-- Use browser back and forward navigation in settings detail screens and update history.
-
-### Weather
-
-- View weather for a searched city or your location. Choose Celsius or Fahrenheit and whether to show the city. Cached weather avoids repeated requests.
-
-### Settings
-
-<!-- prettier-ignore -->
-- Restore the white page background in light mode while preserving the dark
-    background and following system theme changes.
-- Shared controls now use bolerish's design system while keeping Min's compact
-    layout, custom fonts, text scales, and corner settings.
-- Appearance changes also apply to other open Min tabs. A settings read failure
-    no longer prevents the new tab page from opening or replaces saved settings.
-- Choose one font for the entire page and adjust default text and heading sizes
-    independently. Existing text scales are preserved; your content font takes
-    priority when combining saved fonts, with the heading font used if it is blank.
-    Default text size also applies to inputs and settings items. Adjust content
-    width and choose from five languages. Toggle folder dividers and keyboard
-    shortcuts in Layout.
-- Keep the header right-aligned on mobile and the settings button on the right when shortcuts are hidden.
-- Choose whether to show the date and time and select their formats. Time options show examples, and custom date formats include examples and error guidance.
-- Choose light, dark, or system themes, and turn animations on, off, or follow system settings. Saved themes are applied before new-tab content loads.
-
-### Updates
-
-- After a version update, a one-time message appears when you first open a new tab. Use its button to read the update history.
+- Customize folder positions and sizes, bookmark order, and display options. Collapsed folders stay collapsed when you return.
+- Undo and redo bookmark edits, with guidance for duplicate addresses and save errors.
+- Search bookmarks, choose a search engine, and use keyboard shortcuts to start searching or editing.
+- Find weather by city or current location and choose Celsius or Fahrenheit.
+- Customize fonts, text sizes, content width, and date and time display. Appearance settings also apply to other open tabs.
 
 ## Version v1.1.3
 

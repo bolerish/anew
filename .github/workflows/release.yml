@@ -37,7 +37,7 @@ jobs:
       - name: Resolve release asset
         run: |
           VERSION="$(node -p "require('./package.json').version")"
-          ZIP_PATH=".output/min-${VERSION}-chrome.zip"
+          ZIP_PATH=".output/anew-${VERSION}-chrome.zip"
           test -f "$ZIP_PATH"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "ZIP_PATH=$ZIP_PATH" >> "$GITHUB_ENV"
@@ -47,7 +47,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" "$ZIP_PATH" \
-            --title "Min ${VERSION}" \
+            --title "Anew ${VERSION}" \
             --generate-notes
 
       - name: Submit to Chrome Web Store

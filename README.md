@@ -1,21 +1,21 @@
-# Min - New Tab for Bookmarks
+# Anew - New Tab for Bookmarks
 
-![Logo](./public/logo.svg)
+![Logo](./public/logo.png)
 
-Min is a minimal new tab page for Chrome bookmark.
+Anew is a minimal new tab page for Chrome bookmarks.
 
-Search, open, and organize your bookmark in a minimal new tab page.
+Search, open, and organize your bookmarks in a simple new tab page.
 
 ## Features
 
 ### Bookmark management
 
-- View bookmark by folder
-- Add, edit, delete, and reorder bookmark
+- View bookmarks by folder
+- Add, edit, delete, and reorder bookmarks
 
 ### Quick access
 
-- Search bookmark and the web
+- Search bookmarks and the web
 - Navigate with the keyboard
 
 ### Display settings
