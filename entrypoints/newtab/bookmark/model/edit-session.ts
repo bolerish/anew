@@ -103,6 +103,12 @@ function reindex(node: BookmarkTreeNode) {
   });
 }
 export async function performBookmarkCommand(command: Command) {
+  if ((command.type === "create" || command.type === "update") && command.input.title !== undefined) {
+    command = {
+      ...command,
+      input: { ...command.input, title: command.input.title.replace(/[\n\r\t\u2028\u2029]/g, " ") },
+    };
+  }
   if (!state.active) {
     await withMinWriteLock(() => execute(command));
     return;

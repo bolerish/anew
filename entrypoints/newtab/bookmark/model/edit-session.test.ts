@@ -142,3 +142,33 @@ test("two tabs cannot both commit a draft based on the same bookmark tree", asyn
   expect(tree[0].children![0].title).toBe("First tab");
   secondTab.cancelEditing();
 });
+
+test.each(["create", "update"] as const)("%s normalized titles survive a settings-save retry", async (type) => {
+  const tree: BookmarkTreeNode[] = [
+    { id: "1", title: "Bar", children: [{ id: "a", parentId: "1", title: "Original", url: "https://example.com" }] },
+  ];
+  const normalize = (title: string) => title.replace(/[\n\r\t\u2028\u2029]/g, " ");
+  vi.spyOn(browser.bookmarks, "getTree").mockImplementation(async () => structuredClone(tree));
+  const create = vi.spyOn(browser.bookmarks, "create").mockImplementation(async (input) => {
+    const node = { ...input, id: "real", title: normalize(input.title ?? ""), ...(input.url ? {} : { children: [] }) };
+    tree[0].children!.push(node);
+    return node;
+  });
+  vi.spyOn(browser.bookmarks, "update").mockImplementation(async (id, input) =>
+    Object.assign(tree[0].children!.find((node) => node.id === id)!, { ...input, title: normalize(input.title!) }),
+  );
+  const settings: BookmarkSettings = { folderViews: {}, layouts: {}, defaultView: "list", initialColumns: 1 };
+  await session.beginEditing(settings);
+  const input = { title: "Tab\tTitle", ...(type === "create" ? { parentId: "1" } : {}) };
+  await session.performBookmarkCommand({ type, id: type === "create" ? "temp" : "a", input });
+  expect(input.title).toBe("Tab\tTitle");
+  session.undoEditing();
+  expect(session.getEditSession().draft!.tree[0].children).toHaveLength(1);
+  session.redoEditing();
+  const save = vi.fn<() => Promise<void>>(async () => {}).mockRejectedValueOnce(new Error("settings failed"));
+  await expect(session.saveEditing(save)).rejects.toThrow("settings failed");
+  await session.saveEditing(save);
+  expect(create).toHaveBeenCalledTimes(type === "create" ? 1 : 0);
+  expect(session.getEditSession().active).toBe(false);
+  expect(tree[0].children!.at(-1)!.title).toBe("Tab Title");
+});
