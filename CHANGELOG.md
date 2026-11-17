@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+<!-- prettier-ignore -->
+- Keep the new tab usable when a saved date format is invalid.
+
 ## Version v1.2.1
 
 Released on 2026-11-17.
