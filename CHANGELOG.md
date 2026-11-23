@@ -3,6 +3,8 @@
 ## Unreleased
 
 <!-- prettier-ignore -->
+- Stop requesting the unused browser search permission. Web search remains
+    available through your selected search engine.
 - Keep the new tab usable when a saved date format is invalid.
 - Retry partially saved bookmark edits when Chrome normalizes whitespace in
     bookmark or folder titles, without creating duplicates.

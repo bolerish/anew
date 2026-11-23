@@ -20,7 +20,7 @@ export default defineConfig({
     short_name: "Anew",
     description: "__MSG_extensionDescription__",
     default_locale: "en",
-    permissions: ["bookmarks", "favicon", "fontSettings", "search", "storage", "geolocation"],
+    permissions: ["bookmarks", "favicon", "fontSettings", "storage", "geolocation"],
     action: {
       default_title: "__MSG_extensionName__",
     },
